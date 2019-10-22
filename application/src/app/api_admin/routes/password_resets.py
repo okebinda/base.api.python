@@ -47,7 +47,7 @@ def get_password_resets(page=1, limit=10):
         order_by = PasswordReset.id.asc()
 
     # retrieve and return results
-    password_resets = password_reset_query.order_by(order_by).limit(limit).offset((page-1)*limit)
+    password_resets = password_reset_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
     if password_resets.count():
 
         # prep initial output
@@ -61,11 +61,11 @@ def get_password_resets(page=1, limit=10):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'password_resets.get_password_resets', page=page-1, limit=limit,
+                'password_resets.get_password_resets', page=page - 1, limit=limit,
                 _external=True, order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'password_resets.get_password_resets', page=page+1, limit=limit,
+                'password_resets.get_password_resets', page=page + 1, limit=limit,
                 _external=True, order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:

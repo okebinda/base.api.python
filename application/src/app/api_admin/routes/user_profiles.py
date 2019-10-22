@@ -50,7 +50,7 @@ def get_user_profiles(page=1, limit=10):
         order_by = UserProfile.id.asc()
 
     # retrieve and return results
-    user_profiles = user_profile_query.order_by(order_by).limit(limit).offset((page-1)*limit)
+    user_profiles = user_profile_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
     if user_profiles.count():
 
         # prep initial output
@@ -64,11 +64,11 @@ def get_user_profiles(page=1, limit=10):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'user_profiles.get_user_profiles', page=page-1, limit=limit,
+                'user_profiles.get_user_profiles', page=page - 1, limit=limit,
                 _external=True, order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'user_profiles.get_user_profiles', page=page+1, limit=limit,
+                'user_profiles.get_user_profiles', page=page + 1, limit=limit,
                 _external=True, order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:

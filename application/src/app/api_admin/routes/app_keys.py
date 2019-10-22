@@ -47,7 +47,7 @@ def get_app_keys(page=1, limit=10):
         order_by = AppKey.id.asc()
 
     # retrieve and return results
-    app_keys = app_key_query.order_by(order_by).limit(limit).offset((page-1)*limit)
+    app_keys = app_key_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
     if app_keys.count():
 
         # prep initial output
@@ -61,11 +61,11 @@ def get_app_keys(page=1, limit=10):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'app_keys.get_app_keys', page=page-1, limit=limit,
+                'app_keys.get_app_keys', page=page - 1, limit=limit,
                 _external=True, order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'app_keys.get_app_keys', page=page+1, limit=limit,
+                'app_keys.get_app_keys', page=page + 1, limit=limit,
                 _external=True, order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:

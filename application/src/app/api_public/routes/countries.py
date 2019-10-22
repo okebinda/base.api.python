@@ -36,7 +36,7 @@ def get_countries(page=1, limit=250):
         order_by = Country.name.asc()
 
     # retrieve and return results
-    countries = country_query.order_by(order_by).limit(limit).offset((page-1)*limit)
+    countries = country_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
     if countries.count():
 
         # prep initial output
@@ -50,11 +50,11 @@ def get_countries(page=1, limit=250):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'countries.get_countries', page=page-1, limit=limit, _external=True,
+                'countries.get_countries', page=page - 1, limit=limit, _external=True,
                 order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'countries.get_countries', page=page+1, limit=limit, _external=True,
+                'countries.get_countries', page=page + 1, limit=limit, _external=True,
                 order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:

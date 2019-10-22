@@ -44,7 +44,7 @@ def get_roles(page=1, limit=10, role_type=None):
         order_by = Role.id.asc()
 
     # retrieve and return results
-    roles = role_query.order_by(order_by).limit(limit).offset((page-1)*limit)
+    roles = role_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
     if roles.count():
 
         # prep initial output
@@ -58,11 +58,11 @@ def get_roles(page=1, limit=10, role_type=None):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'roles.get_roles', page=page-1, limit=limit, _external=True,
+                'roles.get_roles', page=page - 1, limit=limit, _external=True,
                 order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'roles.get_roles', page=page+1, limit=limit, _external=True,
+                'roles.get_roles', page=page + 1, limit=limit, _external=True,
                 order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:

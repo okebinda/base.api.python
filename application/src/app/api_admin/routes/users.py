@@ -52,7 +52,7 @@ def get_users(page=1, limit=10):
         order_by = User.id.asc()
 
     # retrieve and return results
-    users = user_query.order_by(order_by).limit(limit).offset((page-1)*limit)
+    users = user_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
     if users.count():
 
         # prep initial output
@@ -66,11 +66,11 @@ def get_users(page=1, limit=10):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'users.get_users', page=page-1, limit=limit, _external=True,
+                'users.get_users', page=page - 1, limit=limit, _external=True,
                  order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'users.get_users', page=page+1, limit=limit, _external=True,
+                'users.get_users', page=page + 1, limit=limit, _external=True,
                 order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:

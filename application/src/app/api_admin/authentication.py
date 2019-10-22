@@ -126,7 +126,7 @@ class Authentication:
             recent_logins = login_query.order_by(Login.attempt_date.desc()).limit(admin_role.login_max_attempts)
             if recent_logins.count() >= admin_role.login_max_attempts:
                 if sum(list(map(lambda x: 1 if not x.success else 0, recent_logins))) >= admin_role.login_max_attempts:
-                    if (recent_logins[0].attempt_date-recent_logins[-1].attempt_date).total_seconds() <= admin_role.login_timeframe:
+                    if (recent_logins[0].attempt_date - recent_logins[-1].attempt_date).total_seconds() <= admin_role.login_timeframe:
                         banned_window = recent_logins[0].attempt_date + timedelta(seconds=admin_role.login_ban_time)
                         bw = banned_window.replace(tzinfo=None)
                         if bw > datetime.now():

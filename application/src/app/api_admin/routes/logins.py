@@ -42,7 +42,7 @@ def get_logins(page=1, limit=25):
         order_by = Login.id.asc()
 
     # retrieve and return results
-    logins = login_query.order_by(order_by).limit(limit).offset((page-1)*limit)
+    logins = login_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
     if logins.count():
 
         # prep initial output
@@ -56,11 +56,11 @@ def get_logins(page=1, limit=25):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'logins.get_logins', page=page-1, limit=limit, _external=True,
+                'logins.get_logins', page=page - 1, limit=limit, _external=True,
                 order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'logins.get_logins', page=page+1, limit=limit, _external=True,
+                'logins.get_logins', page=page + 1, limit=limit, _external=True,
                 order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:
