@@ -36,7 +36,7 @@ def post_user_account_step1():
             User.email_digest == temp_user.email_digest).first()
         if user_query:
             errors["email"] = ["Value must be unique."]
-    
+
     if request.json.get('password', None) and request.json.get('password2', None):
         if request.json.get('password') != request.json.get('password2'):
             errors['password2'] = ["Passwords must match."]
@@ -59,7 +59,7 @@ def post_user_account_step1():
             exclude=('first_name', 'last_name',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
-    
+
     # return any errors
     if errors:
         return jsonify({"error": errors}), 400
@@ -71,7 +71,7 @@ def post_user_account_step1():
                 is_verified=False,
                 status=User.STATUS_ENABLED,
                 status_changed_at=datetime.now())
-    
+
     user_role = Role.query.filter(Role.name == 'USER').first()
     if user_role:
         user.roles.append(user_role)
@@ -126,7 +126,7 @@ def post_user_account_step2():
     if user_profile:
         user_profile.first_name = request.json.get('first_name', '').strip()
         user_profile.last_name = request.json.get('last_name', '').strip()
-        
+
     else:
         user_profile = UserProfile(
             user_id=user.id,
@@ -215,7 +215,7 @@ def put_user_account():
                     exclude=('password', 'password2', 'tos_id',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
-    
+
     # return any errors
     if errors:
         return jsonify({"error": errors}), 400
@@ -228,7 +228,7 @@ def put_user_account():
     if user_profile:
         user_profile.first_name = request.json.get('first_name', '').strip()
         user_profile.last_name = request.json.get('last_name', '').strip()
-        
+
     else:
         user_profile = UserProfile(
             user_id=user.id,

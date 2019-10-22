@@ -32,7 +32,7 @@ def get_users(page=1, limit=10):
         user_query = user_query.filter(
             User.status.in_((User.STATUS_ENABLED, User.STATUS_DISABLED,
                              User.STATUS_PENDING)))
-    
+
     if request.args.get('role', '').isnumeric():
         user_query = user_query.filter(
             User.roles.any(Role.id == int(request.args.get('role'))))
@@ -105,7 +105,7 @@ def post_user():
         data, _ = UserSchema(strict=True).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
-    
+
     # return any errors
     if errors:
         return jsonify({"error": errors}), 400
@@ -117,7 +117,7 @@ def post_user():
                 is_verified=request.json.get('is_verified'),
                 status=request.json.get('status'),
                 status_changed_at=datetime.now())
-    
+
     if request.json.get('roles', []) and len(request.json.get('roles')):
       for role_id in request.json.get('roles'):
           if role_id:
@@ -191,7 +191,7 @@ def put_user(user_id):
             data, _ = UserSchema(strict=True, exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
-    
+
     # return any errors
     if errors:
         return jsonify({"error": errors}), 400
@@ -211,7 +211,7 @@ def put_user(user_id):
             role = Role.query.get(role_id)
             if role is not None:
                 user.roles.append(role)
-    
+
     if (user.status != request.json.get('status', None)):
         user.status = request.json.get('status')
         user.status_changed_at = datetime.now()

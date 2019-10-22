@@ -77,7 +77,7 @@ Sometimes it is useful to completely remove all residual Vagrant files after des
 > rm -rf ./vagrant
 ```
 
-## base.api.python.vm
+## Public API: base.api.python.vm
 
 ### Start Development Server
 
@@ -99,7 +99,7 @@ $ cd /vagrant
 $ python -W ignore tests/api_public/functional/run.py
 ```
 
-## base.api.admin.python.vm
+## Admin API: base.api.admin.python.vm
 
 ### Start Development Server
 

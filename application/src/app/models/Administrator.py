@@ -44,7 +44,7 @@ class Administrator(db.Model, BaseModel):
     roles = db.relationship(
         'Role', secondary=roles, lazy='subquery',
         backref=db.backref('administrators', lazy=True))
-    
+
     @hybrid_property
     def password(self):
         return self._password
@@ -54,7 +54,7 @@ class Administrator(db.Model, BaseModel):
         self._password = str(bcrypt.hashpw(bytes(password, 'utf-8'),
             bcrypt.gensalt(self.HASH_ROUNDS)), 'utf8')
         self.password_changed_at = datetime.now()
-    
+
     @hybrid_property
     def email(self):
         return self._email

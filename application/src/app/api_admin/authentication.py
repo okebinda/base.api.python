@@ -47,7 +47,7 @@ def check_password_expiration(view_function):
 
 
 class Authentication:
-    
+
     def verify_password(username_or_token, password):
 
         # first try to authenticate by token
@@ -96,7 +96,7 @@ class Authentication:
         identity_changed.send(current_app._get_current_object(),
                               identity=Identity(user.id))
         return True
-    
+
     def on_identity_loaded(sender, identity):
 
         # Set the identity user object
@@ -112,7 +112,7 @@ class Authentication:
             if hasattr(g.user, 'roles'):
                 for role in g.user.roles:
                     identity.provides.add(RoleNeed(role.name))
-    
+
     def is_account_locked(username_or_token):
         admin_role = Role.query.filter(Role.name == 'SUPER_ADMIN').first()
         if admin_role.login_lockout_policy:

@@ -52,7 +52,7 @@ def put_account():
         data, _ = UserAccountSchema(strict=True, exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
-    
+
     # return any errors
     if errors:
         return jsonify({"error": errors}), 400

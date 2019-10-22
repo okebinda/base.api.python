@@ -59,7 +59,7 @@ def put_password():
             if ('password2' not in errors):
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
-    
+
     if (len(errors)):
         return jsonify({"error": errors}), 400
 
@@ -191,16 +191,16 @@ def put_password_reset():
             if ('password2' not in errors):
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
-    
+
     if (len(errors)):
         return jsonify({"error": errors}), 400
 
     # save password reset record
     password_reset.is_used = True
-    
+
     # save user
     user.password = request.json.get('password1')
     db.session.commit()
-    
+
     # response
     return jsonify({'success': 'true'}), 200

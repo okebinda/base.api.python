@@ -33,7 +33,7 @@ def get_administrators(page=1, limit=10):
             Administrator.status.in_((Administrator.STATUS_ENABLED,
                                       Administrator.STATUS_DISABLED,
                                       Administrator.STATUS_PENDING)))
-    
+
     if request.args.get('role', '').isnumeric():
         administrator_query = administrator_query.filter(
             Administrator.roles.any(Role.id == int(request.args.get('role'))))
@@ -108,7 +108,7 @@ def post_administrator():
         data, _ = AdministratorSchema(strict=True).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
-    
+
     # return any errors
     if errors:
         return jsonify({"error": errors}), 400
@@ -122,7 +122,7 @@ def post_administrator():
                           joined_at=request.json.get('joined_at'),
                           status=request.json.get('status'),
                           status_changed_at=datetime.now())
- 
+
     if request.json.get('roles'):
       for role_id in request.json.get('roles'):
           role = Role.query.get(role_id)
@@ -188,7 +188,7 @@ def put_administrator(administrator_id):
             data, _ = AdministratorSchema(strict=True, exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
-    
+
     # return any errors
     if errors:
         return jsonify({"error": errors}), 400
@@ -209,7 +209,7 @@ def put_administrator(administrator_id):
             role = Role.query.get(role_id)
             if role is not None:
                 administrator.roles.append(role)
-    
+
     if (administrator.status != request.json.get('status', None)):
         administrator.status = request.json.get('status')
         administrator.status_changed_at = datetime.now()

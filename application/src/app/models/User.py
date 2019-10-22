@@ -70,7 +70,7 @@ class User(db.Model, BaseModel):
     @username.setter
     def username(self, username):
         self._username = username.lower().strip()
-    
+
     @hybrid_property
     def email(self):
         return self._email

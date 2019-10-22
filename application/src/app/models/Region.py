@@ -5,7 +5,7 @@ from app.lib.sqlalchemy.BaseModel import BaseModel
 class Region(db.Model, BaseModel):
 
     __tablename__ = 'regions'
-    
+
     # columns
     name = db.Column(db.String(60), nullable=False)
     code_2 = db.Column(db.String(2))

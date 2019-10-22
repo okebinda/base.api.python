@@ -15,7 +15,7 @@ class NotificationSchema(ma.Schema):
                   'notification_id', 'accepted', 'rejected', 'sent_at', 'status',
                   'status_changed_at', 'created_at', 'updated_at', 'user')
         load_only = ['user_id']
-    
+
     # nested schema
     user = fields.Nested('UserSchema', only=('id', 'username', 'uri',))
 

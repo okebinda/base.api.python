@@ -51,7 +51,7 @@ def put_password():
             if ('password2' not in errors):
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
-    
+
     if (len(errors)):
         return jsonify({"error": errors}), 400
 

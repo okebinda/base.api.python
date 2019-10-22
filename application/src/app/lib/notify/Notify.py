@@ -34,11 +34,11 @@ class Notify:
             accepted = response['accepted']
             rejected = response['rejected']
             service = response['service']
-        
+
         # no other channels at the moment
         else:
             pass
-        
+
         # save notification to log if database object present
         if self.db:
             notification = Notification(
@@ -55,10 +55,10 @@ class Notify:
             )
             self.db.session.add(notification)
             self.db.session.commit()
-        
+
         # return True if at least one notification sent
         return 1 <= accepted
-    
+
     def _email(self, email, template=None, **kwargs):
 
         # prep output
