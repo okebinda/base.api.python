@@ -14,7 +14,7 @@ class AdministratorSchema(ma.Schema):
     #    c) Number
     #    d) Non-alpha character
     #  2) 8-40 characters
-    rePassword = '^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,40}$'
+    rePassword = r'^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,40}$'
 
     class Meta:
         model = Administrator
@@ -39,7 +39,7 @@ class AdministratorSchema(ma.Schema):
     id = fields.Integer()
     username = fields.String(
         required=True,
-        validate=validate.Regexp('(?!^\d+$)^.+$', 0, 'Value must not be a number'))
+        validate=validate.Regexp(r'(?!^\d+$)^.+$', 0, 'Value must not be a number'))
     email = fields.Email(required=True)
     first_name = fields.String(
         required=True, validate=validate.Length(1, 40,
