@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__
+.idea/
+.vscode/
+.vagrant/
+application/env/
+deploy/packages/*.zip
+ubuntu-bionic-18.04-cloudimg-console.log
