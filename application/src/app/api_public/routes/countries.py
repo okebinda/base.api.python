@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for
 
-from app.models import Country
+from app.models.Country import Country
 from app.api_public.authentication import require_appkey
-from app.api_public.schema import CountrySchema
+from app.api_public.schema.CountrySchema import CountrySchema
 
 countries = Blueprint('countries', __name__)
 

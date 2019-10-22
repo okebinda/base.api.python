@@ -1,9 +1,8 @@
-from marshmallow import fields, post_dump, pre_dump, validate
+from marshmallow import fields, validate
 
 from app import ma
-from app.models import Administrator
-from . import RoleSchema
-from app.lib.datetime import Formats
+from app.models.Administrator import Administrator
+from app.lib.datetime.Formats import Formats
 
 class AdministratorSchema(ma.Schema):
 

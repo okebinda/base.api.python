@@ -6,10 +6,10 @@ from flask_httpauth import HTTPBasicAuth
 from flask_principal import Identity, Permission, RoleNeed, UserNeed, identity_changed
 
 from app import db
-from app.models import User
-from app.models import Login
-from app.models import Role
-from app.models import AppKey
+from app.models.User import User
+from app.models.Login import Login
+from app.models.Role import Role
+from app.models.AppKey import AppKey
 
 auth = HTTPBasicAuth()
 user_permission = Permission(RoleNeed('USER'))
@@ -20,7 +20,7 @@ def require_appkey(view_function):
     def decorated_function(*args, **kwargs):
         if request.args.get('app_key'):
             try:
-                app_key = AppKey.query.filter(
+                AppKey.query.filter(
                     AppKey.key == request.args.get('app_key'),
                     AppKey.status == AppKey.STATUS_ENABLED).one()
             except Exception:

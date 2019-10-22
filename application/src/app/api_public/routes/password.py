@@ -7,11 +7,13 @@ import hashlib
 from flask import Blueprint, jsonify, request, g, current_app
 
 from app import db
-from app.models import User, Role, PasswordReset
-from app.lib.random import String as RandomString
-from app.lib.notify import Notify
+from app.models.User import User
+from app.models.Role import Role
+from app.models.PasswordReset import PasswordReset
+from app.lib.random.String import String as RandomString
+from app.lib.notify.Notify import Notify
 from app.api_public.authentication import auth, user_permission, require_appkey
-from app.api_public.schema import UserAccountSchema
+from app.api_public.schema.UserAccountSchema import UserAccountSchema
 
 password = Blueprint('password', __name__)
 

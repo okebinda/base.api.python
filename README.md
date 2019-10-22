@@ -34,7 +34,7 @@ $ exit
 # exit
 
 $ cd /vagrant
-$ source env/bin/activate
+$ source application/env/bin/activate
 $ python ./scripts/load_fixtures.py
 ```
 
@@ -120,6 +120,52 @@ All tests must pass before committing any code into the repository.
 $ cd /vagrant
 $ python -W ignore tests/api_admin/functional/run.py
 ```
+
+## Linters
+
+#### Bandit
+
+Bandit is a security linter to find common security issues in Python code.
+
+```ssh
+$ cd /vagrant/application
+$ bandit -r src/
+```
+
+Ref: https://bandit.readthedocs.io/en/latest/
+
+#### Pyflakes
+
+Pyflakes is a simple linter that checks for errors.
+
+```ssh
+$ cd /vagrant/application
+$ pyflakes src/
+```
+
+Ref: https://github.com/PyCQA/pyflakes
+
+#### Pycodestyle
+
+Pycodestyle is a tool to check Python code against the style conventions of PEP 8.
+
+```ssh
+$ cd /vagrant/application
+$ pycodestyle src/
+```
+
+Ref: https://pycodestyle.readthedocs.io/en/latest/
+
+#### Pylint
+
+Pylint is a robust linter that checks for errors, coding standards, and code smell.
+
+```ssh
+$ cd /vagrant/application
+$ pylint src/
+```
+
+Ref: https://pylint.readthedocs.io/en/latest/
 
 ## Deployment
 

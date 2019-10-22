@@ -1,9 +1,7 @@
 from marshmallow import fields, validate
-from datetime import datetime
 
 from app import ma
-from app.models import User
-from app.lib.datetime import Formats
+from app.lib.datetime.Formats import Formats
 
 class UserAccountSchema(ma.Schema):
 

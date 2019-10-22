@@ -4,9 +4,9 @@ from flask import Blueprint, jsonify, abort, request, url_for
 from marshmallow import ValidationError
 
 from app import db
-from app.models import TermsOfService
+from app.models.TermsOfService import TermsOfService
 from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
-from app.api_admin.schema import TermsOfServiceSchema
+from app.api_admin.schema.TermsOfServiceSchema import TermsOfServiceSchema
 
 terms_of_service = Blueprint('terms_of_service', __name__)
 

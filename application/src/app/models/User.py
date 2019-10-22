@@ -1,4 +1,3 @@
-import os
 import bcrypt
 import hashlib
 from datetime import datetime
@@ -6,10 +5,10 @@ from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 
-from app import db, ma
+from app import db
 from app.Config import Config
-from app.lib.sqlalchemy import BaseModel
-from app.lib.sqlalchemy import PGPString
+from app.lib.sqlalchemy.BaseModel import BaseModel
+from app.lib.sqlalchemy.PGPString import PGPString
 from app.models.PasswordReset import PasswordReset
 from app.models.UserTermsOfService import UserTermsOfService
 from app.models.Notification import Notification

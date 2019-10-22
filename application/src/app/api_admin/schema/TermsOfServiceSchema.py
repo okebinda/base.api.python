@@ -1,8 +1,8 @@
 from marshmallow import fields, validate
 
 from app import ma
-from app.models import TermsOfService
-from app.lib.datetime import Formats
+from app.models.TermsOfService import TermsOfService
+from app.lib.datetime.Formats import Formats
 
 class TermsOfServiceSchema(ma.Schema):
 

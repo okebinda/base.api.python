@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for
 
-from app import db
-from app.models import PasswordReset
+from app.models.PasswordReset import PasswordReset
 from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
-from app.api_admin.schema import PasswordResetSchema
+from app.api_admin.schema.PasswordResetSchema import PasswordResetSchema
 
 password_resets = Blueprint('password_resets', __name__)
 

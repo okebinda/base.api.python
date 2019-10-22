@@ -1,8 +1,8 @@
 from marshmallow import fields, validate
 
 from app import ma
-from app.models import Notification
-from app.lib.datetime import Formats
+from app.models.Notification import Notification
+from app.lib.datetime.Formats import Formats
 
 class NotificationSchema(ma.Schema):
 

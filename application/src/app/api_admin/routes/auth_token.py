@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, jsonify
 from flask import g
 
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission, require_appkey
 
 auth_token = Blueprint('auth_token', __name__)
 

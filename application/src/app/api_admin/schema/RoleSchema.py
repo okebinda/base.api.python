@@ -1,8 +1,8 @@
 from marshmallow import fields, validate
 
 from app import ma
-from app.models import Role
-from app.lib.datetime import Formats
+from app.models.Role import Role
+from app.lib.datetime.Formats import Formats
 
 class RoleSchema(ma.Schema):
 

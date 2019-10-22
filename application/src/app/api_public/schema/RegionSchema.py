@@ -1,7 +1,7 @@
 from marshmallow import fields
 
 from app import ma
-from app.models import Region
+from app.models.Region import Region
 
 class RegionSchema(ma.Schema):
 

@@ -5,7 +5,7 @@ from flask import g
 
 from app import db
 from app.api_admin.authentication import auth, admin_permission, require_appkey
-from app.api_admin.schema import AdministratorSchema
+from app.api_admin.schema.AdministratorSchema import AdministratorSchema
 
 password = Blueprint('password', __name__)
 

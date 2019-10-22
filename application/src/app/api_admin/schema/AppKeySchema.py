@@ -1,8 +1,8 @@
 from marshmallow import fields, validate
 
 from app import ma
-from app.models import AppKey
-from app.lib.datetime import Formats
+from app.models.AppKey import AppKey
+from app.lib.datetime.Formats import Formats
 
 class AppKeySchema(ma.Schema):
 

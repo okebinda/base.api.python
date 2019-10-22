@@ -1,12 +1,9 @@
-from marshmallow import fields, post_dump, pre_dump, validate
+from marshmallow import fields, validate
 
 from app import ma
-from app.models import User
-from . import RoleSchema
-from . import CountrySchema
-from . import TermsOfServiceSchema
-from . import UserProfileSchema
-from app.lib.datetime import Formats
+from app.models.User import User
+from .UserTermsOfServiceSchema import UserTermsOfServiceSchema
+from app.lib.datetime.Formats import Formats
 
 class UserSchema(ma.Schema):
 
@@ -34,11 +31,11 @@ class UserSchema(ma.Schema):
     # nested schema
     roles = fields.Nested(
         'RoleSchema', exclude=('login_lockout_policy', 'login_max_attempts',
-        'login_timeframe', 'login_ban_time', 'login_ban_by_ip','password_policy',
-        'password_reset_days','password_reuse_history', 'created_at',
-        'updated_at','is_admin_role','priority',), many=True, dump_only=True)
+        'login_timeframe', 'login_ban_time', 'login_ban_by_ip', 'password_policy',
+        'password_reset_days', 'password_reuse_history', 'created_at',
+        'updated_at', 'is_admin_role','priority',), many=True, dump_only=True)
     terms_of_services = fields.Nested(
-        'UserTermsOfServiceSchema', exclude=('user','created_at','updated_at',),
+        UserTermsOfServiceSchema, exclude=('user', 'created_at', 'updated_at',),
         many=True, dump_only=True)
     profile = fields.Nested(
         'UserProfileSchema', only=('first_name', 'last_name', 'title',))

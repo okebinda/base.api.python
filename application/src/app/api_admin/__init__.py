@@ -1,11 +1,11 @@
-from flask import Flask, jsonify, make_response, request, g
+from flask import Flask, jsonify, make_response
 from flask_principal import Principal
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_principal import identity_loaded
 
 from app import db, ma
-from app.lib.wsgi import ReverseProxied
+from app.lib.wsgi.ReverseProxied import ReverseProxied
 from app.api_admin.authentication import auth, Authentication
 
 def create_app(config):
@@ -23,7 +23,7 @@ def create_app(config):
 
     # init database
     db.init_app(app)
-    migrate = Migrate(app, db)
+    Migrate(app, db)
 
     # init Marshmallow
     ma.init_app(app)

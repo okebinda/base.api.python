@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for
 
-from app import db
-from app.models import Login
+from app.models.Login import Login
 from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
-from app.api_admin.schema import LoginSchema
+from app.api_admin.schema.LoginSchema import LoginSchema
 
 logins = Blueprint('logins', __name__)
 

@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for
 
-from app import db
-from app.models import Region
+from app.models.Region import Region
 from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
-from app.api_admin.schema import RegionSchema
+from app.api_admin.schema.RegionSchema import RegionSchema
 
 regions = Blueprint('regions', __name__)
 

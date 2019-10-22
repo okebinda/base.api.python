@@ -1,7 +1,7 @@
 from marshmallow import fields
 
 from app import ma
-from app.models import Country
+from app.models.Country import Country
 
 class CountrySchema(ma.Schema):
 

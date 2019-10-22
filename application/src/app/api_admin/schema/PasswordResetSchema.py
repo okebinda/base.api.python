@@ -1,8 +1,8 @@
 from marshmallow import fields, validate
 
 from app import ma
-from app.models import PasswordReset
-from app.lib.datetime import Formats
+from app.models.PasswordReset import PasswordReset
+from app.lib.datetime.Formats import Formats
 
 class PasswordResetSchema(ma.Schema):
 

@@ -2,9 +2,9 @@ from flask import Blueprint, jsonify, abort, request, url_for
 from marshmallow import ValidationError
 
 from app import db
-from app.models import Role
+from app.models.Role import Role
 from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
-from app.api_admin.schema import RoleSchema
+from app.api_admin.schema.RoleSchema import RoleSchema
 
 roles = Blueprint('roles', __name__)
 

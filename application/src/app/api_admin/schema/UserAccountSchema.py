@@ -1,8 +1,8 @@
 from marshmallow import fields, validate
 
-from app import db, ma
-from app.models import Administrator
-from app.lib.datetime import Formats
+from app import ma
+from app.models.Administrator import Administrator
+from app.lib.datetime.Formats import Formats
 
 class UserAccountSchema(ma.Schema):
 

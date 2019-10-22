@@ -3,12 +3,13 @@ from fixture import SQLAlchemyFixture
 from fixture.style import NamedDataStyle
 
 from test_fixtures import *
+from . import models
 
 # application imports
 from app import db
 from app.api_public import create_app
 from app.Config import Config
-from app import models
+
     
 class BaseTest(TestCase):
 

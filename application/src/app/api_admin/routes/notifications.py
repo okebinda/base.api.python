@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for
 
-from app import db
-from app.models import Notification
+from app.models.Notification import Notification
 from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
-from app.api_admin.schema import NotificationSchema
+from app.api_admin.schema.NotificationSchema import NotificationSchema
 
 notifications = Blueprint('notifications', __name__)
 

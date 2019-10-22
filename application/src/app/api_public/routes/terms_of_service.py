@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify
 
-from app.models import TermsOfService
+from app.models.TermsOfService import TermsOfService
 from app.api_public.authentication import require_appkey
-from app.api_public.schema import TermsOfServiceSchema
+from app.api_public.schema.TermsOfServiceSchema import TermsOfServiceSchema
 
 terms_of_service = Blueprint('terms_of_service', __name__)
 

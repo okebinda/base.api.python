@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sparkpost import SparkPost
 
-from app.models import Notification
+from app.models.Notification import Notification
 
 class Notify(object):
 

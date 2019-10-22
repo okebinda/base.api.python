@@ -1,8 +1,8 @@
 from marshmallow import fields
 
 from app import ma
-from app.models import UserTermsOfService
-from app.lib.datetime import Formats
+from app.models.UserTermsOfService import UserTermsOfService
+from app.lib.datetime.Formats import Formats
 
 class UserTermsOfServiceSchema(ma.Schema):
 

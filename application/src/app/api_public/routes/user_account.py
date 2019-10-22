@@ -1,12 +1,16 @@
 from datetime import datetime
 
-from flask import Blueprint, jsonify, abort, request, url_for, g
+from flask import Blueprint, jsonify, request, g
 from marshmallow import ValidationError
 
 from app import db
-from app.models import User, UserProfile, Role, TermsOfService, UserTermsOfService
+from app.models.User import User
+from app.models.UserProfile import UserProfile
+from app.models.Role import Role
+from app.models.TermsOfService import TermsOfService
+from app.models.UserTermsOfService import UserTermsOfService
 from app.api_public.authentication import auth, user_permission, require_appkey, check_password_expiration
-from app.api_public.schema import UserAccountSchema
+from app.api_public.schema.UserAccountSchema import UserAccountSchema
 
 
 user_account = Blueprint('user_account', __name__)

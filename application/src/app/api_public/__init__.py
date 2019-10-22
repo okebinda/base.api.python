@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_principal import identity_loaded
 
 from app import db, ma
-from app.lib.wsgi import ReverseProxied
+from app.lib.wsgi.ReverseProxied import ReverseProxied
 from app.api_public.authentication import auth, Authentication
 
 def create_app(config):

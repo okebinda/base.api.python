@@ -1,6 +1,6 @@
 from app import db
-from app.lib.sqlalchemy import BaseModel
-from app.lib.sqlalchemy import PGPString
+from app.lib.sqlalchemy.BaseModel import BaseModel
+from app.lib.sqlalchemy.PGPString import PGPString
 from app.Config import Config
 
 class UserProfile(db.Model, BaseModel):
