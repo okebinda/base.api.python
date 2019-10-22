@@ -67,7 +67,7 @@ def get_users(page=1, limit=10):
         if page != 1:
             output['previous_uri'] = url_for(
                 'users.get_users', page=page - 1, limit=limit, _external=True,
-                 order_by=request.args.get('order_by', None))
+                order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
                 'users.get_users', page=page + 1, limit=limit, _external=True,

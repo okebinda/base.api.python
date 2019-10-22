@@ -42,13 +42,13 @@ def post_user_account_step1():
             errors['password2'] = ["Passwords must match."]
 
     if not request.json.get('tos_id', None):
-        if ('tos_id' not in errors):
+        if 'tos_id' not in errors:
             errors['tos_id'] = []
         errors['tos_id'].append("Please agree to the terms of service.")
     if request.json.get('tos_id', None):
         tos = TermsOfService.query.get(request.json.get('tos_id'))
         if tos is None:
-            if ('tos_id' not in errors):
+            if 'tos_id' not in errors:
                 errors['tos_id'] = []
             errors['tos_id'].append("Invalid value.")
 
@@ -117,9 +117,9 @@ def post_user_account_step2():
     # validate data
     try:
         data, _ = UserAccountSchema(
-                strict=True,
-                exclude=('username', 'email', 'password', 'password2', 'tos_id',)
-            ).load(request.json)
+            strict=True,
+            exclude=('username', 'email', 'password', 'password2', 'tos_id')
+        ).load(request.json)
     except ValidationError as err:
         return jsonify({"error": err.messages}), 400
 
@@ -213,8 +213,8 @@ def put_user_account():
     # validate data
     try:
         data, _ = UserAccountSchema(
-                    strict=True,
-                    exclude=('password', 'password2', 'tos_id',)).load(request.json)
+            strict=True,
+            exclude=('password', 'password2', 'tos_id')).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 

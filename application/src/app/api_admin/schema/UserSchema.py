@@ -8,7 +8,7 @@ from app.lib.datetime.Formats import Formats
 
 class UserSchema(ma.Schema):
 
-  # Rules:
+    # Rules:
     #  1) 3 out of 4:
     #    a) Upper case
     #    b) Lower case

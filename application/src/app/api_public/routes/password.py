@@ -32,31 +32,31 @@ def put_password():
 
     # validate data
     errors = {}
-    if ('previous_password' not in request.json or not request.json['previous_password']):
-        if ('previous_password' not in errors):
+    if 'previous_password' not in request.json or not request.json['previous_password']:
+        if 'previous_password' not in errors:
             errors['previous_password'] = []
         errors['previous_password'].append("Missing data for required field.")
     elif 'previous_password' in request.json and not user.check_password(request.json['previous_password']):
-        if ('previous_password' not in errors):
+        if 'previous_password' not in errors:
             errors['previous_password'] = []
         errors['previous_password'].append("Incorrect password.")
 
-    if ('password1' not in request.json or not request.json['password1']):
-        if ('password1' not in errors):
+    if 'password1' not in request.json or not request.json['password1']:
+        if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Missing data for required field.")
-    if ('password1' in request.json and not rePassword.match(request.json['password1'])):
-        if ('password1' not in errors):
+    if 'password1' in request.json and not rePassword.match(request.json['password1']):
+        if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Please choose a more complex password.")
 
-    if ('password2' not in request.json or not request.json['password2']):
-        if ('password2' not in errors):
+    if 'password2' not in request.json or not request.json['password2']:
+        if 'password2' not in errors:
             errors['password2'] = []
         errors['password2'].append("Missing data for required field.")
-    if ('password1' in request.json and 'password2' in request.json):
-        if (request.json['password1'] != request.json['password2']):
-            if ('password2' not in errors):
+    if 'password1' in request.json and 'password2' in request.json:
+        if request.json['password1'] != request.json['password2']:
+            if 'password2' not in errors:
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
 
@@ -80,8 +80,8 @@ def post_password_request_reset_code():
 
     # validate data
     errors = {}
-    if ('email' not in request.json or not request.json['email']):
-        if ('email' not in errors):
+    if 'email' not in request.json or not request.json['email']:
+        if 'email' not in errors:
             errors['email'] = []
         errors['email'].append("Missing data for required field.")
     if request.json.get('email'):
@@ -92,7 +92,7 @@ def post_password_request_reset_code():
                 User.roles.any(Role.id == 1),
                 User.email_digest == temp_user.email_digest).first()
         if not user:
-            if ('email' not in errors):
+            if 'email' not in errors:
                 errors['email'] = []
             errors['email'].append("Email address not found.")
 
@@ -144,12 +144,12 @@ def put_password_reset():
 
     # validate data
     errors = {}
-    if ('code' not in request.json or not request.json['code']):
-        if ('code' not in errors):
+    if 'code' not in request.json or not request.json['code']:
+        if 'code' not in errors:
             errors['code'] = []
         errors['code'].append("Missing data for required field.")
-    if ('email' not in request.json or not request.json['email']):
-        if ('email' not in errors):
+    if 'email' not in request.json or not request.json['email']:
+        if 'email' not in errors:
             errors['email'] = []
         errors['email'].append("Missing data for required field.")
 
@@ -161,7 +161,7 @@ def put_password_reset():
                 User.roles.any(Role.id == 1),
                 User.email_digest == temp_user.email_digest).first()
         if not user:
-            if ('email' not in errors):
+            if 'email' not in errors:
                 errors['email'] = []
             errors['email'].append("Email address not found.")
     if user and request.json.get('code'):
@@ -169,34 +169,34 @@ def put_password_reset():
             PasswordReset.status == PasswordReset.STATUS_ENABLED,
             PasswordReset.code == request.json.get('code'),
             PasswordReset.user_id == user.id,
-            PasswordReset.is_used == False,
+            PasswordReset.is_used is False,
             (PasswordReset.requested_at + timedelta(seconds=3600)) >= datetime.now()
         ).first()
         if not password_reset:
-            if ('code' not in errors):
+            if 'code' not in errors:
                 errors['code'] = []
             errors['code'].append("Invalid reset code.")
 
-    if ('password1' not in request.json or not request.json['password1']):
-        if ('password1' not in errors):
+    if 'password1' not in request.json or not request.json['password1']:
+        if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Missing data for required field.")
-    if ('password1' in request.json and not rePassword.match(request.json['password1'])):
-        if ('password1' not in errors):
+    if 'password1' in request.json and not rePassword.match(request.json['password1']):
+        if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Please choose a more complex password.")
 
-    if ('password2' not in request.json or not request.json['password2']):
-        if ('password2' not in errors):
+    if 'password2' not in request.json or not request.json['password2']:
+        if 'password2' not in errors:
             errors['password2'] = []
         errors['password2'].append("Missing data for required field.")
-    if ('password1' in request.json and 'password2' in request.json):
-        if (request.json['password1'] != request.json['password2']):
-            if ('password2' not in errors):
+    if 'password1' in request.json and 'password2' in request.json:
+        if request.json['password1'] != request.json['password2']:
+            if 'password2' not in errors:
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
 
-    if (len(errors)):
+    if len(errors):
         return jsonify({"error": errors}), 400
 
     # save password reset record
