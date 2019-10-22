@@ -23,7 +23,7 @@ class CountrySchema(ma.Schema):
         required=True, validate=validate.Length(2, 2,
         "Value must be 2 characters long."))
     code_3 = fields.String(
-        required=True, validate=validate.Length(3, 3, 
+        required=True, validate=validate.Length(3, 3,
         "Value must be 3 characters long."))
     status = fields.Integer(required=True)
     status_changed_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)

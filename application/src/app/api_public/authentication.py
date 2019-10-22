@@ -117,7 +117,7 @@ class Authentication:
             login_query = Login.query
             if role.login_ban_by_ip:
                 login_query = login_query.filter(
-                    Login.username == username_or_token, 
+                    Login.username == username_or_token,
                     Login.ip_address == request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
             else:
                 login_query = login_query.filter(Login.username == username_or_token)
