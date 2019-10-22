@@ -6,7 +6,8 @@ from marshmallow import ValidationError
 from app import db
 from app.models.Administrator import Administrator
 from app.models.Role import Role
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.AdministratorSchema import AdministratorSchema
 
 administrators = Blueprint('administrators', __name__)
@@ -14,7 +15,8 @@ administrators = Blueprint('administrators', __name__)
 
 @administrators.route("/administrators", methods=['GET'])
 @administrators.route("/administrators/<int:page>", methods=['GET'])
-@administrators.route("/administrators/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
+@administrators.route("/administrators/<int:page>/<int(min=1, max=100):limit>",
+                      methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -55,12 +57,14 @@ def get_administrators(page=1, limit=10):
         order_by = Administrator.id.asc()
 
     # retrieve and return results
-    administrators = administrator_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    administrators = administrator_query.order_by(order_by).limit(
+        limit).offset((page - 1) * limit)
     if administrators.count():
 
         # prep initial output
         output = {
-            'administrators': AdministratorSchema(many=True).dump(administrators).data,
+            'administrators': AdministratorSchema(many=True).dump(
+                administrators).data,
             'page': page,
             'limit': limit,
             'total': administrator_query.count()
@@ -69,12 +73,18 @@ def get_administrators(page=1, limit=10):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'administrators.get_administrators', page=page - 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+                'administrators.get_administrators',
+                page=page - 1,
+                limit=limit,
+                _external=True,
+                order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'administrators.get_administrators', page=page + 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+                'administrators.get_administrators',
+                page=page + 1,
+                limit=limit,
+                _external=True,
+                order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:
         return '', 204
@@ -132,7 +142,8 @@ def post_administrator():
     db.session.commit()
 
     # response
-    return jsonify({'administrator': AdministratorSchema().dump(admin).data}), 201
+    return jsonify(
+        {'administrator': AdministratorSchema().dump(admin).data}), 201
 
 
 @administrators.route('/administrator/<int:administrator_id>', methods=['GET'])
@@ -149,7 +160,8 @@ def get_administrator(administrator_id=None):
         abort(404)
 
     # response
-    return jsonify({'administrator': AdministratorSchema().dump(administrator).data}), 200
+    return jsonify(
+        {'administrator': AdministratorSchema().dump(administrator).data}), 200
 
 
 @administrators.route('/administrator/<int:administrator_id>', methods=['PUT'])
@@ -168,12 +180,14 @@ def put_administrator(administrator_id):
     errors = {}
 
     # pre-validate data
-    if request.json.get('username', None) and request.json.get('username') != administrator.username:
+    if (request.json.get('username', None) and
+            request.json.get('username') != administrator.username):
         administrator_query = Administrator.query.filter(
             Administrator.username == request.json.get('username')).first()
         if administrator_query:
             errors["username"] = ["Value must be unique."]
-    if request.json.get('email', None) and request.json.get('email') != administrator.email:
+    if (request.json.get('email', None) and
+            request.json.get('email') != administrator.email):
         temp_admin = Administrator(email=request.json.get('email'))
         administrator_query = Administrator.query.filter(
             Administrator.email_digest == temp_admin.email_digest).first()
@@ -185,7 +199,8 @@ def put_administrator(administrator_id):
         if request.json.get('password', None):
             data, _ = AdministratorSchema(strict=True).load(request.json)
         else:
-            data, _ = AdministratorSchema(strict=True, exclude=('password',)).load(request.json)
+            data, _ = AdministratorSchema(
+                strict=True, exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -204,23 +219,26 @@ def put_administrator(administrator_id):
         administrator.password = request.json.get('password')
 
     administrator.roles[:] = []
-    if request.json.get('roles') and isinstance(request.json.get('roles'), list):
+    if (request.json.get('roles') and
+            isinstance(request.json.get('roles'), list)):
         for role_id in request.json.get('roles'):
             role = Role.query.get(role_id)
             if role is not None:
                 administrator.roles.append(role)
 
-    if (administrator.status != request.json.get('status', None)):
+    if administrator.status != request.json.get('status', None):
         administrator.status = request.json.get('status')
         administrator.status_changed_at = datetime.now()
 
     db.session.commit()
 
     # response
-    return jsonify({'administrator': AdministratorSchema().dump(administrator).data}), 200
+    return jsonify(
+        {'administrator': AdministratorSchema().dump(administrator).data}), 200
 
 
-@administrators.route('/administrator/<int:administrator_id>', methods=['DELETE'])
+@administrators.route('/administrator/<int:administrator_id>',
+                      methods=['DELETE'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)

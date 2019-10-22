@@ -3,7 +3,8 @@ from marshmallow import ValidationError
 
 from app import db
 from app.models.Role import Role
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.RoleSchema import RoleSchema
 
 roles = Blueprint('roles', __name__)
@@ -14,7 +15,9 @@ roles = Blueprint('roles', __name__)
 @roles.route("/roles/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
 @roles.route("/roles/<string:role_type>", methods=['GET'])
 @roles.route("/roles/<string:role_type>/<int:page>", methods=['GET'])
-@roles.route("/roles/<string:role_type>/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
+@roles.route(
+    "/roles/<string:role_type>/<int:page>/<int(min=1, max=100):limit>",
+    methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -44,7 +47,8 @@ def get_roles(page=1, limit=10, role_type=None):
         order_by = Role.id.asc()
 
     # retrieve and return results
-    roles = role_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    roles = role_query.order_by(order_by).limit(limit).offset(
+        (page - 1) * limit)
     if roles.count():
 
         # prep initial output
@@ -83,17 +87,18 @@ def post_roles():
         return jsonify({"error": err.messages}), 400
 
     # save role
-    role = Role(name=request.json.get('name'),
-                is_admin_role=request.json.get('is_admin_role'),
-                priority=request.json.get('priority'),
-                login_lockout_policy=request.json.get('login_lockout_policy'),
-                login_max_attempts=request.json.get('login_max_attempts'),
-                login_timeframe=request.json.get('login_timeframe'),
-                login_ban_time=request.json.get('login_ban_time'),
-                login_ban_by_ip=request.json.get('login_ban_by_ip'),
-                password_policy=request.json.get('password_policy'),
-                password_reuse_history=request.json.get('password_reuse_history'),
-                password_reset_days=request.json.get('password_reset_days'))
+    role = Role(
+        name=request.json.get('name'),
+        is_admin_role=request.json.get('is_admin_role'),
+        priority=request.json.get('priority'),
+        login_lockout_policy=request.json.get('login_lockout_policy'),
+        login_max_attempts=request.json.get('login_max_attempts'),
+        login_timeframe=request.json.get('login_timeframe'),
+        login_ban_time=request.json.get('login_ban_time'),
+        login_ban_by_ip=request.json.get('login_ban_by_ip'),
+        password_policy=request.json.get('password_policy'),
+        password_reuse_history=request.json.get('password_reuse_history'),
+        password_reset_days=request.json.get('password_reset_days'))
     db.session.add(role)
     db.session.commit()
 
@@ -152,7 +157,8 @@ def put_role(role_id):
     role.login_ban_time = request.json.get('login_ban_time', None)
     role.login_ban_by_ip = request.json.get('login_ban_by_ip', None)
     role.password_policy = request.json.get('password_policy', None)
-    role.password_reuse_history = request.json.get('password_reuse_history', None)
+    role.password_reuse_history = request.json.get('password_reuse_history',
+                                                   None)
     role.password_reset_days = request.json.get('password_reset_days', None)
     db.session.commit()
 

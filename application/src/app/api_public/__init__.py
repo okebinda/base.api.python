@@ -44,7 +44,9 @@ def create_app(config):
 
     @app.errorhandler(400)
     def error_400(error):
-        return make_response(jsonify({'error': error.description if error.description else 'Bad data'}), 400)
+        return make_response(jsonify(
+            {'error': error.description if
+                error.description else 'Bad data'}), 400)
 
     @app.errorhandler(401)
     def error_401(error):
@@ -52,7 +54,9 @@ def create_app(config):
 
     @app.errorhandler(403)
     def error_403(error):
-        return make_response(jsonify({'error': error.description if error.description else "Permission denied"}), 403)
+        return make_response(jsonify(
+            {'error': error.description if
+                error.description else "Permission denied"}), 403)
 
     @app.errorhandler(404)
     def error_404(error):
@@ -68,22 +72,22 @@ def create_app(config):
 
     # ROUTES
 
-    from app.api_public.routes.auth_token import auth_token as auth_token_blueprint
-    app.register_blueprint(auth_token_blueprint)
+    from app.api_public.routes.auth_token import auth_token
+    app.register_blueprint(auth_token)
 
-    from app.api_public.routes.password import password as password_blueprint
-    app.register_blueprint(password_blueprint)
+    from app.api_public.routes.password import password
+    app.register_blueprint(password)
 
-    from app.api_public.routes.user_account import user_account as user_account_blueprint
-    app.register_blueprint(user_account_blueprint)
+    from app.api_public.routes.user_account import user_account
+    app.register_blueprint(user_account)
 
-    from app.api_public.routes.terms_of_service import terms_of_service as terms_of_service_blueprint
-    app.register_blueprint(terms_of_service_blueprint)
+    from app.api_public.routes.terms_of_service import terms_of_service
+    app.register_blueprint(terms_of_service)
 
-    from app.api_public.routes.countries import countries as countries_blueprint
-    app.register_blueprint(countries_blueprint)
+    from app.api_public.routes.countries import countries
+    app.register_blueprint(countries)
 
-    from app.api_public.routes.regions import regions as regions_blueprint
-    app.register_blueprint(regions_blueprint)
+    from app.api_public.routes.regions import regions
+    app.register_blueprint(regions)
 
     return app

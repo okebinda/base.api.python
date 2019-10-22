@@ -9,7 +9,8 @@ from app.models.UserProfile import UserProfile
 from app.models.Role import Role
 from app.models.TermsOfService import TermsOfService
 from app.models.UserTermsOfService import UserTermsOfService
-from app.api_public.authentication import auth, user_permission, require_appkey, check_password_expiration
+from app.api_public.authentication import auth, user_permission,\
+    require_appkey, check_password_expiration
 from app.api_public.schema.UserAccountSchema import UserAccountSchema
 
 
@@ -37,7 +38,8 @@ def post_user_account_step1():
         if user_query:
             errors["email"] = ["Value must be unique."]
 
-    if request.json.get('password', None) and request.json.get('password2', None):
+    if (request.json.get('password', None) and
+            request.json.get('password2', None)):
         if request.json.get('password') != request.json.get('password2'):
             errors['password2'] = ["Passwords must match."]
 
@@ -118,7 +120,7 @@ def post_user_account_step2():
     try:
         data, _ = UserAccountSchema(
             strict=True,
-            exclude=('username', 'email', 'password', 'password2', 'tos_id')
+            exclude=('username', 'email', 'password', 'password2', 'tos_id',)
         ).load(request.json)
     except ValidationError as err:
         return jsonify({"error": err.messages}), 400
@@ -197,13 +199,15 @@ def put_user_account():
     errors = {}
 
     # pre-validate data
-    if request.json.get('username', None) and request.json.get('username') != user.username:
+    if (request.json.get('username', None) and
+            request.json.get('username') != user.username):
         user_query = User.query.filter(
             User.username == request.json.get('username')).first()
         if user_query:
             errors["username"] = ["Value must be unique."]
 
-    if request.json.get('email', None) and request.json.get('email') != user.email:
+    if (request.json.get('email', None) and
+            request.json.get('email') != user.email):
         temp_user = User(email=request.json.get('email'))
         user_query = User.query.filter(
             User.email_digest == temp_user.email_digest).first()
@@ -214,7 +218,7 @@ def put_user_account():
     try:
         data, _ = UserAccountSchema(
             strict=True,
-            exclude=('password', 'password2', 'tos_id')).load(request.json)
+            exclude=('password', 'password2', 'tos_id',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 

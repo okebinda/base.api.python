@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for
 
 from app.models.Region import Region
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.RegionSchema import RegionSchema
 
 regions = Blueprint('regions', __name__)
@@ -9,7 +10,8 @@ regions = Blueprint('regions', __name__)
 
 @regions.route("/regions", methods=['GET'])
 @regions.route("/regions/<int:page>", methods=['GET'])
-@regions.route("/regions/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])
+@regions.route("/regions/<int:page>/<int(min=1, max=250):limit>",
+               methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -48,7 +50,8 @@ def get_regions(page=1, limit=10):
         order_by = Region.id.asc()
 
     # retrieve and return results
-    regions = region_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    regions = region_query.order_by(order_by).limit(limit).offset(
+        (page - 1) * limit)
     if regions.count():
 
         # prep initial output
@@ -62,12 +65,12 @@ def get_regions(page=1, limit=10):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'regions.get_regions', page=page - 1, limit=limit, _external=True,
-                order_by=request.args.get('order_by', None))
+                'regions.get_regions', page=page - 1, limit=limit,
+                _external=True, order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'regions.get_regions', page=page + 1, limit=limit, _external=True,
-                order_by=request.args.get('order_by', None))
+                'regions.get_regions', page=page + 1, limit=limit,
+                _external=True, order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:
         return '', 204

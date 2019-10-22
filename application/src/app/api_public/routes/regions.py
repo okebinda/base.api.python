@@ -9,7 +9,9 @@ regions = Blueprint('regions', __name__)
 
 @regions.route("/regions/<string:country_code>", methods=['GET'])
 @regions.route("/regions/<string:country_code>/<int:page>", methods=['GET'])
-@regions.route("/regions/<string:country_code>/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])
+@regions.route(
+    "/regions/<string:country_code>/<int:page>/<int(min=1, max=250):limit>",
+    methods=['GET'])
 @require_appkey
 def get_regions(country_code, page=1, limit=100):
 
@@ -35,7 +37,8 @@ def get_regions(country_code, page=1, limit=100):
         order_by = Region.name.asc()
 
     # retrieve and return results
-    regions = region_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    regions = region_query.order_by(order_by).limit(limit).offset(
+        (page - 1) * limit)
     if regions.count():
 
         # prep initial output
@@ -49,12 +52,20 @@ def get_regions(country_code, page=1, limit=100):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'regions.get_regions', country_code=country_code, page=page - 1,
-                limit=limit, _external=True, order_by=request.args.get('order_by', None))
+                'regions.get_regions',
+                country_code=country_code,
+                page=page - 1,
+                limit=limit,
+                _external=True,
+                order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'regions.get_regions', country_code=country_code, page=page + 1,
-                limit=limit, _external=True, order_by=request.args.get('order_by', None))
+                'regions.get_regions',
+                country_code=country_code,
+                page=page + 1,
+                limit=limit,
+                _external=True,
+                order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:
         return '', 204

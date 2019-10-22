@@ -11,8 +11,9 @@ class UserTermsOfServiceSchema(ma.Schema):
         model = UserTermsOfService
 
         # fields to expose
-        fields = ('user_id', 'terms_of_service_id', 'accept_date', 'ip_address',
-                  'created_at', 'updated_at', 'user', 'terms_of_service')
+        fields = ('user_id', 'terms_of_service_id', 'accept_date',
+                  'ip_address', 'created_at', 'updated_at', 'user',
+                  'terms_of_service')
         load_only = ['user_id', 'terms_of_service_id']
 
     # nested schema
@@ -29,7 +30,8 @@ class UserTermsOfServiceSchema(ma.Schema):
     # field validation
     user_id = fields.Integer(required=True)
     terms_of_service_id = fields.Integer(required=True)
-    accept_date = fields.DateTime(required=True, format=Formats.ISO_8601_DATETIME)
+    accept_date = fields.DateTime(required=True,
+                                  format=Formats.ISO_8601_DATETIME)
     ip_address = fields.String(required=True)
     created_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     updated_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)

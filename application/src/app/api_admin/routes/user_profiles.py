@@ -5,7 +5,8 @@ from marshmallow import ValidationError
 
 from app import db
 from app.models.UserProfile import UserProfile
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.UserProfileSchema import UserProfileSchema
 
 user_profiles = Blueprint('user_profiles', __name__)
@@ -13,7 +14,8 @@ user_profiles = Blueprint('user_profiles', __name__)
 
 @user_profiles.route("/user_profiles", methods=['GET'])
 @user_profiles.route("/user_profiles/<int:page>", methods=['GET'])
-@user_profiles.route("/user_profiles/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
+@user_profiles.route("/user_profiles/<int:page>/<int(min=1, max=100):limit>",
+                     methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -50,12 +52,14 @@ def get_user_profiles(page=1, limit=10):
         order_by = UserProfile.id.asc()
 
     # retrieve and return results
-    user_profiles = user_profile_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    user_profiles = user_profile_query.order_by(order_by).limit(limit).offset(
+        (page - 1) * limit)
     if user_profiles.count():
 
         # prep initial output
         output = {
-            'user_profiles': UserProfileSchema(many=True).dump(user_profiles).data,
+            'user_profiles': UserProfileSchema(many=True).dump(
+                user_profiles).data,
             'page': page,
             'limit': limit,
             'total': user_profile_query.count()
@@ -89,17 +93,19 @@ def post_user_profiles():
         return jsonify({"error": err.messages}), 400
 
     # save user_profile
-    user_profile = UserProfile(user_id=request.json.get('user_id'),
-                               first_name=request.json.get('first_name', '').strip(),
-                               last_name=request.json.get('last_name', '').strip(),
-                               joined_at=request.json.get('joined_at'),
-                               status=request.json.get('status'),
-                               status_changed_at=datetime.now())
+    user_profile = UserProfile(
+        user_id=request.json.get('user_id'),
+        first_name=request.json.get('first_name', '').strip(),
+        last_name=request.json.get('last_name', '').strip(),
+        joined_at=request.json.get('joined_at'),
+        status=request.json.get('status'),
+        status_changed_at=datetime.now())
     db.session.add(user_profile)
     db.session.commit()
 
     # response
-    return jsonify({'user_profile': UserProfileSchema().dump(user_profile).data}), 201
+    return jsonify(
+        {'user_profile': UserProfileSchema().dump(user_profile).data}), 201
 
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['GET'])
@@ -116,7 +122,8 @@ def get_user_profile(user_profile_id=None):
         abort(404)
 
     # response
-    return jsonify({'user_profile': UserProfileSchema().dump(user_profile).data}), 200
+    return jsonify(
+        {'user_profile': UserProfileSchema().dump(user_profile).data}), 200
 
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['PUT'])
@@ -142,13 +149,14 @@ def put_user_profile(user_profile_id):
     user_profile.first_name = request.json.get('first_name', '').strip()
     user_profile.last_name = request.json.get('last_name', '').strip()
     user_profile.joined_at = request.json.get('joined_at', None)
-    if (user_profile.status != request.json.get('status', None)):
+    if user_profile.status != request.json.get('status', None):
         user_profile.status = request.json.get('status')
         user_profile.status_changed_at = datetime.now()
     db.session.commit()
 
     # response
-    return jsonify({'user_profile': UserProfileSchema().dump(user_profile).data}), 200
+    return jsonify(
+        {'user_profile': UserProfileSchema().dump(user_profile).data}), 200
 
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['DELETE'])

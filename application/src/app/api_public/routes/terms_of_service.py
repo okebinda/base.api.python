@@ -21,6 +21,8 @@ def get_terms_of_service():
     # retrieve and return results
     terms_of_services = terms_of_service_query.order_by(order_by).limit(1)
     if terms_of_services.count():
-        return jsonify({'terms_of_service': TermsOfServiceSchema().dump(terms_of_services[0]).data}), 200
+        return jsonify(
+            {'terms_of_service': TermsOfServiceSchema().dump(
+                terms_of_services[0]).data}), 200
     else:
         return '', 204

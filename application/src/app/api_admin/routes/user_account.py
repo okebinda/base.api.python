@@ -3,7 +3,8 @@ from marshmallow import ValidationError
 
 from app import db
 from app.models.Administrator import Administrator
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.UserAccountSchema import UserAccountSchema
 
 user_account = Blueprint('user_account', __name__)
@@ -35,12 +36,14 @@ def put_account():
     errors = {}
 
     # pre-validate data
-    if request.json.get('username', None) and request.json.get('username') != user.username:
+    if (request.json.get('username', None) and
+            request.json.get('username') != user.username):
         administrator_query = Administrator.query.filter(
             Administrator.username == request.json.get('username')).first()
         if administrator_query:
             errors["username"] = ["Value must be unique."]
-    if request.json.get('email', None) and request.json.get('email') != user.email:
+    if (request.json.get('email', None) and
+            request.json.get('email') != user.email):
         temp_admin = Administrator(email=request.json.get('email'))
         administrator_query = Administrator.query.filter(
             Administrator.email_digest == temp_admin.email_digest).first()
@@ -49,7 +52,8 @@ def put_account():
 
     # validate data
     try:
-        data, _ = UserAccountSchema(strict=True, exclude=('password',)).load(request.json)
+        data, _ = UserAccountSchema(
+            strict=True, exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 

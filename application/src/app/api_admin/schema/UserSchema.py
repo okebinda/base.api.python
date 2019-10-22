@@ -15,7 +15,13 @@ class UserSchema(ma.Schema):
     #    c) Number
     #    d) Non-alpha character
     #  2) 8-40 characters
-    rePassword = r'^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,40}$'
+    rePassword = ''.join([
+        r'^(?:',
+        r'(?=.*[a-z])',
+        r'(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))',
+        r'|(?=.*\W)(?=.*[A-Z])(?=.*\d)',
+        r').{8,40}$'
+    ])
 
     class Meta:
         model = User
@@ -54,9 +60,13 @@ class UserSchema(ma.Schema):
     username = fields.String(
         required=True,
         validate=[
-            validate.Length(2, 40, "Value must be between 2 and 40 characters long."),
-            validate.Regexp(r'(?!^\d+$)^.+$', 0, 'Value must not be a number.'),
-            validate.Regexp(r'^\w+$', 0, 'Value must contain only alphanumeric characters and the underscore.'),
+            validate.Length(
+                2, 40, "Value must be between 2 and 40 characters long."),
+            validate.Regexp(
+                r'(?!^\d+$)^.+$', 0, 'Value must not be a number.'),
+            validate.Regexp(
+                r'^\w+$', 0, ''.join(["Value must contain only alphanumeric ",
+                                      "characters and the underscore."]))
         ])
     email = fields.Email(required=True)
     status = fields.Integer(required=True)

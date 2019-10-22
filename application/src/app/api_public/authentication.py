@@ -3,7 +3,8 @@ from functools import wraps
 
 from flask import g, current_app, request, abort
 from flask_httpauth import HTTPBasicAuth
-from flask_principal import Identity, Permission, RoleNeed, UserNeed, identity_changed
+from flask_principal import Identity, Permission, RoleNeed, UserNeed,\
+    identity_changed
 
 from app import db
 from app.models.User import User
@@ -36,7 +37,8 @@ def check_password_expiration(view_function):
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
         if hasattr(g, 'user'):
-            password_valid_window = g.user.password_changed_at + timedelta(days=g.user.roles[0].password_reset_days)
+            password_valid_window = g.user.password_changed_at + timedelta(
+                days=g.user.roles[0].password_reset_days)
             pvw = password_valid_window.replace(tzinfo=None)
             if pvw < datetime.now():
                 abort(403, "Password expired")
@@ -67,7 +69,8 @@ class Authentication:
                     login_record = Login(
                         user_id=user.id if user else None,
                         username=username_or_token[0:40],
-                        ip_address=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
+                        ip_address=request.environ.get('HTTP_X_REAL_IP',
+                                                       request.remote_addr),
                         success=False,
                         attempt_date=datetime.now())
                     db.session.add(login_record)
@@ -81,7 +84,8 @@ class Authentication:
                 login_record = Login(
                     user_id=user.id,
                     username=username_or_token[0:40],
-                    ip_address=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
+                    ip_address=request.environ.get('HTTP_X_REAL_IP',
+                                                   request.remote_addr),
                     success=True,
                     attempt_date=datetime.now())
                 db.session.add(login_record)
@@ -118,14 +122,22 @@ class Authentication:
             if role.login_ban_by_ip:
                 login_query = login_query.filter(
                     Login.username == username_or_token,
-                    Login.ip_address == request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
+                    Login.ip_address == request.environ.get(
+                        'HTTP_X_REAL_IP', request.remote_addr))
             else:
-                login_query = login_query.filter(Login.username == username_or_token)
-            recent_logins = login_query.order_by(Login.attempt_date.desc()).limit(role.login_max_attempts)
+                login_query = login_query.filter(
+                    Login.username == username_or_token)
+            recent_logins = login_query.order_by(
+                Login.attempt_date.desc()).limit(role.login_max_attempts)
             if recent_logins.count() >= role.login_max_attempts:
-                if sum(list(map(lambda x: 1 if not x.success else 0, recent_logins))) >= role.login_max_attempts:
-                    if (recent_logins[0].attempt_date - recent_logins[-1].attempt_date).total_seconds() <= role.login_timeframe:
-                        banned_window = recent_logins[0].attempt_date + timedelta(seconds=role.login_ban_time)
+                if sum(list(map(
+                        lambda x: 1 if not x.success else 0, recent_logins
+                ))) >= role.login_max_attempts:
+                    if ((recent_logins[0].attempt_date -
+                            recent_logins[-1].attempt_date).total_seconds() <=
+                            role.login_timeframe):
+                        banned_window = recent_logins[0].attempt_date + \
+                                        timedelta(seconds=role.login_ban_time)
                         bw = banned_window.replace(tzinfo=None)
                         if bw > datetime.now():
                             return True

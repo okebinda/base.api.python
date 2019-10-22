@@ -12,7 +12,8 @@ class RegionSchema(ma.Schema):
 
         # fields to expose
         fields = ('id', 'name', 'code_2', 'country', 'status',
-                  'status_changed_at', 'created_at', 'updated_at', 'country_id')
+                  'status_changed_at', 'created_at', 'updated_at',
+                  'country_id')
         load_only = ['country_id']
 
     # nested schema

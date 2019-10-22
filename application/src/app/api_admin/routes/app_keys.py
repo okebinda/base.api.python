@@ -5,7 +5,8 @@ from marshmallow import ValidationError
 
 from app import db
 from app.models.AppKey import AppKey
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.AppKeySchema import AppKeySchema
 
 app_keys = Blueprint('app_keys', __name__)
@@ -13,7 +14,8 @@ app_keys = Blueprint('app_keys', __name__)
 
 @app_keys.route("/app_keys", methods=['GET'])
 @app_keys.route("/app_keys/<int:page>", methods=['GET'])
-@app_keys.route("/app_keys/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
+@app_keys.route("/app_keys/<int:page>/<int(min=1, max=100):limit>",
+                methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -47,7 +49,8 @@ def get_app_keys(page=1, limit=10):
         order_by = AppKey.id.asc()
 
     # retrieve and return results
-    app_keys = app_key_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    app_keys = app_key_query.order_by(order_by).limit(limit).offset(
+        (page - 1) * limit)
     if app_keys.count():
 
         # prep initial output

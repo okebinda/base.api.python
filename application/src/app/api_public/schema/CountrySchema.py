@@ -13,7 +13,8 @@ class CountrySchema(ma.Schema):
         fields = ('id', 'name', 'code_2', 'code_3', 'regions_uri')
 
     # hyperlinks
-    regions_uri = ma.AbsoluteUrlFor('regions.get_regions', country_code='<code_2>')
+    regions_uri = ma.AbsoluteUrlFor('regions.get_regions',
+                                    country_code='<code_2>')
 
     # field validation
     id = fields.Integer()

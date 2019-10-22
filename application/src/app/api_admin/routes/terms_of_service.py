@@ -5,7 +5,8 @@ from marshmallow import ValidationError
 
 from app import db
 from app.models.TermsOfService import TermsOfService
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.TermsOfServiceSchema import TermsOfServiceSchema
 
 terms_of_service = Blueprint('terms_of_service', __name__)
@@ -13,7 +14,9 @@ terms_of_service = Blueprint('terms_of_service', __name__)
 
 @terms_of_service.route("/terms_of_services", methods=['GET'])
 @terms_of_service.route("/terms_of_services/<int:page>", methods=['GET'])
-@terms_of_service.route("/terms_of_services/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
+@terms_of_service.route(
+    "/terms_of_services/<int:page>/<int(min=1, max=100):limit>",
+    methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -50,12 +53,14 @@ def get_terms_of_services(page=1, limit=10):
         order_by = TermsOfService.id.asc()
 
     # retrieve and return results
-    terms_of_services = terms_of_service_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    terms_of_services = terms_of_service_query.order_by(order_by).limit(
+        limit).offset((page - 1) * limit)
     if terms_of_services.count():
 
         # prep initial output
         output = {
-            'terms_of_services': TermsOfServiceSchema(many=True).dump(terms_of_services).data,
+            'terms_of_services': TermsOfServiceSchema(many=True).dump(
+                terms_of_services).data,
             'page': page,
             'limit': limit,
             'total': terms_of_service_query.count()
@@ -64,12 +69,18 @@ def get_terms_of_services(page=1, limit=10):
         # prep pagination URIs
         if page != 1:
             output['previous_uri'] = url_for(
-                'terms_of_service.get_terms_of_services', page=page - 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+                'terms_of_service.get_terms_of_services',
+                page=page - 1,
+                limit=limit,
+                _external=True,
+                order_by=request.args.get('order_by', None))
         if page < output['total'] / limit:
             output['next_uri'] = url_for(
-                'terms_of_service.get_terms_of_services', page=page + 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+                'terms_of_service.get_terms_of_services',
+                page=page + 1,
+                limit=limit,
+                _external=True,
+                order_by=request.args.get('order_by', None))
         return jsonify(output), 200
     else:
         return '', 204
@@ -89,19 +100,22 @@ def post_terms_of_services():
         return jsonify({"error": err.messages}), 400
 
     # save terms of service
-    terms_of_service = TermsOfService(text=request.json.get('text'),
-                                      version=request.json.get('version'),
-                                      publish_date=request.json.get('publish_date'),
-                                      status=request.json.get('status'),
-                                      status_changed_at=datetime.now())
+    terms_of_service = TermsOfService(
+        text=request.json.get('text'),
+        version=request.json.get('version'),
+        publish_date=request.json.get('publish_date'),
+        status=request.json.get('status'),
+        status_changed_at=datetime.now())
     db.session.add(terms_of_service)
     db.session.commit()
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(terms_of_service).data}), 201
+    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
+        terms_of_service).data}), 201
 
 
-@terms_of_service.route('/terms_of_service/<int:terms_of_service_id>', methods=['GET'])
+@terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
+                        methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -115,10 +129,12 @@ def get_terms_of_service(terms_of_service_id=None):
         abort(404)
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(terms_of_service).data}), 200
+    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
+        terms_of_service).data}), 200
 
 
-@terms_of_service.route('/terms_of_service/<int:terms_of_service_id>', methods=['PUT'])
+@terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
+                        methods=['PUT'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -140,16 +156,18 @@ def put_terms_of_service(terms_of_service_id):
     terms_of_service.text = request.json.get('text', None)
     terms_of_service.version = request.json.get('version', None)
     terms_of_service.publish_date = request.json.get('publish_date', None)
-    if (terms_of_service.status != request.json.get('status', None)):
+    if terms_of_service.status != request.json.get('status', None):
         terms_of_service.status = request.json.get('status')
         terms_of_service.status_changed_at = datetime.now()
     db.session.commit()
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(terms_of_service).data}), 200
+    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
+        terms_of_service).data}), 200
 
 
-@terms_of_service.route('/terms_of_service/<int:terms_of_service_id>', methods=['DELETE'])
+@terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
+                        methods=['DELETE'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)

@@ -3,7 +3,8 @@ import hashlib
 from datetime import datetime
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
 
 from app import db
 from app.Config import Config
@@ -13,8 +14,16 @@ from app.lib.sqlalchemy.PGPString import PGPString
 # relation tables
 roles = db.Table(
     'admin_roles',
-    db.Column('admin_id', db.Integer, db.ForeignKey('administrators.id'), primary_key=True),
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True)
+    db.Column(
+        'admin_id',
+        db.Integer,
+        db.ForeignKey('administrators.id'),
+        primary_key=True),
+    db.Column(
+        'role_id',
+        db.Integer,
+        db.ForeignKey('roles.id'),
+        primary_key=True)
 )
 
 
@@ -29,29 +38,48 @@ class Administrator(db.Model, BaseModel):
 
     # columns
     username = db.Column(
-        'username', db.String(40), index=True, unique=True, nullable=False)
+        'username',
+        db.String(40),
+        index=True,
+        unique=True,
+        nullable=False)
     _email = db.Column(
-        'email', PGPString(CRYPT_SYM_SECRET_KEY, length=500), nullable=False)
+        'email',
+        PGPString(CRYPT_SYM_SECRET_KEY, length=500),
+        nullable=False)
     email_digest = db.Column(
-        'email_digest', db.String(64), unique=True, nullable=False)
+        'email_digest',
+        db.String(64),
+        unique=True,
+        nullable=False)
     first_name = db.Column(
-        'first_name', PGPString(CRYPT_SYM_SECRET_KEY, length=200),
+        'first_name',
+        PGPString(CRYPT_SYM_SECRET_KEY, length=200),
         nullable=False)
     last_name = db.Column(
-        'last_name', PGPString(CRYPT_SYM_SECRET_KEY, length=200),
+        'last_name',
+        PGPString(CRYPT_SYM_SECRET_KEY, length=200),
         nullable=False)
     _password = db.Column(
-        'password', db.String(60), nullable=False)
+        'password',
+        db.String(60),
+        nullable=False)
     password_changed_at = db.Column(
-        'password_changed_at', db.TIMESTAMP(timezone=True),
-        server_default=db.func.current_timestamp(), nullable=False)
+        'password_changed_at',
+        db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(),
+        nullable=False)
     joined_at = db.Column(
-        'joined_at', db.TIMESTAMP(timezone=True),
-        server_default=db.func.current_timestamp(), nullable=False)
+        'joined_at',
+        db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(),
+        nullable=False)
 
     # relationships
     roles = db.relationship(
-        'Role', secondary=roles, lazy='subquery',
+        'Role',
+        secondary=roles,
+        lazy='subquery',
         backref=db.backref('administrators', lazy=True))
 
     @hybrid_property
@@ -74,11 +102,13 @@ class Administrator(db.Model, BaseModel):
     @email.setter
     def email(self, email):
         self._email = email.lower()
-        hash_object = hashlib.sha256((self.CRYPT_DIGEST_SALT + email).encode('utf-8'))
+        hash_object = hashlib.sha256(
+            (self.CRYPT_DIGEST_SALT + email).encode('utf-8'))
         self.email_digest = hash_object.hexdigest()
 
     def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self._password.encode('utf-8'))
+        return bcrypt.checkpw(
+            password.encode('utf-8'), self._password.encode('utf-8'))
 
     def generate_auth_token(self, expiration=1800):
         s = Serializer(self.AUTH_SECRET_KEY, expires_in=expiration)

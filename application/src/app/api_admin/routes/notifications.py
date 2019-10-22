@@ -1,7 +1,8 @@
 from flask import Blueprint, jsonify, request, url_for
 
 from app.models.Notification import Notification
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.NotificationSchema import NotificationSchema
 
 notifications = Blueprint('notifications', __name__)
@@ -9,7 +10,8 @@ notifications = Blueprint('notifications', __name__)
 
 @notifications.route("/notifications", methods=['GET'])
 @notifications.route("/notifications/<int:page>", methods=['GET'])
-@notifications.route("/notifications/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
+@notifications.route("/notifications/<int:page>/<int(min=1, max=100):limit>",
+                     methods=['GET'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
@@ -50,12 +52,14 @@ def get_notifications(page=1, limit=10):
         order_by = Notification.id.asc()
 
     # retrieve and return results
-    notifications = notification_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    notifications = notification_query.order_by(order_by).limit(limit).offset(
+        (page - 1) * limit)
     if notifications.count():
 
         # prep initial output
         output = {
-            'notifications': NotificationSchema(many=True).dump(notifications).data,
+            'notifications': NotificationSchema(many=True).dump(
+                notifications).data,
             'page': page,
             'limit': limit,
             'total': notification_query.count()

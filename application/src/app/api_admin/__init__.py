@@ -54,7 +54,9 @@ def create_app(config):
 
     @app.errorhandler(403)
     def error_403(error):
-        return make_response(jsonify({'error': error.description if error.description else "Permission denied"}), 403)
+        return make_response(jsonify(
+            {'error': error.description if
+                error.description else "Permission denied"}), 403)
 
     @app.errorhandler(404)
     def error_404(error):
@@ -70,46 +72,46 @@ def create_app(config):
 
     # ROUTES
 
-    from app.api_admin.routes.app_keys import app_keys as app_keys_blueprint
-    app.register_blueprint(app_keys_blueprint)
+    from app.api_admin.routes.app_keys import app_keys
+    app.register_blueprint(app_keys)
 
-    from app.api_admin.routes.auth_token import auth_token as auth_token_blueprint
-    app.register_blueprint(auth_token_blueprint)
+    from app.api_admin.routes.auth_token import auth_token
+    app.register_blueprint(auth_token)
 
-    from app.api_admin.routes.password import password as password_blueprint
-    app.register_blueprint(password_blueprint)
+    from app.api_admin.routes.password import password
+    app.register_blueprint(password)
 
-    from app.api_admin.routes.user_account import user_account as user_account_blueprint
-    app.register_blueprint(user_account_blueprint)
+    from app.api_admin.routes.user_account import user_account
+    app.register_blueprint(user_account)
 
-    from app.api_admin.routes.roles import roles as roles_blueprint
-    app.register_blueprint(roles_blueprint)
+    from app.api_admin.routes.roles import roles
+    app.register_blueprint(roles)
 
-    from app.api_admin.routes.administrators import administrators as administrators_blueprint
-    app.register_blueprint(administrators_blueprint)
+    from app.api_admin.routes.administrators import administrators
+    app.register_blueprint(administrators)
 
-    from app.api_admin.routes.users import users as users_blueprint
-    app.register_blueprint(users_blueprint)
+    from app.api_admin.routes.users import users
+    app.register_blueprint(users)
 
-    from app.api_admin.routes.user_profiles import user_profiles as user_profiles_blueprint
-    app.register_blueprint(user_profiles_blueprint)
+    from app.api_admin.routes.user_profiles import user_profiles
+    app.register_blueprint(user_profiles)
 
-    from app.api_admin.routes.password_resets import password_resets as password_resets_blueprint
-    app.register_blueprint(password_resets_blueprint)
+    from app.api_admin.routes.password_resets import password_resets
+    app.register_blueprint(password_resets)
 
-    from app.api_admin.routes.terms_of_service import terms_of_service as terms_of_service_blueprint
-    app.register_blueprint(terms_of_service_blueprint)
+    from app.api_admin.routes.terms_of_service import terms_of_service
+    app.register_blueprint(terms_of_service)
 
-    from app.api_admin.routes.logins import logins as logins_blueprint
-    app.register_blueprint(logins_blueprint)
+    from app.api_admin.routes.logins import logins
+    app.register_blueprint(logins)
 
-    from app.api_admin.routes.notifications import notifications as notifications_blueprint
-    app.register_blueprint(notifications_blueprint)
+    from app.api_admin.routes.notifications import notifications
+    app.register_blueprint(notifications)
 
-    from app.api_admin.routes.countries import countries as countries_blueprint
-    app.register_blueprint(countries_blueprint)
+    from app.api_admin.routes.countries import countries
+    app.register_blueprint(countries)
 
-    from app.api_admin.routes.regions import regions as regions_blueprint
-    app.register_blueprint(regions_blueprint)
+    from app.api_admin.routes.regions import regions
+    app.register_blueprint(regions)
 
     return app

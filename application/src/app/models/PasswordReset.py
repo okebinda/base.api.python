@@ -7,13 +7,30 @@ class PasswordReset(db.Model, BaseModel):
     __tablename__ = 'password_resets'
 
     # columns
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    code = db.Column(db.String(40), nullable=False)
-    is_used = db.Column(db.Boolean, nullable=False)
-    requested_at = db.Column(
-        db.TIMESTAMP(timezone=True), server_default=db.func.current_timestamp(),
+    user_id = db.Column(
+        'user_id',
+        db.Integer,
+        db.ForeignKey('users.id'),
         nullable=False)
-    ip_address = db.Column(db.String(50), index=True)
+    code = db.Column(
+        'code',
+        db.String(40),
+        nullable=False)
+    is_used = db.Column(
+        'is_used',
+        db.Boolean,
+        nullable=False)
+    requested_at = db.Column(
+        'requested_at',
+        db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(),
+        nullable=False)
+    ip_address = db.Column(
+        'ip_address',
+        db.String(50),
+        index=True)
 
     # relationships
-    user = db.relationship('User', back_populates='password_resets')
+    user = db.relationship(
+        'User',
+        back_populates='password_resets')

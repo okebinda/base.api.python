@@ -32,11 +32,13 @@ def put_password():
 
     # validate data
     errors = {}
-    if 'previous_password' not in request.json or not request.json['previous_password']:
+    if ('previous_password' not in request.json or
+            not request.json['previous_password']):
         if 'previous_password' not in errors:
             errors['previous_password'] = []
         errors['previous_password'].append("Missing data for required field.")
-    elif 'previous_password' in request.json and not user.check_password(request.json['previous_password']):
+    elif ('previous_password' in request.json and
+          not user.check_password(request.json['previous_password'])):
         if 'previous_password' not in errors:
             errors['previous_password'] = []
         errors['previous_password'].append("Incorrect password.")
@@ -45,7 +47,8 @@ def put_password():
         if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Missing data for required field.")
-    if 'password1' in request.json and not rePassword.match(request.json['password1']):
+    if ('password1' in request.json and
+            not rePassword.match(request.json['password1'])):
         if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Please choose a more complex password.")
@@ -103,7 +106,8 @@ def post_password_request_reset_code():
     d = datetime.now()
     unixtime = time.mktime(d.timetuple())
     hash_object = hashlib.sha256(
-        (str(unixtime) + str(os.getpid()) + User.CRYPT_DIGEST_SALT).encode('utf-8'))
+        (str(unixtime) + str(os.getpid()) +
+            User.CRYPT_DIGEST_SALT).encode('utf-8'))
     random_seed = hash_object.hexdigest()
 
     # save reset request
@@ -169,8 +173,9 @@ def put_password_reset():
             PasswordReset.status == PasswordReset.STATUS_ENABLED,
             PasswordReset.code == request.json.get('code'),
             PasswordReset.user_id == user.id,
-            PasswordReset.is_used is False,
-            (PasswordReset.requested_at + timedelta(seconds=3600)) >= datetime.now()
+            PasswordReset.is_used == False,  # noqa
+            (PasswordReset.requested_at +
+                timedelta(seconds=3600)) >= datetime.now()
         ).first()
         if not password_reset:
             if 'code' not in errors:
@@ -181,7 +186,8 @@ def put_password_reset():
         if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Missing data for required field.")
-    if 'password1' in request.json and not rePassword.match(request.json['password1']):
+    if ('password1' in request.json and
+            not rePassword.match(request.json['password1'])):
         if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Please choose a more complex password.")

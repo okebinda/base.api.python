@@ -3,7 +3,8 @@ import hashlib
 from datetime import datetime
 
 from sqlalchemy.ext.hybrid import hybrid_property
-from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
 
 from app import db
 from app.Config import Config
@@ -16,8 +17,16 @@ from app.models.Notification import Notification
 # relation tables
 roles = db.Table(
     'user_roles',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True)
+    db.Column(
+        'user_id',
+        db.Integer,
+        db.ForeignKey('users.id'),
+        primary_key=True),
+    db.Column(
+        'role_id',
+        db.Integer,
+        db.ForeignKey('roles.id'),
+        primary_key=True)
 )
 
 
@@ -32,35 +41,60 @@ class User(db.Model, BaseModel):
 
     # columns
     _username = db.Column(
-        'username', db.String(40), index=True, unique=True, nullable=False)
+        'username',
+        db.String(40),
+        index=True,
+        unique=True,
+        nullable=False)
     _email = db.Column(
-        'email', PGPString(CRYPT_SYM_SECRET_KEY, length=500), nullable=False)
+        'email',
+        PGPString(CRYPT_SYM_SECRET_KEY, length=500),
+        nullable=False)
     email_digest = db.Column(
-        'email_digest', db.String(64), unique=True, nullable=False)
+        'email_digest',
+        db.String(64),
+        unique=True,
+        nullable=False)
     _password = db.Column(
-        'password', db.String(60), nullable=False)
+        'password',
+        db.String(60),
+        nullable=False)
     password_changed_at = db.Column(
-        'password_changed_at', db.TIMESTAMP(timezone=True),
-        server_default=db.func.current_timestamp(), nullable=False)
+        'password_changed_at',
+        db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(),
+        nullable=False)
     is_verified = db.Column(
-        'is_verified', db.Boolean, nullable=False)
+        'is_verified',
+        db.Boolean,
+        nullable=False)
 
     # relationships
     roles = db.relationship(
-        'Role', secondary=roles, lazy='subquery',
+        'Role',
+        secondary=roles,
+        lazy='subquery',
         backref=db.backref('users', lazy=True))
     terms_of_services = db.relationship(
-        'UserTermsOfService', lazy='subquery', cascade="all,delete-orphan",
+        'UserTermsOfService',
+        lazy='subquery',
+        cascade="all,delete-orphan",
         order_by=UserTermsOfService.accept_date.desc())
     password_resets = db.relationship(
-        'PasswordReset ', cascade="all,delete-orphan", back_populates='user',
+        'PasswordReset ',
+        cascade="all,delete-orphan",
+        back_populates='user',
         order_by=PasswordReset.requested_at.desc())
     notifications = db.relationship(
-        'Notification ', cascade="all,delete-orphan", back_populates='user',
+        'Notification ',
+        cascade="all,delete-orphan",
+        back_populates='user',
         order_by=Notification.sent_at.desc())
     profile = db.relationship(
-        'UserProfile', uselist=False,
-        cascade="all,delete-orphan", back_populates='user')
+        'UserProfile',
+        uselist=False,
+        cascade="all,delete-orphan",
+        back_populates='user')
 
     @hybrid_property
     def password(self):
@@ -90,11 +124,13 @@ class User(db.Model, BaseModel):
     @email.setter
     def email(self, email):
         self._email = email.lower().strip()
-        hash_object = hashlib.sha256((self.CRYPT_DIGEST_SALT + email).encode('utf-8'))
+        hash_object = hashlib.sha256(
+            (self.CRYPT_DIGEST_SALT + email).encode('utf-8'))
         self.email_digest = hash_object.hexdigest()
 
     def check_password(self, password):
-        return bcrypt.checkpw(password.encode('utf-8'), self._password.encode('utf-8'))
+        return bcrypt.checkpw(
+            password.encode('utf-8'), self._password.encode('utf-8'))
 
     def generate_auth_token(self, expiration=1800):
         s = Serializer(self.AUTH_SECRET_KEY, expires_in=expiration)

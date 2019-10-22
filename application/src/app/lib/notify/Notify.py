@@ -70,7 +70,8 @@ class Notify:
         }
 
         # send if in prod mode or forced
-        if os.environ.get('SPARKPOST_API_KEY') and ('production' == self.env or self.force_email):
+        if (os.environ.get('SPARKPOST_API_KEY') and
+                ('production' == self.env or self.force_email)):
 
             # send email via SparkPost
             sp = SparkPost()

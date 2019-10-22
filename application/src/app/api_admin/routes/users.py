@@ -6,7 +6,8 @@ from marshmallow import ValidationError
 from app import db
 from app.models.User import User
 from app.models.Role import Role
-from app.api_admin.authentication import auth, admin_permission, require_appkey, check_password_expiration
+from app.api_admin.authentication import auth, admin_permission,\
+    require_appkey, check_password_expiration
 from app.api_admin.schema.UserSchema import UserSchema
 
 users = Blueprint('users', __name__)
@@ -52,7 +53,8 @@ def get_users(page=1, limit=10):
         order_by = User.id.asc()
 
     # retrieve and return results
-    users = user_query.order_by(order_by).limit(limit).offset((page - 1) * limit)
+    users = user_query.order_by(order_by).limit(limit).offset(
+        (page - 1) * limit)
     if users.count():
 
         # prep initial output
@@ -171,12 +173,14 @@ def put_user(user_id):
     errors = {}
 
     # pre-validate data
-    if request.json.get('username', None) and request.json.get('username') != user.username:
+    if (request.json.get('username', None) and
+            request.json.get('username') != user.username):
         user_query = User.query.filter(
             User.username == request.json.get('username')).first()
         if user_query:
             errors["username"] = ["Value must be unique."]
-    if request.json.get('email', None) and request.json.get('email') != user.email:
+    if (request.json.get('email', None) and
+            request.json.get('email') != user.email):
         temp_user = User(email=request.json.get('email'))
         user_query = User.query.filter(
             User.email_digest == temp_user.email_digest).first()
@@ -188,7 +192,8 @@ def put_user(user_id):
         if request.json.get('password', None):
             data, _ = UserSchema(strict=True).load(request.json)
         else:
-            data, _ = UserSchema(strict=True, exclude=('password',)).load(request.json)
+            data, _ = UserSchema(
+                strict=True, exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -206,13 +211,14 @@ def put_user(user_id):
         user.password = request.json.get('password')
 
     user.roles[:] = []
-    if request.json.get('roles') and isinstance(request.json.get('roles'), list):
+    if (request.json.get('roles') and
+            isinstance(request.json.get('roles'), list)):
         for role_id in request.json.get('roles'):
             role = Role.query.get(role_id)
             if role is not None:
                 user.roles.append(role)
 
-    if (user.status != request.json.get('status', None)):
+    if user.status != request.json.get('status', None):
         user.status = request.json.get('status')
         user.status_changed_at = datetime.now()
 

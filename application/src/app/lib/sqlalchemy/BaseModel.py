@@ -10,14 +10,18 @@ class BaseModel:
     STATUS_PENDING = 5
 
     # properties
-    id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.SmallInteger, nullable=False)
+    id = db.Column(
+        'id', db.Integer, primary_key=True)
+    status = db.Column(
+        'status', db.SmallInteger, nullable=False)
 
     # timestamps
-    status_changed_at = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
+    status_changed_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False)
     created_at = db.Column(
-        db.TIMESTAMP(timezone=True), server_default=db.func.current_timestamp(),
-        nullable=False)
+        db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(), nullable=False)
     updated_at = db.Column(
-        db.TIMESTAMP(timezone=True), server_default=db.func.current_timestamp(),
+        db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(),
         onupdate=db.func.current_timestamp(), nullable=False)

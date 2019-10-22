@@ -7,9 +7,20 @@ class Region(db.Model, BaseModel):
     __tablename__ = 'regions'
 
     # columns
-    name = db.Column(db.String(60), nullable=False)
-    code_2 = db.Column(db.String(2))
-    country_id = db.Column(db.Integer, db.ForeignKey('countries.id'), nullable=False)
+    name = db.Column(
+        'name',
+        db.String(60),
+        nullable=False)
+    code_2 = db.Column(
+        'code_2',
+        db.String(2))
+    country_id = db.Column(
+        'country_id',
+        db.Integer,
+        db.ForeignKey('countries.id'),
+        nullable=False)
 
     # relationships
-    country = db.relationship('Country', back_populates="regions")
+    country = db.relationship(
+        'Country',
+        back_populates="regions")
