@@ -1,7 +1,8 @@
 from tests.BaseTest import BaseTest
 from test_fixtures import *
 from tests.utils import get_http_basic_auth_credentials
-    
+
+
 class NotificationsTest(BaseTest):
 
     def test_get_notifications(self):

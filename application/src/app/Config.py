@@ -1,6 +1,7 @@
 import os
 
-class Config(object):
+
+class Config:
 
     # application properties
     SECRET_KEY = os.environ.get('SECRET_KEY')

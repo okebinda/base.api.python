@@ -4,6 +4,7 @@ from app import ma
 from app.models.UserProfile import UserProfile
 from app.lib.datetime.Formats import Formats
 
+
 class UserProfileSchema(ma.Schema):
 
     class Meta:

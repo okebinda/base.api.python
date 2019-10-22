@@ -4,6 +4,7 @@ from app import ma
 from app.models.Region import Region
 from app.lib.datetime.Formats import Formats
 
+
 class RegionSchema(ma.Schema):
 
     class Meta:

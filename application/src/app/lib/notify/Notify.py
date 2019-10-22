@@ -5,7 +5,8 @@ from sparkpost import SparkPost
 
 from app.models.Notification import Notification
 
-class Notify(object):
+
+class Notify:
 
     CHANNEL_EMAIL = 1
 

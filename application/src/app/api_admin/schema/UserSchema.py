@@ -5,6 +5,7 @@ from app.models.User import User
 from .UserTermsOfServiceSchema import UserTermsOfServiceSchema
 from app.lib.datetime.Formats import Formats
 
+
 class UserSchema(ma.Schema):
 
   # Rules:

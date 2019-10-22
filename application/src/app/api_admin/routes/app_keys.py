@@ -10,6 +10,7 @@ from app.api_admin.schema.AppKeySchema import AppKeySchema
 
 app_keys = Blueprint('app_keys', __name__)
 
+
 @app_keys.route("/app_keys", methods=['GET'])
 @app_keys.route("/app_keys/<int:page>", methods=['GET'])
 @app_keys.route("/app_keys/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
@@ -70,6 +71,7 @@ def get_app_keys(page=1, limit=10):
     else:
         return '', 204
 
+
 @app_keys.route('/app_keys', methods=['POST'])
 @require_appkey
 @auth.login_required
@@ -94,6 +96,7 @@ def post_app_keys():
     # response
     return jsonify({'app_key': AppKeySchema().dump(app_key).data}), 201
 
+
 @app_keys.route('/app_key/<int:app_key_id>', methods=['GET'])
 @require_appkey
 @auth.login_required
@@ -109,6 +112,7 @@ def get_app_key(app_key_id=None):
 
     # response
     return jsonify({'app_key': AppKeySchema().dump(app_key).data}), 200
+
 
 @app_keys.route('/app_key/<int:app_key_id>', methods=['PUT'])
 @require_appkey
@@ -138,6 +142,7 @@ def put_app_key(app_key_id):
 
     # response
     return jsonify({'app_key': AppKeySchema().dump(app_key).data}), 200
+
 
 @app_keys.route('/app_key/<int:app_key_id>', methods=['DELETE'])
 @require_appkey

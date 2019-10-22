@@ -17,6 +17,7 @@ from app.api_public.schema.UserAccountSchema import UserAccountSchema
 
 password = Blueprint('password', __name__)
 
+
 @password.route('/user_account/password', methods=['PUT'])
 @require_appkey
 @auth.login_required
@@ -68,6 +69,7 @@ def put_password():
 
     # response
     return jsonify({'success': 'true'}), 200
+
 
 @password.route('/password/request-reset-code', methods=['POST'])
 @require_appkey
@@ -124,6 +126,7 @@ def post_password_request_reset_code():
 
     # response
     return jsonify({'success': 'true', 'sent': response}), 201
+
 
 @password.route('/password/reset', methods=['PUT'])
 @require_appkey

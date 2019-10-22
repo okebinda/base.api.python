@@ -6,6 +6,7 @@ from app.api_public.schema.TermsOfServiceSchema import TermsOfServiceSchema
 
 terms_of_service = Blueprint('terms_of_service', __name__)
 
+
 @terms_of_service.route("/terms_of_service/current", methods=['GET'])
 @require_appkey
 def get_terms_of_service():

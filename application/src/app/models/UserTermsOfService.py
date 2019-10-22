@@ -2,6 +2,7 @@ from app import db
 from app.Config import Config
 from app.lib.sqlalchemy.PGPString import PGPString
 
+
 class UserTermsOfService(db.Model):
 
     __tablename__ = 'user_terms_of_services'

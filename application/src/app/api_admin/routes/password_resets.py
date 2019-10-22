@@ -6,6 +6,7 @@ from app.api_admin.schema.PasswordResetSchema import PasswordResetSchema
 
 password_resets = Blueprint('password_resets', __name__)
 
+
 @password_resets.route("/password_resets", methods=['GET'])
 @password_resets.route("/password_resets/<int:page>", methods=['GET'])
 @password_resets.route("/password_resets/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])

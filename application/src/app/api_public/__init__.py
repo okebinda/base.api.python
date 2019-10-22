@@ -7,6 +7,7 @@ from app import db, ma
 from app.lib.wsgi.ReverseProxied import ReverseProxied
 from app.api_public.authentication import auth, Authentication
 
+
 def create_app(config):
 
     # init app

@@ -6,6 +6,7 @@ from app.api_public.schema.RegionSchema import RegionSchema
 
 regions = Blueprint('regions', __name__)
 
+
 @regions.route("/regions/<string:country_code>", methods=['GET'])
 @regions.route("/regions/<string:country_code>/<int:page>", methods=['GET'])
 @regions.route("/regions/<string:country_code>/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])

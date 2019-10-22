@@ -3,6 +3,7 @@ from marshmallow import fields, validate
 from app import ma
 from app.lib.datetime.Formats import Formats
 
+
 class UserAccountSchema(ma.Schema):
 
     # Rules:

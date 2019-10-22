@@ -6,6 +6,7 @@ from app.api_admin.schema.LoginSchema import LoginSchema
 
 logins = Blueprint('logins', __name__)
 
+
 @logins.route("/logins", methods=['GET'])
 @logins.route("/logins/<int:page>", methods=['GET'])
 @logins.route("/logins/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])

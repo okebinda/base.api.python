@@ -56,6 +56,7 @@ class CountryData(DataSet):
         status = Country.STATUS_PENDING
         status_changed_at = datetime.date(2018, 1, 5)
 
+
 class RegionData(DataSet):
     class id1_california:
         name = "California"
@@ -106,6 +107,7 @@ class RegionData(DataSet):
         status = Region.STATUS_ENABLED
         status_changed_at = datetime.date(2018, 1, 6)
 
+
 class AppKeyData(DataSet):
     class id1_appkey1:
         application = "Application 1"
@@ -137,6 +139,7 @@ class AppKeyData(DataSet):
         key = "kP4k7vun5RwTBbESwHrCuDdFUtRchbVf"
         status = AppKey.STATUS_PENDING
         status_changed_at = datetime.date(2018, 1, 25)
+
 
 class RoleData(DataSet):
     class id1_user:
@@ -175,6 +178,7 @@ class RoleData(DataSet):
         password_policy = True
         password_reuse_history = 24
         password_reset_days = 365
+
 
 class AdministratorData(DataSet):
     class id1_admin1:
@@ -248,6 +252,7 @@ class AdministratorData(DataSet):
         status = Administrator.STATUS_PENDING
         status_changed_at = datetime.date(2018, 11, 10)
 
+
 class TermsOfServiceData(DataSet):
     class id1_tos1:
         text = "This is TOS 1"
@@ -285,6 +290,7 @@ class TermsOfServiceData(DataSet):
         publish_date = datetime.date(2019, 1, 30)
         status = TermsOfService.STATUS_PENDING
         status_changed_at = datetime.date(2019, 1, 30)
+
 
 class UserData(DataSet):
     class id1_user1:
@@ -360,6 +366,7 @@ class UserData(DataSet):
         status = User.STATUS_ENABLED
         status_changed_at = datetime.date(2019, 2, 1)
 
+
 class UserProfileData(DataSet):
     class id1_userprofile1:
         user = UserData.id1_user1
@@ -418,6 +425,7 @@ class UserProfileData(DataSet):
         status = UserProfile.STATUS_ENABLED
         status_changed_at = datetime.date(2019, 1, 10)
 
+
 class UserTermsOfServiceData(DataSet):
     class id1_u1_tos1:
         user = UserData.id1_user1
@@ -444,6 +452,7 @@ class UserTermsOfServiceData(DataSet):
         terms_of_service = TermsOfServiceData.id2_tos2
         accept_date = datetime.date(2019, 1, 2)
         ip_address = '1.1.1.3'
+
 
 class LoginData(DataSet):
     class id1_u1_login1:
@@ -493,6 +502,7 @@ class LoginData(DataSet):
         ip_address = '9.9.9.9'
         success = False
         attempt_date = datetime.datetime(2019, 1, 8, 2, 40, 21)
+
 
 class PasswordResetData(DataSet):
     class id1_password_reset1:
@@ -567,6 +577,7 @@ class PasswordResetData(DataSet):
         ip_address = '1.2.3.4'
         status = PasswordReset.STATUS_ENABLED
         status_changed_at = datetime.datetime.now()
+
 
 class NotificationData(DataSet):
     class id1_notification1:

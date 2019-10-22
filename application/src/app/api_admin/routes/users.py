@@ -11,6 +11,7 @@ from app.api_admin.schema.UserSchema import UserSchema
 
 users = Blueprint('users', __name__)
 
+
 @users.route("/users", methods=['GET'])
 @users.route("/users/<int:page>", methods=['GET'])
 @users.route("/users/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
@@ -75,6 +76,7 @@ def get_users(page=1, limit=10):
     else:
         return '', 204
 
+
 @users.route('/users', methods=['POST'])
 @require_appkey
 @auth.login_required
@@ -129,6 +131,7 @@ def post_user():
     # response
     return jsonify({'user': UserSchema().dump(user).data}), 201
 
+
 @users.route('/user/<int:user_id>', methods=['GET'])
 @users.route('/user/<string:username>', methods=['GET'])
 @require_appkey
@@ -150,6 +153,7 @@ def get_user(user_id=None, username=None):
 
     # response
     return jsonify({'user': UserSchema().dump(user).data}), 200
+
 
 @users.route('/user/<int:user_id>', methods=['PUT'])
 @require_appkey
@@ -216,6 +220,7 @@ def put_user(user_id):
 
     # response
     return jsonify({'user': UserSchema().dump(user).data}), 200
+
 
 @users.route('/user/<int:user_id>', methods=['DELETE'])
 @require_appkey

@@ -1,5 +1,6 @@
 from app import db
 
+
 class Login(db.Model):
 
     __tablename__ = 'logins'

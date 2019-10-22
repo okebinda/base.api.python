@@ -1,7 +1,8 @@
 import random
 import string
 
-class String(object):
+
+class String:
 
     def user_code(length, seed=None):
         if seed:

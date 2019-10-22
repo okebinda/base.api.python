@@ -1,6 +1,7 @@
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy import func, type_coerce, String
 
+
 class PGPString(BYTEA):
     def __init__(self, passphrase, length=None):
         super(PGPString, self).__init__(length)

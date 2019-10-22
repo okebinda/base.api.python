@@ -8,6 +8,7 @@ from app.api_admin.schema.UserAccountSchema import UserAccountSchema
 
 user_account = Blueprint('user_account', __name__)
 
+
 @user_account.route('/user_account', methods=['GET'])
 @require_appkey
 @auth.login_required
@@ -20,6 +21,7 @@ def get_account():
 
     # response
     return jsonify({'user_account': UserAccountSchema().dump(user).data}), 200
+
 
 @user_account.route('/user_account', methods=['PUT'])
 @require_appkey

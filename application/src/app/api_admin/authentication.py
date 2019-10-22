@@ -17,6 +17,7 @@ admin_permission = Permission(RoleNeed('SUPER_ADMIN'))
 
 # @todo: upgrade policy checks to use highest priority (lowest number) role
 
+
 def require_appkey(view_function):
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
@@ -32,6 +33,7 @@ def require_appkey(view_function):
             abort(401, "Missing application key")
     return decorated_function
 
+
 def check_password_expiration(view_function):
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
@@ -43,7 +45,8 @@ def check_password_expiration(view_function):
         return view_function(*args, **kwargs)
     return decorated_function
 
-class Authentication(object):
+
+class Authentication:
     
     def verify_password(username_or_token, password):
 

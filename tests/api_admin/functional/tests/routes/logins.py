@@ -1,7 +1,8 @@
 from tests.BaseTest import BaseTest
 from test_fixtures import *
 from tests.utils import get_http_basic_auth_credentials
-    
+
+
 class LoginsTest(BaseTest):
 
     def test_get_logins(self):

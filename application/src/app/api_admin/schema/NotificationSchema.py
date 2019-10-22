@@ -4,6 +4,7 @@ from app import ma
 from app.models.Notification import Notification
 from app.lib.datetime.Formats import Formats
 
+
 class NotificationSchema(ma.Schema):
 
     class Meta:

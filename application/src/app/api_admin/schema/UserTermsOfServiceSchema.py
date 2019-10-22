@@ -4,6 +4,7 @@ from app import ma
 from app.models.UserTermsOfService import UserTermsOfService
 from app.lib.datetime.Formats import Formats
 
+
 class UserTermsOfServiceSchema(ma.Schema):
 
     class Meta:

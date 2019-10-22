@@ -10,6 +10,7 @@ from app.api_admin.schema.TermsOfServiceSchema import TermsOfServiceSchema
 
 terms_of_service = Blueprint('terms_of_service', __name__)
 
+
 @terms_of_service.route("/terms_of_services", methods=['GET'])
 @terms_of_service.route("/terms_of_services/<int:page>", methods=['GET'])
 @terms_of_service.route("/terms_of_services/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
@@ -73,6 +74,7 @@ def get_terms_of_services(page=1, limit=10):
     else:
         return '', 204
 
+
 @terms_of_service.route('/terms_of_services', methods=['POST'])
 @require_appkey
 @auth.login_required
@@ -98,6 +100,7 @@ def post_terms_of_services():
     # response
     return jsonify({'terms_of_service': TermsOfServiceSchema().dump(terms_of_service).data}), 201
 
+
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>', methods=['GET'])
 @require_appkey
 @auth.login_required
@@ -113,6 +116,7 @@ def get_terms_of_service(terms_of_service_id=None):
 
     # response
     return jsonify({'terms_of_service': TermsOfServiceSchema().dump(terms_of_service).data}), 200
+
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>', methods=['PUT'])
 @require_appkey
@@ -143,6 +147,7 @@ def put_terms_of_service(terms_of_service_id):
 
     # response
     return jsonify({'terms_of_service': TermsOfServiceSchema().dump(terms_of_service).data}), 200
+
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>', methods=['DELETE'])
 @require_appkey

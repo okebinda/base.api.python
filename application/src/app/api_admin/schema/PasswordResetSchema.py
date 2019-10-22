@@ -4,6 +4,7 @@ from app import ma
 from app.models.PasswordReset import PasswordReset
 from app.lib.datetime.Formats import Formats
 
+
 class PasswordResetSchema(ma.Schema):
 
     class Meta:

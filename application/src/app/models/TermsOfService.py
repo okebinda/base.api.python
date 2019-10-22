@@ -1,6 +1,7 @@
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
+
 class TermsOfService(db.Model, BaseModel):
 
     __tablename__ = 'terms_of_services'

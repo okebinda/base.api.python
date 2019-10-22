@@ -10,6 +10,7 @@ from app.api_admin.schema.UserProfileSchema import UserProfileSchema
 
 user_profiles = Blueprint('user_profiles', __name__)
 
+
 @user_profiles.route("/user_profiles", methods=['GET'])
 @user_profiles.route("/user_profiles/<int:page>", methods=['GET'])
 @user_profiles.route("/user_profiles/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
@@ -73,6 +74,7 @@ def get_user_profiles(page=1, limit=10):
     else:
         return '', 204
 
+
 @user_profiles.route('/user_profiles', methods=['POST'])
 @require_appkey
 @auth.login_required
@@ -99,6 +101,7 @@ def post_user_profiles():
     # response
     return jsonify({'user_profile': UserProfileSchema().dump(user_profile).data}), 201
 
+
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['GET'])
 @require_appkey
 @auth.login_required
@@ -114,6 +117,7 @@ def get_user_profile(user_profile_id=None):
 
     # response
     return jsonify({'user_profile': UserProfileSchema().dump(user_profile).data}), 200
+
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['PUT'])
 @require_appkey
@@ -145,6 +149,7 @@ def put_user_profile(user_profile_id):
 
     # response
     return jsonify({'user_profile': UserProfileSchema().dump(user_profile).data}), 200
+
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['DELETE'])
 @require_appkey

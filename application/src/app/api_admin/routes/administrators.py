@@ -11,6 +11,7 @@ from app.api_admin.schema.AdministratorSchema import AdministratorSchema
 
 administrators = Blueprint('administrators', __name__)
 
+
 @administrators.route("/administrators", methods=['GET'])
 @administrators.route("/administrators/<int:page>", methods=['GET'])
 @administrators.route("/administrators/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
@@ -78,6 +79,7 @@ def get_administrators(page=1, limit=10):
     else:
         return '', 204
 
+
 @administrators.route('/administrators', methods=['POST'])
 @require_appkey
 @auth.login_required
@@ -132,6 +134,7 @@ def post_administrator():
     # response
     return jsonify({'administrator': AdministratorSchema().dump(admin).data}), 201
 
+
 @administrators.route('/administrator/<int:administrator_id>', methods=['GET'])
 @require_appkey
 @auth.login_required
@@ -147,6 +150,7 @@ def get_administrator(administrator_id=None):
 
     # response
     return jsonify({'administrator': AdministratorSchema().dump(administrator).data}), 200
+
 
 @administrators.route('/administrator/<int:administrator_id>', methods=['PUT'])
 @require_appkey
@@ -214,6 +218,7 @@ def put_administrator(administrator_id):
 
     # response
     return jsonify({'administrator': AdministratorSchema().dump(administrator).data}), 200
+
 
 @administrators.route('/administrator/<int:administrator_id>', methods=['DELETE'])
 @require_appkey

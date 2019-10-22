@@ -6,6 +6,7 @@ from app.api_admin.schema.NotificationSchema import NotificationSchema
 
 notifications = Blueprint('notifications', __name__)
 
+
 @notifications.route("/notifications", methods=['GET'])
 @notifications.route("/notifications/<int:page>", methods=['GET'])
 @notifications.route("/notifications/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])

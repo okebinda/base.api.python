@@ -6,6 +6,7 @@ from app.api_public.schema.CountrySchema import CountrySchema
 
 countries = Blueprint('countries', __name__)
 
+
 @countries.route("/countries", methods=['GET'])
 @countries.route("/countries/<int:page>", methods=['GET'])
 @countries.route("/countries/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])

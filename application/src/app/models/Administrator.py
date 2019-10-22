@@ -16,6 +16,7 @@ roles = db.Table('admin_roles',
     db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True)
 )
 
+
 class Administrator(db.Model, BaseModel):
 
     __tablename__ = 'administrators'

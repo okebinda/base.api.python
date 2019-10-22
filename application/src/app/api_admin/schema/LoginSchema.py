@@ -4,6 +4,7 @@ from app import ma
 from app.models.Login import Login
 from app.lib.datetime.Formats import Formats
 
+
 class LoginSchema(ma.Schema):
 
     class Meta:

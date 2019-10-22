@@ -1,6 +1,7 @@
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
+
 class AppKey(db.Model, BaseModel):
 
     __tablename__ = 'app_keys'

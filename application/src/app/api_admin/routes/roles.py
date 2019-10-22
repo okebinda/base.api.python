@@ -8,6 +8,7 @@ from app.api_admin.schema.RoleSchema import RoleSchema
 
 roles = Blueprint('roles', __name__)
 
+
 @roles.route("/roles", methods=['GET'])
 @roles.route("/roles/<int:page>", methods=['GET'])
 @roles.route("/roles/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])
@@ -67,6 +68,7 @@ def get_roles(page=1, limit=10, role_type=None):
     else:
         return '', 204
 
+
 @roles.route('/roles', methods=['POST'])
 @require_appkey
 @auth.login_required
@@ -98,6 +100,7 @@ def post_roles():
     # response
     return jsonify({'role': RoleSchema().dump(role).data}), 201
 
+
 @roles.route('/role/<int:role_id>', methods=['GET'])
 @roles.route('/role/<string:name>', methods=['GET'])
 @require_appkey
@@ -119,6 +122,7 @@ def get_role(role_id=None, name=None):
 
     # response
     return jsonify({'role': RoleSchema().dump(role).data}), 200
+
 
 @roles.route('/role/<int:role_id>', methods=['PUT'])
 @require_appkey
@@ -154,6 +158,7 @@ def put_role(role_id):
 
     # response
     return jsonify({'role': RoleSchema().dump(role).data}), 200
+
 
 @roles.route('/role/<int:role_id>', methods=['DELETE'])
 @require_appkey

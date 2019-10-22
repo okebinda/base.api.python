@@ -4,6 +4,7 @@ from app import ma
 from app.models.Role import Role
 from app.lib.datetime.Formats import Formats
 
+
 class RoleSchema(ma.Schema):
 
     class Meta:

@@ -1,6 +1,7 @@
 from app import db
 
-class BaseModel(object):
+
+class BaseModel:
 
     STATUS_ENABLED = 1
     STATUS_DISABLED = 2
