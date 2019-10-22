@@ -124,9 +124,9 @@ def post_administrator():
                           status_changed_at=datetime.now())
 
     if request.json.get('roles'):
-      for role_id in request.json.get('roles'):
-          role = Role.query.get(role_id)
-          admin.roles.append(role)
+        for role_id in request.json.get('roles'):
+            role = Role.query.get(role_id)
+            admin.roles.append(role)
 
     db.session.add(admin)
     db.session.commit()

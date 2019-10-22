@@ -119,9 +119,9 @@ def post_user():
                 status_changed_at=datetime.now())
 
     if request.json.get('roles', []) and len(request.json.get('roles')):
-      for role_id in request.json.get('roles'):
-          if role_id:
-            role = Role.query.get(role_id)
+        for role_id in request.json.get('roles'):
+            if role_id:
+                role = Role.query.get(role_id)
             if role:
                 user.roles.append(role)
 
