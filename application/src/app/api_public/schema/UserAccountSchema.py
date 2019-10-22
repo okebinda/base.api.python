@@ -44,8 +44,10 @@ class UserAccountSchema(ma.Schema):
     is_verified = fields.Boolean()
 
     first_name = fields.String(
-        required=True, validate=validate.Length(1, 40,
-        "Value must be between 1 and 40 characters long."))
+        required=True,
+        validate=validate.Length(
+            1, 40, "Value must be between 1 and 40 characters long."))
     last_name = fields.String(
-        required=True, validate=validate.Length(2, 40,
-        "Value must be between 2 and 40 characters long."))
+        required=True,
+        validate=validate.Length(
+            2, 40, "Value must be between 2 and 40 characters long."))

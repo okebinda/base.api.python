@@ -79,8 +79,10 @@ def post_user_account_step1():
     db.session.add(user)
 
     # save user terms of service
-    user_tos = UserTermsOfService(user=user,
-        terms_of_service_id=request.json.get('tos_id'), accept_date=datetime.now(),
+    user_tos = UserTermsOfService(
+        user=user,
+        terms_of_service_id=request.json.get('tos_id'),
+        accept_date=datetime.now(),
         ip_address=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
     db.session.add(user_tos)
 

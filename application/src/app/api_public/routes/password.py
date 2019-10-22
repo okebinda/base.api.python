@@ -121,8 +121,12 @@ def post_password_request_reset_code():
 
     # email notification
     notify = Notify(current_app.config['ENV'], db)
-    response = notify.send(user, Notify.CHANNEL_EMAIL, 'password-reset-code',
-        name=user.profile.first_name if user.profile else 'User', code=password_reset.code)
+    response = notify.send(
+        user,
+        Notify.CHANNEL_EMAIL,
+        'password-reset-code',
+        name=user.profile.first_name if user.profile else 'User',
+        code=password_reset.code)
 
     # response
     return jsonify({'success': 'true', 'sent': response}), 201

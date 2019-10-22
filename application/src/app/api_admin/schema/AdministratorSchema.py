@@ -26,27 +26,33 @@ class AdministratorSchema(ma.Schema):
         load_only = ['password']
 
     # hyperlinks
-    uri = ma.AbsoluteUrlFor('administrators.get_administrator', administrator_id='<id>')
+    uri = ma.AbsoluteUrlFor(
+        'administrators.get_administrator', administrator_id='<id>')
 
     # nested schema
     roles = fields.Nested(
-        'RoleSchema', exclude=('login_lockout_policy', 'login_max_attempts',
-        'login_timeframe', 'login_ban_time', 'login_ban_by_ip', 'password_policy',
-        'password_reset_days', 'password_reuse_history', 'created_at',
-        'updated_at', 'is_admin_role', 'priority'), many=True, dump_only=True)
+        'RoleSchema', exclude=(
+            'login_lockout_policy', 'login_max_attempts', 'login_timeframe',
+            'login_ban_time', 'login_ban_by_ip', 'password_policy',
+            'password_reset_days', 'password_reuse_history', 'created_at',
+            'updated_at', 'is_admin_role', 'priority'),
+        many=True, dump_only=True)
 
     # field validation
     id = fields.Integer()
     username = fields.String(
         required=True,
-        validate=validate.Regexp(r'(?!^\d+$)^.+$', 0, 'Value must not be a number'))
+        validate=validate.Regexp(
+            r'(?!^\d+$)^.+$', 0, 'Value must not be a number'))
     email = fields.Email(required=True)
     first_name = fields.String(
-        required=True, validate=validate.Length(1, 40,
-        "Value must be between 1 and 40 characters long."))
+        required=True,
+        validate=validate.Length(
+            1, 40, "Value must be between 1 and 40 characters long."))
     last_name = fields.String(
-        required=True, validate=validate.Length(2, 40,
-        "Value must be between 2 and 40 characters long."))
+        required=True,
+        validate=validate.Length(
+            2, 40, "Value must be between 2 and 40 characters long."))
     status = fields.Integer(required=True)
     password_changed_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     joined_at = fields.DateTime(required=True, format=Formats.ISO_8601_DATETIME)

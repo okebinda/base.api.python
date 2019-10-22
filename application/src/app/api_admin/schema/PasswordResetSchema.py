@@ -22,12 +22,16 @@ class PasswordResetSchema(ma.Schema):
     # field validation
     id = fields.Integer()
     user_id = fields.Integer()
-    code = fields.String(required=True, validate=validate.Length(1, 40,
-        "Value must be between 6 and 40 characters long."))
+    code = fields.String(
+        required=True,
+        validate=validate.Length(
+            1, 40, "Value must be between 6 and 40 characters long."))
     is_used = fields.Boolean(required=True)
     requested_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
-    ip_address = fields.String(required=True, validate=validate.Length(6, 50,
-        "Value must be between 6 and 50 characters long."))
+    ip_address = fields.String(
+        required=True,
+        validate=validate.Length(
+            6, 50, "Value must be between 6 and 50 characters long."))
     status = fields.Integer(required=True)
     status_changed_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     created_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)

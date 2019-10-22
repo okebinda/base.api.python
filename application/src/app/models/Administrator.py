@@ -11,7 +11,8 @@ from app.lib.sqlalchemy.BaseModel import BaseModel
 from app.lib.sqlalchemy.PGPString import PGPString
 
 # relation tables
-roles = db.Table('admin_roles',
+roles = db.Table(
+    'admin_roles',
     db.Column('admin_id', db.Integer, db.ForeignKey('administrators.id'), primary_key=True),
     db.Column('role_id', db.Integer, db.ForeignKey('roles.id'), primary_key=True)
 )
@@ -27,18 +28,26 @@ class Administrator(db.Model, BaseModel):
     CRYPT_DIGEST_SALT = Config.CRYPT_DIGEST_SALT
 
     # columns
-    username = db.Column(db.String(40), index=True, unique=True, nullable=False)
-    _email = db.Column(PGPString(CRYPT_SYM_SECRET_KEY, length=500), nullable=False)
-    email_digest = db.Column(db.String(64), unique=True, nullable=False)
-    first_name = db.Column(PGPString(CRYPT_SYM_SECRET_KEY, length=200), nullable=False)
-    last_name = db.Column(PGPString(CRYPT_SYM_SECRET_KEY, length=200), nullable=False)
-    _password = db.Column(db.String(60), nullable=False)
+    username = db.Column(
+        'username', db.String(40), index=True, unique=True, nullable=False)
+    _email = db.Column(
+        'email', PGPString(CRYPT_SYM_SECRET_KEY, length=500), nullable=False)
+    email_digest = db.Column(
+        'email_digest', db.String(64), unique=True, nullable=False)
+    first_name = db.Column(
+        'first_name', PGPString(CRYPT_SYM_SECRET_KEY, length=200),
+        nullable=False)
+    last_name = db.Column(
+        'last_name', PGPString(CRYPT_SYM_SECRET_KEY, length=200),
+        nullable=False)
+    _password = db.Column(
+        'password', db.String(60), nullable=False)
     password_changed_at = db.Column(
-        db.TIMESTAMP(timezone=True), server_default=db.func.current_timestamp(),
-        nullable=False)
+        'password_changed_at', db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(), nullable=False)
     joined_at = db.Column(
-        db.TIMESTAMP(timezone=True), server_default=db.func.current_timestamp(),
-        nullable=False)
+        'joined_at', db.TIMESTAMP(timezone=True),
+        server_default=db.func.current_timestamp(), nullable=False)
 
     # relationships
     roles = db.relationship(
@@ -51,8 +60,11 @@ class Administrator(db.Model, BaseModel):
 
     @password.setter
     def password(self, password):
-        self._password = str(bcrypt.hashpw(bytes(password, 'utf-8'),
-            bcrypt.gensalt(self.HASH_ROUNDS)), 'utf8')
+        self._password = str(
+            bcrypt.hashpw(
+                bytes(password, 'utf-8'),
+                bcrypt.gensalt(self.HASH_ROUNDS)),
+            'utf8')
         self.password_changed_at = datetime.now()
 
     @hybrid_property

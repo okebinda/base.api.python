@@ -17,10 +17,14 @@ class LoginSchema(ma.Schema):
     # field validation
     id = fields.Integer()
     user_id = fields.Integer()
-    username = fields.String(required=True, validate=validate.Length(1, 40,
-        "Value must be between 1 and 40 characters long."))
-    ip_address = fields.String(required=True, validate=validate.Length(6, 50,
-        "Value must be between 6 and 50 characters long."))
+    username = fields.String(
+        required=True,
+        validate=validate.Length(
+            1, 40, "Value must be between 1 and 40 characters long."))
+    ip_address = fields.String(
+        required=True,
+        validate=validate.Length(
+            6, 50, "Value must be between 6 and 50 characters long."))
     success = fields.Boolean(required=True)
     attempt_date = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     created_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
