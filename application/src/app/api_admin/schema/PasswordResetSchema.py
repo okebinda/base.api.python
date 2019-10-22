@@ -17,7 +17,7 @@ class PasswordResetSchema(ma.Schema):
         load_only = ['user_id']
 
     # nested schema
-    user = fields.Nested('UserSchema', only=('id', 'username', 'uri',))
+    user = fields.Nested('UserSchema', only=('id', 'username', 'uri'))
 
     # field validation
     id = fields.Integer()

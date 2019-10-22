@@ -13,7 +13,7 @@ class UserProfileSchema(ma.Schema):
         # fields to expose
         fields = ('id', 'user_id', 'first_name', 'last_name', 'status',
                   'status_changed_at', 'created_at', 'updated_at',
-                  'joined_at',)
+                  'joined_at')
 
     # field validation
     id = fields.Integer()

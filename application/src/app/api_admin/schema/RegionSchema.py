@@ -17,7 +17,7 @@ class RegionSchema(ma.Schema):
 
     # nested schema
     country = fields.Nested('CountrySchema', exclude=('status',
-                            'status_changed_at', 'created_at', 'updated_at',))
+                            'status_changed_at', 'created_at', 'updated_at'))
 
     # field validation
     id = fields.Integer()

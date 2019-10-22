@@ -23,8 +23,8 @@ class UserSchema(ma.Schema):
         # fields to expose
         fields = ('id', 'username', 'email', 'roles', 'status', 'status_changed_at',
                   'uri', 'created_at', 'updated_at', 'password', 'terms_of_services',
-                  'password_changed_at', 'profile', 'is_verified',)
-        load_only = ['password',]
+                  'password_changed_at', 'profile', 'is_verified')
+        load_only = ['password']
 
     # hyperlinks
     uri = ma.AbsoluteUrlFor('users.get_user', user_id='<id>')
@@ -34,12 +34,12 @@ class UserSchema(ma.Schema):
         'RoleSchema', exclude=('login_lockout_policy', 'login_max_attempts',
         'login_timeframe', 'login_ban_time', 'login_ban_by_ip', 'password_policy',
         'password_reset_days', 'password_reuse_history', 'created_at',
-        'updated_at', 'is_admin_role','priority',), many=True, dump_only=True)
+        'updated_at', 'is_admin_role', 'priority'), many=True, dump_only=True)
     terms_of_services = fields.Nested(
-        UserTermsOfServiceSchema, exclude=('user', 'created_at', 'updated_at',),
+        UserTermsOfServiceSchema, exclude=('user', 'created_at', 'updated_at'),
         many=True, dump_only=True)
     profile = fields.Nested(
-        'UserProfileSchema', only=('first_name', 'last_name', 'title',))
+        'UserProfileSchema', only=('first_name', 'last_name', 'title'))
 
     # field validation
     id = fields.Integer()

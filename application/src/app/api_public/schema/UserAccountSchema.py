@@ -20,9 +20,9 @@ class UserAccountSchema(ma.Schema):
 
         # fields to expose
         fields = ('id', 'username', 'email', 'password', 'password2', 'tos_id',
-                  'first_name', 'last_name', 'password_changed_at', 'joined_at', 'is_verified',)
-        load_only = ['password', 'password2', 'tos_id',]
-        dump_only = ['joined_at', 'is_verified', 'password_changed_at',]
+                  'first_name', 'last_name', 'password_changed_at', 'joined_at', 'is_verified')
+        load_only = ['password', 'password2', 'tos_id']
+        dump_only = ['joined_at', 'is_verified', 'password_changed_at']
 
     # field validation
     id = fields.Integer()

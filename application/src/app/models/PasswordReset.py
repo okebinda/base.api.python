@@ -8,7 +8,7 @@ class PasswordReset(db.Model, BaseModel):
 
     # columns
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    code = db.Column(db.String(40),nullable=False)
+    code = db.Column(db.String(40), nullable=False)
     is_used = db.Column(db.Boolean, nullable=False)
     requested_at = db.Column(
         db.TIMESTAMP(timezone=True), server_default=db.func.current_timestamp(),

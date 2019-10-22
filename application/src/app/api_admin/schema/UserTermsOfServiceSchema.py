@@ -18,10 +18,10 @@ class UserTermsOfServiceSchema(ma.Schema):
     # nested schema
     user = fields.Nested(
         'UserSchema', exclude=('status', 'status_changed_at', 'created_at',
-        'updated_at',), many=False)
+        'updated_at'), many=False)
     terms_of_service = fields.Nested(
         'TermsOfServiceSchema', exclude=('text', 'publish_date', 'status',
-        'status_changed_at', 'created_at', 'updated_at',), many=False)
+        'status_changed_at', 'created_at', 'updated_at'), many=False)
 
     # field validation
     user_id = fields.Integer(required=True)

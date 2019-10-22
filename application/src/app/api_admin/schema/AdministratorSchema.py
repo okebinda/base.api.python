@@ -31,9 +31,9 @@ class AdministratorSchema(ma.Schema):
     # nested schema
     roles = fields.Nested(
         'RoleSchema', exclude=('login_lockout_policy', 'login_max_attempts',
-        'login_timeframe', 'login_ban_time', 'login_ban_by_ip','password_policy',
-        'password_reset_days','password_reuse_history', 'created_at',
-        'updated_at','is_admin_role','priority',), many=True, dump_only=True)
+        'login_timeframe', 'login_ban_time', 'login_ban_by_ip', 'password_policy',
+        'password_reset_days', 'password_reuse_history', 'created_at',
+        'updated_at', 'is_admin_role', 'priority'), many=True, dump_only=True)
 
     # field validation
     id = fields.Integer()
