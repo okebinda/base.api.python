@@ -15,7 +15,7 @@ class UserSchema(ma.Schema):
     #    c) Number
     #    d) Non-alpha character
     #  2) 8-40 characters
-    rePassword = ''.join([
+    re_password = ''.join([
         r'^(?:',
         r'(?=.*[a-z])',
         r'(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))',
@@ -77,4 +77,4 @@ class UserSchema(ma.Schema):
     updated_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     password = fields.String(
         required=True, validate=validate.Regexp(
-            rePassword, 0, 'Please choose a more complex password.'))
+            re_password, 0, 'Please choose a more complex password.'))

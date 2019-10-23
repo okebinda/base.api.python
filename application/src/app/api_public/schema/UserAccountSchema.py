@@ -13,7 +13,7 @@ class UserAccountSchema(ma.Schema):
     #    c) Number
     #    d) Non-alpha character
     #  2) 8-40 characters
-    rePassword = ''.join([
+    re_password = ''.join([
         r'^(?:',
         r'(?=.*[a-z])',
         r'(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))',
@@ -47,7 +47,7 @@ class UserAccountSchema(ma.Schema):
     email = fields.Email(required=True)
     password = fields.String(
         required=True, validate=validate.Regexp(
-            rePassword, 0, 'Please choose a more complex password.'))
+            re_password, 0, 'Please choose a more complex password.'))
     password2 = fields.String(required=True)
     tos_id = fields.Integer(required=True)
     password_changed_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)

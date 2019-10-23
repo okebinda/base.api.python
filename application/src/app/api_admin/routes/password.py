@@ -20,7 +20,7 @@ def put_password():
     user = g.user
 
     # prep regex
-    rePassword = re.compile(AdministratorSchema.rePassword)
+    re_password = re.compile(AdministratorSchema.re_password)
 
     # validate data
     errors = {}
@@ -40,7 +40,7 @@ def put_password():
             errors['password1'] = []
         errors['password1'].append("Missing data for required field.")
     if ('password1' in request.json and
-            not rePassword.match(request.json['password1'])):
+            not re_password.match(request.json['password1'])):
         if 'password1' not in errors:
             errors['password1'] = []
         errors['password1'].append("Please choose a more complex password.")
