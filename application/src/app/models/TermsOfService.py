@@ -1,8 +1,11 @@
+"""SQLAlchemy database record definition for TermsOfService"""
+
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
 
 class TermsOfService(db.Model, BaseModel):
+    """Model for TermsOfService"""
 
     __tablename__ = 'terms_of_services'
 

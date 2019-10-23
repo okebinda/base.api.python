@@ -1,8 +1,11 @@
+"""SQLAlchemy database record definition for PasswordReset"""
+
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
 
 class PasswordReset(db.Model, BaseModel):
+    """Model for PasswordReset"""
 
     __tablename__ = 'password_resets'
 

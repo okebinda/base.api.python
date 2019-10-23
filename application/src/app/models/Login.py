@@ -1,7 +1,10 @@
+"""SQLAlchemy database record definition for Login"""
+
 from app import db
 
 
 class Login(db.Model):
+    """Model for Login"""
 
     __tablename__ = 'logins'
 

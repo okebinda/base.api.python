@@ -1,7 +1,10 @@
+"""Main application configuration"""
+
 import os
 
 
 class Config:
+    """Abstract data type containing configuration settings, data only"""
 
     # application properties
     SECRET_KEY = os.environ.get('SECRET_KEY')

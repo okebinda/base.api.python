@@ -1,8 +1,12 @@
+"""SQLAlchemy property type for encrypting values at rest"""
+
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy import func, type_coerce, String
 
 
 class PGPString(BYTEA):
+    """Defines an encrypted database field"""
+
     def __init__(self, passphrase, length=None):
         super(PGPString, self).__init__(length)
         self.passphrase = passphrase

@@ -1,3 +1,5 @@
+"""SQLAlchemy database record definition for UserProfile"""
+
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 from app.lib.sqlalchemy.PGPString import PGPString
@@ -5,6 +7,7 @@ from app.Config import Config
 
 
 class UserProfile(db.Model, BaseModel):
+    """Model for UserProfile"""
 
     __tablename__ = 'user_profiles'
 

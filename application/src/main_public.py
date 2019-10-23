@@ -1,3 +1,5 @@
+"""Public application front controller"""
+
 from app.api_public import create_app
 from app.Config import Config
 

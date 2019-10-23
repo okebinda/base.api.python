@@ -1,8 +1,11 @@
+"""SQLAlchemy database record definition for Country"""
+
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
 
 class Country(db.Model, BaseModel):
+    """Model for Country"""
 
     __tablename__ = 'countries'
 

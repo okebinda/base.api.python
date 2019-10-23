@@ -1,3 +1,5 @@
+"""Admin application front controller"""
+
 from app.api_admin import create_app
 from app.Config import Config
 

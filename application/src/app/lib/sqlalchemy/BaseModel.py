@@ -1,7 +1,11 @@
+"""SQLAlchemy base model containing standard properties for most models to
+inherit"""
+
 from app import db
 
 
 class BaseModel:
+    """Base model containing: id, status, and timestamps"""
 
     STATUS_ENABLED = 1
     STATUS_DISABLED = 2

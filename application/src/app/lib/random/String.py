@@ -1,11 +1,29 @@
+"""Generate random strings for specific purposes"""
+
 import random
 import string
 
 
 class String:
+    """Helper for random string values"""
 
     @staticmethod
     def user_code(length, seed=None):
+        """Generates a random string of uppercase letters + digits
+
+        Creates a random string from uppercase characters and digits. Removes
+        certain characters that are easily confused for each other, such as
+        'O' and '0'. This is intended to be used for user-facing, one-time
+        codes such as for password reset requests, and is not considered
+        cryptographically secure.
+
+        :param length: Length of string to generate
+        :type length: int
+        :param seed: Random seed
+        :return: Random user code
+        :rtype: str
+        """
+
         if seed:
             random.seed(seed)
 

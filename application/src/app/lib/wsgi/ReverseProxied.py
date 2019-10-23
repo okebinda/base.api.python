@@ -1,3 +1,6 @@
+"""Middleware to assist application to be served in a subdirectory by NGINX"""
+
+
 class ReverseProxied:
     '''Wrap the application in this middleware and configure the
     front-end server to add these headers, to let you quietly bind

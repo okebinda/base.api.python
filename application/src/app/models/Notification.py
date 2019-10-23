@@ -1,8 +1,11 @@
+"""SQLAlchemy database record definition for Notification"""
+
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
 
 class Notification(db.Model, BaseModel):
+    """Model for Notification"""
 
     __tablename__ = 'notifications'
 

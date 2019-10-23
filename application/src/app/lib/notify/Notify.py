@@ -1,3 +1,5 @@
+"""Manage notification channels (such as email) with users"""
+
 import os
 from datetime import datetime
 
@@ -7,6 +9,7 @@ from app.models.Notification import Notification
 
 
 class Notify:
+    """Open a notification channel with a user"""
 
     CHANNEL_EMAIL = 1
 
@@ -16,6 +19,18 @@ class Notify:
         self.force_email = force_email
 
     def send(self, user, channel, template=None, **kwargs):
+        """Sends a notification to a user
+
+        :param user: The user to notify
+        :type user: User
+        :param channel: The communication channel to use
+        :type channel: int
+        :param template: The name of the template to use when communicating
+        :type template: string
+        :param kwargs: Key:value pairs for template substitution
+        :return: True if channel accepted notification, otherwise false
+        :rtype: bool
+        """
 
         # prep results
         notification_id = None
@@ -60,6 +75,16 @@ class Notify:
         return accepted >= 1
 
     def _email(self, email, template=None, **kwargs):
+        """Sends an email via Sparkpost API
+
+        :param email: A single email address to send to
+        :type email: str
+        :param template: The name of the template to use when communicating
+        :type template: string
+        :param kwargs: Key:value pairs for template substitution
+        :return: A dictionary of values from the communication channel
+        :rtype: dict
+        """
 
         # prep output
         output = {

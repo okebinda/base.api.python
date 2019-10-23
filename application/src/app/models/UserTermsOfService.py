@@ -1,9 +1,12 @@
+"""SQLAlchemy database record definition for UserTermsOfService"""
+
 from app import db
 from app.Config import Config
 from app.lib.sqlalchemy.PGPString import PGPString
 
 
 class UserTermsOfService(db.Model):
+    """Model for UserTermsOfService"""
 
     __tablename__ = 'user_terms_of_services'
 

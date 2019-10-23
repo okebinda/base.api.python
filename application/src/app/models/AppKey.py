@@ -1,8 +1,11 @@
+"""SQLAlchemy database record definition for AppKey"""
+
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
 
 class AppKey(db.Model, BaseModel):
+    """Model for AppKey"""
 
     __tablename__ = 'app_keys'
 

@@ -1,3 +1,5 @@
+"""SQLAlchemy database record definition for Administrator"""
+
 import hashlib
 from datetime import datetime
 import bcrypt
@@ -27,6 +29,7 @@ roles = db.Table(
 
 
 class Administrator(db.Model, BaseModel):
+    """Model for Administrator"""
 
     __tablename__ = 'administrators'
 
@@ -83,10 +86,26 @@ class Administrator(db.Model, BaseModel):
 
     @hybrid_property
     def password(self):
+        """Gets `password` property (hashed)
+
+        :return: User's hashed password value
+        :rtype: string
+        """
+
         return self._password
 
     @password.setter
     def password(self, password):
+        """Sets `password` property
+
+        Applies Bcrypt hashing function to `password` before storing it. The
+        number of hashing rounds are configurable in the main application
+        config settings.
+
+        :param password: User's plaintext password
+        :type password: str
+        """
+
         self._password = str(
             bcrypt.hashpw(
                 bytes(password, 'utf-8'),
@@ -96,25 +115,66 @@ class Administrator(db.Model, BaseModel):
 
     @hybrid_property
     def email(self):
+        """Gets `email` property
+
+        :return: User's plaintext email address
+        :rtype: str
+        """
+
         return self._email
 
     @email.setter
     def email(self, email):
+        """Sets `email` property
+
+        Applies a lowercase transformation to `email` before storing it. Also
+        sets the `email_digest` property to its SHA-256 hash value - this is
+        useful if the email is stored encrypted, to allow lookups and
+        comparisons (e.g.: duplicates) if an exact match is supplied.
+
+        :param email: User's plaintext email address
+        :type email: str
+        """
+
         self._email = email.lower()
         hash_object = hashlib.sha256(
             (self.CRYPT_DIGEST_SALT + email).encode('utf-8'))
         self.email_digest = hash_object.hexdigest()
 
     def check_password(self, password):
+        """Checks supplied password against saved value
+
+        :param password: User's plaintext password
+        :type password: str
+        :return: True if password matches what's on file, False otherwise
+        :rtype: bool
+        """
+
         return bcrypt.checkpw(
             password.encode('utf-8'), self._password.encode('utf-8'))
 
     def generate_auth_token(self, expiration=1800):
+        """Creates a new authentication token
+
+        :param expiration: Length of time in seconds that token is valid
+        :type expiration: int
+        :return: Authentication token
+        :rtype: str
+        """
+
         s = Serializer(self.AUTH_SECRET_KEY, expires_in=expiration)
         return s.dumps({'id': self.id, 'type': 'administrator'})
 
     @staticmethod
     def verify_auth_token(token):
+        """Verifies authentication token is valid and current
+
+        :param token: Authentication token
+        :type token: str
+        :return: The user associated with token if valid, None otherwise
+        :rtype: User | None
+        """
+
         s = Serializer(Administrator.AUTH_SECRET_KEY)
         try:
             data = s.loads(token)

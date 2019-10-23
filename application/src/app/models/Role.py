@@ -1,7 +1,10 @@
+"""SQLAlchemy database record definition for Role"""
+
 from app import db
 
 
 class Role(db.Model):
+    """Model for Role"""
 
     __tablename__ = 'roles'
 

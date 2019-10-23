@@ -1,8 +1,11 @@
+"""SQLAlchemy database record definition for Region"""
+
 from app import db
 from app.lib.sqlalchemy.BaseModel import BaseModel
 
 
 class Region(db.Model, BaseModel):
+    """Model for Region"""
 
     __tablename__ = 'regions'
 
