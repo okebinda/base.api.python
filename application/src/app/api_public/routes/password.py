@@ -63,7 +63,7 @@ def put_password():
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
 
-    if (len(errors)):
+    if len(errors):
         return jsonify({"error": errors}), 400
 
     # save user
@@ -99,7 +99,7 @@ def post_password_request_reset_code():
                 errors['email'] = []
             errors['email'].append("Email address not found.")
 
-    if (len(errors)):
+    if len(errors):
         return jsonify({"error": errors}), 400
 
     # generate random seed
@@ -107,7 +107,7 @@ def post_password_request_reset_code():
     unixtime = time.mktime(d.timetuple())
     hash_object = hashlib.sha256(
         (str(unixtime) + str(os.getpid()) +
-            User.CRYPT_DIGEST_SALT).encode('utf-8'))
+         User.CRYPT_DIGEST_SALT).encode('utf-8'))
     random_seed = hash_object.hexdigest()
 
     # save reset request
@@ -175,7 +175,7 @@ def put_password_reset():
             PasswordReset.user_id == user.id,
             PasswordReset.is_used == False,  # noqa
             (PasswordReset.requested_at +
-                timedelta(seconds=3600)) >= datetime.now()
+             timedelta(seconds=3600)) >= datetime.now()
         ).first()
         if not password_reset:
             if 'code' not in errors:

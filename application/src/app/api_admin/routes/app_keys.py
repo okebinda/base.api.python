@@ -138,7 +138,7 @@ def put_app_key(app_key_id):
     # save app key
     app_key.application = request.json.get('application', None)
     app_key.key = request.json.get('key', None)
-    if (app_key.status != request.json.get('status', None)):
+    if app_key.status != request.json.get('status', None):
         app_key.status = request.json.get('status')
         app_key.status_changed_at = datetime.now()
     db.session.commit()

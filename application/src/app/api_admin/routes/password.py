@@ -51,7 +51,7 @@ def put_password():
         errors['password2'].append("Missing data for required field.")
     if 'password1' in request.json and 'password2' in request.json:
         if request.json['password1'] != request.json['password2']:
-            if ('password2' not in errors):
+            if 'password2' not in errors:
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
 
