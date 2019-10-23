@@ -113,14 +113,14 @@ def post_user():
         return jsonify({"error": errors}), 400
 
     # save user
-    user = User(username=request.json.get('username').strip(),
-                email=request.json.get('email').strip(),
-                password=request.json.get('password'),
-                is_verified=request.json.get('is_verified'),
-                status=request.json.get('status'),
+    user = User(username=data['username'].strip(),
+                email=data['email'].strip(),
+                password=data['password'],
+                is_verified=data['is_verified'],
+                status=data['status'],
                 status_changed_at=datetime.now())
 
-    if request.json.get('roles', []) and len(request.json.get('roles')):
+    if request.json.get('roles', []) and request.json.get('roles'):
         for role_id in request.json.get('roles'):
             if role_id:
                 role = Role.query.get(role_id)
@@ -202,13 +202,12 @@ def put_user(user_id):
         return jsonify({"error": errors}), 400
 
     # save user
-    user.username = request.json.get('username', '').strip()
-    user.email = request.json.get('email', '').strip()
-    user.account_id = request.json.get('account_id', None)
-    user.is_verified = request.json.get('is_verified', None)
+    user.username = data['username'].strip()
+    user.email = data['email'].strip()
+    user.is_verified = data['is_verified']
 
-    if request.json.get('password', None):
-        user.password = request.json.get('password')
+    if 'password' in data:
+        user.password = data['password']
 
     user.roles[:] = []
     if (request.json.get('roles') and
@@ -218,8 +217,8 @@ def put_user(user_id):
             if role is not None:
                 user.roles.append(role)
 
-    if user.status != request.json.get('status', None):
-        user.status = request.json.get('status')
+    if user.status != data['status']:
+        user.status = data['status']
         user.status_changed_at = datetime.now()
 
     db.session.commit()

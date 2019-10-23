@@ -10,6 +10,7 @@ from app.api_admin.authentication import auth, Authentication
 
 
 def create_app(config):
+    # pylint: disable=unused-variable
 
     # init app
     app = Flask(__name__)

@@ -88,17 +88,17 @@ def post_roles():
 
     # save role
     role = Role(
-        name=request.json.get('name'),
-        is_admin_role=request.json.get('is_admin_role'),
-        priority=request.json.get('priority'),
-        login_lockout_policy=request.json.get('login_lockout_policy'),
-        login_max_attempts=request.json.get('login_max_attempts'),
-        login_timeframe=request.json.get('login_timeframe'),
-        login_ban_time=request.json.get('login_ban_time'),
-        login_ban_by_ip=request.json.get('login_ban_by_ip'),
-        password_policy=request.json.get('password_policy'),
-        password_reuse_history=request.json.get('password_reuse_history'),
-        password_reset_days=request.json.get('password_reset_days'))
+        name=data['name'],
+        is_admin_role=data['is_admin_role'],
+        priority=data['priority'],
+        login_lockout_policy=data['login_lockout_policy'],
+        login_max_attempts=data['login_max_attempts'],
+        login_timeframe=data['login_timeframe'],
+        login_ban_time=data['login_ban_time'],
+        login_ban_by_ip=data['login_ban_by_ip'],
+        password_policy=data['password_policy'],
+        password_reuse_history=data['password_reuse_history'],
+        password_reset_days=data['password_reset_days'])
     db.session.add(role)
     db.session.commit()
 
@@ -148,18 +148,17 @@ def put_role(role_id):
         return jsonify({"error": err.messages}), 400
 
     # save role
-    role.name = request.json.get('name', None)
-    role.is_admin_role = request.json.get('is_admin_role', None)
-    role.priority = request.json.get('priority', None)
-    role.login_lockout_policy = request.json.get('login_lockout_policy', None)
-    role.login_max_attempts = request.json.get('login_max_attempts', None)
-    role.login_timeframe = request.json.get('login_timeframe', None)
-    role.login_ban_time = request.json.get('login_ban_time', None)
-    role.login_ban_by_ip = request.json.get('login_ban_by_ip', None)
-    role.password_policy = request.json.get('password_policy', None)
-    role.password_reuse_history = request.json.get('password_reuse_history',
-                                                   None)
-    role.password_reset_days = request.json.get('password_reset_days', None)
+    role.name = data['name']
+    role.is_admin_role = data['is_admin_role']
+    role.priority = data['priority']
+    role.login_lockout_policy = data['login_lockout_policy']
+    role.login_max_attempts = data['login_max_attempts']
+    role.login_timeframe = data['login_timeframe']
+    role.login_ban_time = data['login_ban_time']
+    role.login_ban_by_ip = data['login_ban_by_ip']
+    role.password_policy = data['password_policy']
+    role.password_reuse_history = data['password_reuse_history']
+    role.password_reset_days = data['password_reset_days']
     db.session.commit()
 
     # response

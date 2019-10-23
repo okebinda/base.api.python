@@ -67,9 +67,9 @@ def post_user_account_step1():
         return jsonify({"error": errors}), 400
 
     # save user
-    user = User(username=request.json.get('username').strip(),
-                email=request.json.get('email').strip(),
-                password=request.json.get('password'),
+    user = User(username=data['username'].strip(),
+                email=data['email'].strip(),
+                password=data['password'],
                 is_verified=False,
                 status=User.STATUS_ENABLED,
                 status_changed_at=datetime.now())
@@ -90,8 +90,8 @@ def post_user_account_step1():
 
     db.session.commit()
 
-    # prep data
-    data = {
+    # prep output
+    output = {
         'id': user.id,
         'username': user.username,
         'email': user.email,
@@ -103,7 +103,8 @@ def post_user_account_step1():
     }
 
     # response
-    return jsonify({'user_account': UserAccountSchema().dump(data).data}), 201
+    return jsonify(
+        {'user_account': UserAccountSchema().dump(output).data}), 201
 
 
 @user_account.route('/user_account/step2', methods=['POST'])
@@ -128,14 +129,14 @@ def post_user_account_step2():
     # save user profile
     user_profile = user.profile if user.profile else None
     if user_profile:
-        user_profile.first_name = request.json.get('first_name', '').strip()
-        user_profile.last_name = request.json.get('last_name', '').strip()
+        user_profile.first_name = data['first_name'].strip()
+        user_profile.last_name = data['last_name'].strip()
 
     else:
         user_profile = UserProfile(
             user_id=user.id,
-            first_name=request.json.get('first_name', '').strip(),
-            last_name=request.json.get('last_name', '').strip(),
+            first_name=data['first_name'].strip(),
+            last_name=data['last_name'].strip(),
             joined_at=datetime.now(),
             status=UserProfile.STATUS_ENABLED,
             status_changed_at=datetime.now())
@@ -144,8 +145,8 @@ def post_user_account_step2():
 
     db.session.commit()
 
-    # prep data
-    data = {
+    # prep output
+    output = {
         'id': user.id,
         'username': user.username,
         'email': user.email,
@@ -157,7 +158,8 @@ def post_user_account_step2():
     }
 
     # response
-    return jsonify({'user_account': UserAccountSchema().dump(data).data}), 201
+    return jsonify(
+        {'user_account': UserAccountSchema().dump(output).data}), 201
 
 
 @user_account.route('/user_account', methods=['GET'])
@@ -170,8 +172,8 @@ def get_user_account():
     # get user
     user = g.user
 
-    # prep data
-    data = {
+    # prep output
+    output = {
         'id': user.id,
         'username': user.username,
         'email': user.email,
@@ -183,7 +185,8 @@ def get_user_account():
     }
 
     # response
-    return jsonify({'user_account': UserAccountSchema().dump(data).data}), 200
+    return jsonify(
+        {'user_account': UserAccountSchema().dump(output).data}), 200
 
 
 @user_account.route('/user_account', methods=['PUT'])
@@ -227,19 +230,19 @@ def put_user_account():
         return jsonify({"error": errors}), 400
 
     # save user
-    user.username = request.json.get('username', '').strip()
-    user.email = request.json.get('email', '').strip()
+    user.username = data['username'].strip()
+    user.email = data['email'].strip()
 
     # save user profile
     if user_profile:
-        user_profile.first_name = request.json.get('first_name', '').strip()
-        user_profile.last_name = request.json.get('last_name', '').strip()
+        user_profile.first_name = data['first_name'].strip()
+        user_profile.last_name = data['last_name'].strip()
 
     else:
         user_profile = UserProfile(
             user_id=user.id,
-            first_name=request.json.get('first_name', '').strip(),
-            last_name=request.json.get('last_name', '').strip(),
+            first_name=data['first_name'].strip(),
+            last_name=data['last_name'].strip(),
             joined_at=datetime.now(),
             status=UserProfile.STATUS_ENABLED,
             status_changed_at=datetime.now())
@@ -248,8 +251,8 @@ def put_user_account():
 
     db.session.commit()
 
-    # prep data
-    data = {
+    # prep output
+    output = {
         'id': user.id,
         'username': user.username,
         'email': user.email,
@@ -261,7 +264,8 @@ def put_user_account():
     }
 
     # response
-    return jsonify({'user_account': UserAccountSchema().dump(data).data}), 200
+    return jsonify(
+        {'user_account': UserAccountSchema().dump(output).data}), 200
 
 
 @user_account.route('/user_account', methods=['DELETE'])

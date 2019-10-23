@@ -62,10 +62,10 @@ def put_account():
         return jsonify({"error": errors}), 400
 
     # save user account
-    user.username = request.json.get('username', '').strip()
-    user.email = request.json.get('email', '').strip()
-    user.first_name = request.json.get('first_name', '').strip()
-    user.last_name = request.json.get('last_name', '').strip()
+    user.username = data['username'].strip()
+    user.email = data['email'].strip()
+    user.first_name = data['first_name'].strip()
+    user.last_name = data['last_name'].strip()
 
     db.session.commit()
 

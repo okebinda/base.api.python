@@ -124,13 +124,13 @@ def post_administrator():
         return jsonify({"error": errors}), 400
 
     # save admin
-    admin = Administrator(username=request.json.get('username'),
-                          email=request.json.get('email'),
-                          first_name=request.json.get('first_name'),
-                          last_name=request.json.get('last_name'),
-                          password=request.json.get('password'),
-                          joined_at=request.json.get('joined_at'),
-                          status=request.json.get('status'),
+    admin = Administrator(username=data['username'],
+                          email=data['email'],
+                          first_name=data['first_name'],
+                          last_name=data['last_name'],
+                          password=data['password'],
+                          joined_at=data['joined_at'],
+                          status=data['status'],
                           status_changed_at=datetime.now())
 
     if request.json.get('roles'):
@@ -209,14 +209,14 @@ def put_administrator(administrator_id):
         return jsonify({"error": errors}), 400
 
     # save administrator
-    administrator.username = request.json.get('username', None)
-    administrator.email = request.json.get('email', None)
-    administrator.first_name = request.json.get('first_name', None)
-    administrator.last_name = request.json.get('last_name', None)
-    administrator.joined_at = request.json.get('joined_at', None)
+    administrator.username = data['username']
+    administrator.email = data['email']
+    administrator.first_name = data['first_name']
+    administrator.last_name = data['last_name']
+    administrator.joined_at = data['joined_at']
 
-    if request.json.get('password', None):
-        administrator.password = request.json.get('password')
+    if 'password' in data:
+        administrator.password = data['password']
 
     administrator.roles[:] = []
     if (request.json.get('roles') and
@@ -226,8 +226,8 @@ def put_administrator(administrator_id):
             if role is not None:
                 administrator.roles.append(role)
 
-    if administrator.status != request.json.get('status', None):
-        administrator.status = request.json.get('status')
+    if administrator.status != data['status']:
+        administrator.status = data['status']
         administrator.status_changed_at = datetime.now()
 
     db.session.commit()

@@ -94,11 +94,11 @@ def post_user_profiles():
 
     # save user_profile
     user_profile = UserProfile(
-        user_id=request.json.get('user_id'),
-        first_name=request.json.get('first_name', '').strip(),
-        last_name=request.json.get('last_name', '').strip(),
-        joined_at=request.json.get('joined_at'),
-        status=request.json.get('status'),
+        user_id=data['user_id'],
+        first_name=data['first_name'].strip(),
+        last_name=data['last_name'].strip(),
+        joined_at=data['joined_at'],
+        status=data['status'],
         status_changed_at=datetime.now())
     db.session.add(user_profile)
     db.session.commit()
@@ -145,12 +145,12 @@ def put_user_profile(user_profile_id):
         return jsonify({"error": err.messages}), 400
 
     # save user_profile
-    user_profile.user_id = request.json.get('user_id', None)
-    user_profile.first_name = request.json.get('first_name', '').strip()
-    user_profile.last_name = request.json.get('last_name', '').strip()
-    user_profile.joined_at = request.json.get('joined_at', None)
-    if user_profile.status != request.json.get('status', None):
-        user_profile.status = request.json.get('status')
+    user_profile.user_id = data['user_id']
+    user_profile.first_name = data['first_name'].strip()
+    user_profile.last_name = data['last_name'].strip()
+    user_profile.joined_at = data['joined_at']
+    if user_profile.status != data['status']:
+        user_profile.status = data['status']
         user_profile.status_changed_at = datetime.now()
     db.session.commit()
 

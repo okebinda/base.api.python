@@ -101,10 +101,10 @@ def post_terms_of_services():
 
     # save terms of service
     tos = TermsOfService(
-        text=request.json.get('text'),
-        version=request.json.get('version'),
-        publish_date=request.json.get('publish_date'),
-        status=request.json.get('status'),
+        text=data['text'],
+        version=data['version'],
+        publish_date=data['publish_date'],
+        status=data['status'],
         status_changed_at=datetime.now())
     db.session.add(tos)
     db.session.commit()
@@ -153,11 +153,11 @@ def put_terms_of_service(terms_of_service_id):
         return jsonify({"error": err.messages}), 400
 
     # save terms of service
-    tos.text = request.json.get('text', None)
-    tos.version = request.json.get('version', None)
-    tos.publish_date = request.json.get('publish_date', None)
-    if tos.status != request.json.get('status', None):
-        tos.status = request.json.get('status')
+    tos.text = data['text']
+    tos.version = data['version']
+    tos.publish_date = data['publish_date']
+    if tos.status != data['status']:
+        tos.status = data['status']
         tos.status_changed_at = datetime.now()
     db.session.commit()
 

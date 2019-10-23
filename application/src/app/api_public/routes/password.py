@@ -63,7 +63,7 @@ def put_password():
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
 
-    if len(errors):
+    if errors:
         return jsonify({"error": errors}), 400
 
     # save user
@@ -99,7 +99,7 @@ def post_password_request_reset_code():
                 errors['email'] = []
             errors['email'].append("Email address not found.")
 
-    if len(errors):
+    if errors:
         return jsonify({"error": errors}), 400
 
     # generate random seed
@@ -202,7 +202,7 @@ def put_password_reset():
                 errors['password2'] = []
             errors['password2'].append("New passwords must match.")
 
-    if len(errors):
+    if errors:
         return jsonify({"error": errors}), 400
 
     # save password reset record

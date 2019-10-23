@@ -89,9 +89,9 @@ def post_app_keys():
         return jsonify({"error": err.messages}), 400
 
     # save app key
-    app_key = AppKey(application=request.json.get('application'),
-                     key=request.json.get('key'),
-                     status=request.json.get('status'),
+    app_key = AppKey(application=data['application'],
+                     key=data['key'],
+                     status=data['status'],
                      status_changed_at=datetime.now())
     db.session.add(app_key)
     db.session.commit()
@@ -136,10 +136,10 @@ def put_app_key(app_key_id):
         return jsonify({"error": err.messages}), 400
 
     # save app key
-    app_key.application = request.json.get('application', None)
-    app_key.key = request.json.get('key', None)
-    if app_key.status != request.json.get('status', None):
-        app_key.status = request.json.get('status')
+    app_key.application = data['application']
+    app_key.key = data['key']
+    if app_key.status != data['status']:
+        app_key.status = data['status']
         app_key.status_changed_at = datetime.now()
     db.session.commit()
 
