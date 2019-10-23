@@ -49,13 +49,13 @@ def get_app_keys(page=1, limit=10):
         order_by = AppKey.id.asc()
 
     # retrieve and return results
-    app_keys = app_key_query.order_by(order_by).limit(limit).offset(
+    results = app_key_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if app_keys.count():
+    if results.count():
 
         # prep initial output
         output = {
-            'app_keys': AppKeySchema(many=True).dump(app_keys).data,
+            'app_keys': AppKeySchema(many=True).dump(results).data,
             'page': page,
             'limit': limit,
             'total': app_key_query.count()

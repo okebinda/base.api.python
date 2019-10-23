@@ -52,14 +52,14 @@ def get_notifications(page=1, limit=10):
         order_by = Notification.id.asc()
 
     # retrieve and return results
-    notifications = notification_query.order_by(order_by).limit(limit).offset(
+    results = notification_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if notifications.count():
+    if results.count():
 
         # prep initial output
         output = {
             'notifications': NotificationSchema(many=True).dump(
-                notifications).data,
+                results).data,
             'page': page,
             'limit': limit,
             'total': notification_query.count()

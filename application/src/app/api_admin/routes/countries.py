@@ -50,13 +50,13 @@ def get_countries(page=1, limit=10):
         order_by = Country.id.asc()
 
     # retrieve and return results
-    countries = country_query.order_by(order_by).limit(limit).offset(
+    results = country_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if countries.count():
+    if results.count():
 
         # prep initial output
         output = {
-            'countries': CountrySchema(many=True).dump(countries).data,
+            'countries': CountrySchema(many=True).dump(results).data,
             'page': page,
             'limit': limit,
             'total': country_query.count()

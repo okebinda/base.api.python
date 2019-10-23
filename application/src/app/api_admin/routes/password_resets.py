@@ -49,14 +49,14 @@ def get_password_resets(page=1, limit=10):
         order_by = PasswordReset.id.asc()
 
     # retrieve and return results
-    password_resets = password_reset_query.order_by(order_by).limit(
+    results = password_reset_query.order_by(order_by).limit(
         limit).offset((page - 1) * limit)
-    if password_resets.count():
+    if results.count():
 
         # prep initial output
         output = {
             'password_resets': PasswordResetSchema(many=True).dump(
-                password_resets).data,
+                results).data,
             'page': page,
             'limit': limit,
             'total': password_reset_query.count()

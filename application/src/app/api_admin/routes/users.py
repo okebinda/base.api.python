@@ -53,13 +53,13 @@ def get_users(page=1, limit=10):
         order_by = User.id.asc()
 
     # retrieve and return results
-    users = user_query.order_by(order_by).limit(limit).offset(
+    results = user_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if users.count():
+    if results.count():
 
         # prep initial output
         output = {
-            'users': UserSchema(many=True).dump(users).data,
+            'users': UserSchema(many=True).dump(results).data,
             'page': page,
             'limit': limit,
             'total': user_query.count()

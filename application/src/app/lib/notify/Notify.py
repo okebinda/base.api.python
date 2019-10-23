@@ -57,7 +57,7 @@ class Notify:
             self.db.session.commit()
 
         # return True if at least one notification sent
-        return 1 <= accepted
+        return accepted >= 1
 
     def _email(self, email, template=None, **kwargs):
 
@@ -71,7 +71,7 @@ class Notify:
 
         # send if in prod mode or forced
         if (os.environ.get('SPARKPOST_API_KEY') and
-                ('production' == self.env or self.force_email)):
+                (self.env == 'production' or self.force_email)):
 
             # send email via SparkPost
             sp = SparkPost()

@@ -52,14 +52,14 @@ def get_user_profiles(page=1, limit=10):
         order_by = UserProfile.id.asc()
 
     # retrieve and return results
-    user_profiles = user_profile_query.order_by(order_by).limit(limit).offset(
+    results = user_profile_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if user_profiles.count():
+    if results.count():
 
         # prep initial output
         output = {
             'user_profiles': UserProfileSchema(many=True).dump(
-                user_profiles).data,
+                results).data,
             'page': page,
             'limit': limit,
             'total': user_profile_query.count()

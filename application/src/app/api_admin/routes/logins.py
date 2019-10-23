@@ -47,13 +47,13 @@ def get_logins(page=1, limit=25):
         order_by = Login.id.asc()
 
     # retrieve and return results
-    logins = login_query.order_by(order_by).limit(limit).offset(
+    results = login_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if logins.count():
+    if results.count():
 
         # prep initial output
         output = {
-            'logins': LoginSchema(many=True).dump(logins).data,
+            'logins': LoginSchema(many=True).dump(results).data,
             'page': page,
             'limit': limit,
             'total': login_query.count()

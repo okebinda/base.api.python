@@ -47,13 +47,13 @@ def get_roles(page=1, limit=10, role_type=None):
         order_by = Role.id.asc()
 
     # retrieve and return results
-    roles = role_query.order_by(order_by).limit(limit).offset(
+    results = role_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if roles.count():
+    if results.count():
 
         # prep initial output
         output = {
-            'roles': RoleSchema(many=True).dump(roles).data,
+            'roles': RoleSchema(many=True).dump(results).data,
             'page': page,
             'limit': limit,
             'total': role_query.count()

@@ -50,13 +50,13 @@ def get_regions(page=1, limit=10):
         order_by = Region.id.asc()
 
     # retrieve and return results
-    regions = region_query.order_by(order_by).limit(limit).offset(
+    results = region_query.order_by(order_by).limit(limit).offset(
         (page - 1) * limit)
-    if regions.count():
+    if results.count():
 
         # prep initial output
         output = {
-            'regions': RegionSchema(many=True).dump(regions).data,
+            'regions': RegionSchema(many=True).dump(results).data,
             'page': page,
             'limit': limit,
             'total': region_query.count()

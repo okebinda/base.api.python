@@ -57,14 +57,14 @@ def get_administrators(page=1, limit=10):
         order_by = Administrator.id.asc()
 
     # retrieve and return results
-    administrators = administrator_query.order_by(order_by).limit(
+    results = administrator_query.order_by(order_by).limit(
         limit).offset((page - 1) * limit)
-    if administrators.count():
+    if results.count():
 
         # prep initial output
         output = {
             'administrators': AdministratorSchema(many=True).dump(
-                administrators).data,
+                results).data,
             'page': page,
             'limit': limit,
             'total': administrator_query.count()

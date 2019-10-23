@@ -53,14 +53,14 @@ def get_terms_of_services(page=1, limit=10):
         order_by = TermsOfService.id.asc()
 
     # retrieve and return results
-    terms_of_services = terms_of_service_query.order_by(order_by).limit(
+    results = terms_of_service_query.order_by(order_by).limit(
         limit).offset((page - 1) * limit)
-    if terms_of_services.count():
+    if results.count():
 
         # prep initial output
         output = {
             'terms_of_services': TermsOfServiceSchema(many=True).dump(
-                terms_of_services).data,
+                results).data,
             'page': page,
             'limit': limit,
             'total': terms_of_service_query.count()
@@ -100,18 +100,18 @@ def post_terms_of_services():
         return jsonify({"error": err.messages}), 400
 
     # save terms of service
-    terms_of_service = TermsOfService(
+    tos = TermsOfService(
         text=request.json.get('text'),
         version=request.json.get('version'),
         publish_date=request.json.get('publish_date'),
         status=request.json.get('status'),
         status_changed_at=datetime.now())
-    db.session.add(terms_of_service)
+    db.session.add(tos)
     db.session.commit()
 
     # response
     return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
-        terms_of_service).data}), 201
+        tos).data}), 201
 
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
@@ -124,13 +124,13 @@ def get_terms_of_service(terms_of_service_id=None):
 
     # get terms of service
     if terms_of_service_id is not None:
-        terms_of_service = TermsOfService.query.get(terms_of_service_id)
-    if terms_of_service is None:
+        tos = TermsOfService.query.get(terms_of_service_id)
+    if tos is None:
         abort(404)
 
     # response
     return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
-        terms_of_service).data}), 200
+        tos).data}), 200
 
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
@@ -142,8 +142,8 @@ def get_terms_of_service(terms_of_service_id=None):
 def put_terms_of_service(terms_of_service_id):
 
     # get terms of service
-    terms_of_service = TermsOfService.query.get(terms_of_service_id)
-    if terms_of_service is None:
+    tos = TermsOfService.query.get(terms_of_service_id)
+    if tos is None:
         abort(404)
 
     # validate data
@@ -153,17 +153,17 @@ def put_terms_of_service(terms_of_service_id):
         return jsonify({"error": err.messages}), 400
 
     # save terms of service
-    terms_of_service.text = request.json.get('text', None)
-    terms_of_service.version = request.json.get('version', None)
-    terms_of_service.publish_date = request.json.get('publish_date', None)
-    if terms_of_service.status != request.json.get('status', None):
-        terms_of_service.status = request.json.get('status')
-        terms_of_service.status_changed_at = datetime.now()
+    tos.text = request.json.get('text', None)
+    tos.version = request.json.get('version', None)
+    tos.publish_date = request.json.get('publish_date', None)
+    if tos.status != request.json.get('status', None):
+        tos.status = request.json.get('status')
+        tos.status_changed_at = datetime.now()
     db.session.commit()
 
     # response
     return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
-        terms_of_service).data}), 200
+        tos).data}), 200
 
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
@@ -175,12 +175,12 @@ def put_terms_of_service(terms_of_service_id):
 def delete_terms_of_service(terms_of_service_id):
 
     # get terms of service
-    terms_of_service = TermsOfService.query.get(terms_of_service_id)
-    if terms_of_service is None:
+    tos = TermsOfService.query.get(terms_of_service_id)
+    if tos is None:
         abort(404)
 
     # delete terms of service
-    db.session.delete(terms_of_service)
+    db.session.delete(tos)
     db.session.commit()
 
     # response
