@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate Login model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class LoginSchema(ma.Schema):
+    """Schema for Login model"""
 
     class Meta:
+        """LoginSchema meta data"""
+
         model = Login
 
         # fields to expose

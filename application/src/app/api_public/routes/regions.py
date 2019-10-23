@@ -1,3 +1,5 @@
+"""Regions controller"""
+
 from flask import Blueprint, jsonify, request, url_for
 
 from app.models.Region import Region
@@ -14,6 +16,15 @@ regions = Blueprint('regions', __name__)
     methods=['GET'])
 @require_appkey
 def get_regions(country_code, page=1, limit=100):
+    """Retrieves a list of regions (states)
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of regions; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     region_query = Region.query.filter(

@@ -1,3 +1,5 @@
+"""Users controller"""
+
 from datetime import datetime
 
 from flask import Blueprint, jsonify, abort, request, url_for
@@ -22,6 +24,15 @@ users = Blueprint('users', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_users(page=1, limit=10):
+    """Retrieves a list of users
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of users; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     user_query = User.query
@@ -86,6 +97,11 @@ def get_users(page=1, limit=10):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def post_user():
+    """Creates a new user
+
+    :returns: JSON string of the new user's data; status code
+    :rtype: (str, int)
+    """
 
     # init vars
     errors = {}
@@ -142,6 +158,15 @@ def post_user():
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_user(user_id=None, username=None):
+    """Retrieves an existing user
+
+    :param user_id: ID of user
+    :type user_id: int
+    :param username: Username of user
+    :type username: str
+    :returns: JSON string of the user's data; status code
+    :rtype: (str, int)
+    """
 
     # get user
     if user_id is not None:
@@ -164,6 +189,13 @@ def get_user(user_id=None, username=None):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def put_user(user_id):
+    """Updates an existing user
+
+    :param user_id: ID of user
+    :type user_id: int
+    :returns: JSON string of the user's data; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = User.query.get(user_id)
@@ -234,6 +266,13 @@ def put_user(user_id):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def delete_user(user_id):
+    """Deletes an existing user
+
+    :param user_id: ID of user
+    :type user_id: int
+    :returns: Empty string; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = User.query.get(user_id)

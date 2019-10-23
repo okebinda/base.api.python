@@ -1,3 +1,5 @@
+"""Application Keys controller"""
+
 from datetime import datetime
 
 from flask import Blueprint, jsonify, abort, request, url_for
@@ -21,6 +23,15 @@ app_keys = Blueprint('app_keys', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_app_keys(page=1, limit=10):
+    """Retrieves a list of application keys
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of application keys; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     app_key_query = AppKey.query
@@ -81,6 +92,11 @@ def get_app_keys(page=1, limit=10):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def post_app_keys():
+    """Creates a new application key
+
+    :returns: JSON string of the new application key's data; status code
+    :rtype: (str, int)
+    """
 
     # validate data
     try:
@@ -106,6 +122,13 @@ def post_app_keys():
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_app_key(app_key_id=None):
+    """Retrieves an existing application key
+
+    :param app_key_id: ID of application key
+    :type app_key_id: int
+    :returns: JSON string of the application key's data; status code
+    :rtype: (str, int)
+    """
 
     # get app key
     if app_key_id is not None:
@@ -123,6 +146,13 @@ def get_app_key(app_key_id=None):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def put_app_key(app_key_id):
+    """Updates an existing application key
+
+    :param app_key_id: ID of application key
+    :type app_key_id: int
+    :returns: JSON string of the application key's data; status code
+    :rtype: (str, int)
+    """
 
     # get app key
     app_key = AppKey.query.get(app_key_id)
@@ -153,6 +183,13 @@ def put_app_key(app_key_id):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def delete_app_key(app_key_id):
+    """Deletes an existing application key
+
+    :param app_key_id: ID of application key
+    :type app_key_id: int
+    :returns: Empty string; status code
+    :rtype: (str, int)
+    """
 
     # get app key
     app_key = AppKey.query.get(app_key_id)

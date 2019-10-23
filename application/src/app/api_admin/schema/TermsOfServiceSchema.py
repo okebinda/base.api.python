@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate TermsOfService model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class TermsOfServiceSchema(ma.Schema):
+    """Schema for TermsOfService model"""
 
     class Meta:
+        """TermsOfServiceSchema meta data"""
+
         model = TermsOfService
 
         # fields to expose

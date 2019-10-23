@@ -1,3 +1,5 @@
+"""Terms of Services controller"""
+
 from datetime import datetime
 
 from flask import Blueprint, jsonify, abort, request, url_for
@@ -22,6 +24,15 @@ terms_of_service = Blueprint('terms_of_service', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_terms_of_services(page=1, limit=10):
+    """Retrieves a list of terms of service
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of terms of service; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     terms_of_service_query = TermsOfService.query
@@ -92,6 +103,11 @@ def get_terms_of_services(page=1, limit=10):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def post_terms_of_services():
+    """Creates a new terms of service
+
+    :returns: JSON string of the new terms of service's data; status code
+    :rtype: (str, int)
+    """
 
     # validate data
     try:
@@ -121,6 +137,13 @@ def post_terms_of_services():
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_terms_of_service(terms_of_service_id=None):
+    """Retrieves an existing terms of service
+
+    :param terms_of_service_id: ID of terms of service
+    :type terms_of_service_id: int
+    :returns: JSON string of the terms of service's data; status code
+    :rtype: (str, int)
+    """
 
     # get terms of service
     if terms_of_service_id is not None:
@@ -140,6 +163,13 @@ def get_terms_of_service(terms_of_service_id=None):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def put_terms_of_service(terms_of_service_id):
+    """Updates an existing terms of service
+
+    :param terms_of_service_id: ID of terms of service
+    :type terms_of_service_id: int
+    :returns: JSON string of the terms of service's data; status code
+    :rtype: (str, int)
+    """
 
     # get terms of service
     tos = TermsOfService.query.get(terms_of_service_id)
@@ -173,6 +203,13 @@ def put_terms_of_service(terms_of_service_id):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def delete_terms_of_service(terms_of_service_id):
+    """Deletes an existing terms of service
+
+    :param terms_of_service_id: ID of terms of service
+    :type terms_of_service_id: int
+    :returns: Empty string; status code
+    :rtype: (str, int)
+    """
 
     # get terms of service
     tos = TermsOfService.query.get(terms_of_service_id)

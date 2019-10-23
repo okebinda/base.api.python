@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate UserAccount model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class UserAccountSchema(ma.Schema):
+    """Schema for UserAccount model"""
 
     class Meta:
+        """UserAccountSchema meta data"""
+
         model = Administrator
 
         # fields to expose

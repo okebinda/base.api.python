@@ -1,3 +1,5 @@
+"""Authentication Token controller"""
+
 from flask import Blueprint, current_app, jsonify
 from flask import g
 
@@ -11,6 +13,12 @@ auth_token = Blueprint('auth_token', __name__)
 @auth.login_required
 @admin_permission.require(http_exception=403)
 def get_auth_token():
+    """Generates an authentication token
+
+    :returns: JSON string of a token and some other information; status code
+    :rtype: (str, int)
+    """
+
     token = g.user.generate_auth_token(
         current_app.config['AUTH_TOKEN_EXPIRATION'])
     return jsonify(
@@ -23,6 +31,11 @@ def get_auth_token():
 @auth.login_required
 @admin_permission.require(http_exception=403)
 def get_auth_token_check():
+    """Checks if an authentication token is still valid
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
 
     # response
     return jsonify({'token_check': True}), 200

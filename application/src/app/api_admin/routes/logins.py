@@ -1,3 +1,5 @@
+"""Logins controller"""
+
 from flask import Blueprint, jsonify, request, url_for
 
 from app.models.Login import Login
@@ -17,6 +19,15 @@ logins = Blueprint('logins', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_logins(page=1, limit=25):
+    """Retrieves a list of logins
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of logins; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     login_query = Login.query

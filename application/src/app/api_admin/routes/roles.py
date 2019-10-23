@@ -1,3 +1,5 @@
+"""Roles controller"""
+
 from flask import Blueprint, jsonify, abort, request, url_for
 from marshmallow import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
@@ -24,6 +26,17 @@ roles = Blueprint('roles', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_roles(page=1, limit=10, role_type=None):
+    """Retrieves a list of roles
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :param role_type: Type of role to filter by: `admin` | `user`
+    :type role_type: str
+    :returns: JSON string of list of roles; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     role_query = Role.query
@@ -80,6 +93,11 @@ def get_roles(page=1, limit=10, role_type=None):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def post_roles():
+    """Creates a new role
+
+    :returns: JSON string of the new role's data; status code
+    :rtype: (str, int)
+    """
 
     # validate data
     try:
@@ -114,6 +132,15 @@ def post_roles():
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_role(role_id=None, name=None):
+    """Retrieves an existing role
+
+    :param role_id: ID of role
+    :type role_id: int
+    :param name: Name of role
+    :type name: str
+    :returns: JSON string of the role's data; status code
+    :rtype: (str, int)
+    """
 
     # get role
     if role_id is not None:
@@ -136,6 +163,13 @@ def get_role(role_id=None, name=None):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def put_role(role_id):
+    """Updates an existing role
+
+    :param role_id: ID of role
+    :type role_id: int
+    :returns: JSON string of the role's data; status code
+    :rtype: (str, int)
+    """
 
     # get role
     role = Role.query.get(role_id)
@@ -172,6 +206,13 @@ def put_role(role_id):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def delete_role(role_id):
+    """Deletes an existing role
+
+    :param role_id: ID of role
+    :type role_id: int
+    :returns: Empty string; status code
+    :rtype: (str, int)
+    """
 
     # get role
     role = Role.query.get(role_id)

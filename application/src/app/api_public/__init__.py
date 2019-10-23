@@ -1,3 +1,5 @@
+"""Public application front controller"""
+
 from flask import Flask, jsonify, make_response
 from flask_principal import Principal, identity_loaded
 from flask_cors import CORS
@@ -8,6 +10,12 @@ from app.api_public.authentication import auth, Authentication
 
 
 def create_app(config):
+    """Initializes the public application Flask object
+
+    :param config: Configuration ADT
+    :type config: Config
+    :returns: Flask app object
+    """
     # pylint: disable=unused-variable,unused-argument,too-many-locals
 
     # init app
@@ -45,8 +53,8 @@ def create_app(config):
     @app.errorhandler(400)
     def error_400(error):
         return make_response(jsonify(
-            {'error': error.description if
-                      error.description else 'Bad data'}), 400)
+            {'error': error.description if error.description
+                      else 'Bad data'}), 400)  # noqa
 
     @app.errorhandler(401)
     def error_401(error):
@@ -55,8 +63,8 @@ def create_app(config):
     @app.errorhandler(403)
     def error_403(error):
         return make_response(jsonify(
-            {'error': error.description if
-                      error.description else "Permission denied"}), 403)
+            {'error': error.description if error.description
+                      else "Permission denied"}), 403)  # noqa
 
     @app.errorhandler(404)
     def error_404(error):

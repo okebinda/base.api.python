@@ -1,3 +1,5 @@
+"""Password controller"""
+
 import re
 
 from flask import Blueprint, jsonify, request
@@ -15,6 +17,11 @@ password = Blueprint('password', __name__)
 @auth.login_required
 @admin_permission.require(http_exception=403)
 def put_password():
+    """Updates the current user's password
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = g.user

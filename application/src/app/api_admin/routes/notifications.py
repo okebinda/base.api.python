@@ -1,3 +1,5 @@
+"""Notifications controller"""
+
 from flask import Blueprint, jsonify, request, url_for
 
 from app.models.Notification import Notification
@@ -17,6 +19,15 @@ notifications = Blueprint('notifications', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_notifications(page=1, limit=10):
+    """Retrieves a list of notifications
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of notifications; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     notification_query = Notification.query

@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate Administrator model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,6 +8,7 @@ from app.lib.datetime.Formats import Formats
 
 
 class AdministratorSchema(ma.Schema):
+    """Schema for Administrator model"""
 
     # Rules:
     #  1) 3 out of 4:
@@ -23,6 +26,8 @@ class AdministratorSchema(ma.Schema):
     ])
 
     class Meta:
+        """AdministratorSchema meta data"""
+
         model = Administrator
 
         # fields to expose

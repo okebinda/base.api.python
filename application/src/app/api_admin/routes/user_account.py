@@ -1,3 +1,5 @@
+"""User Account controller"""
+
 from flask import Blueprint, jsonify, request, g
 from marshmallow import ValidationError
 
@@ -16,6 +18,11 @@ user_account = Blueprint('user_account', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_account():
+    """Retrieves user's account information
+
+    :returns: JSON string of the user's account information; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = g.user
@@ -30,6 +37,11 @@ def get_account():
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def put_account():
+    """Updates the current user's account information
+
+    :returns: JSON string of the user's account information; status code
+    :rtype: (str, int)
+    """
 
     # init vars
     user = g.user

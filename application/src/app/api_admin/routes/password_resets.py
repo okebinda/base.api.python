@@ -1,3 +1,5 @@
+"""Password Resets controller"""
+
 from flask import Blueprint, jsonify, request, url_for
 
 from app.models.PasswordReset import PasswordReset
@@ -17,6 +19,15 @@ password_resets = Blueprint('password_resets', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_password_resets(page=1, limit=10):
+    """Retrieves a list of password resets
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of password resets; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     password_reset_query = PasswordReset.query

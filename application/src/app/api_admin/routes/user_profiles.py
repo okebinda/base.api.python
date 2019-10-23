@@ -1,3 +1,5 @@
+"""User Profiles controller"""
+
 from datetime import datetime
 
 from flask import Blueprint, jsonify, abort, request, url_for
@@ -21,6 +23,15 @@ user_profiles = Blueprint('user_profiles', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_user_profiles(page=1, limit=10):
+    """Retrieves a list of user profiles
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of user profiles; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     user_profile_query = UserProfile.query
@@ -85,6 +96,11 @@ def get_user_profiles(page=1, limit=10):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def post_user_profiles():
+    """Creates a new user profile
+
+    :returns: JSON string of the new user profile's data; status code
+    :rtype: (str, int)
+    """
 
     # validate data
     try:
@@ -114,6 +130,13 @@ def post_user_profiles():
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_user_profile(user_profile_id=None):
+    """Retrieves an existing user profile
+
+    :param user_profile_id: ID of user profile
+    :type user_profile_id: int
+    :returns: JSON string of the user profile's data; status code
+    :rtype: (str, int)
+    """
 
     # get user_profile
     if user_profile_id is not None:
@@ -132,6 +155,13 @@ def get_user_profile(user_profile_id=None):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def put_user_profile(user_profile_id):
+    """Updates an existing user profile
+
+    :param user_profile_id: ID of user profile
+    :type user_profile_id: int
+    :returns: JSON string of the user profile's data; status code
+    :rtype: (str, int)
+    """
 
     # get user_profile
     user_profile = UserProfile.query.get(user_profile_id)
@@ -165,6 +195,13 @@ def put_user_profile(user_profile_id):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def delete_user_profile(user_profile_id):
+    """Deletes an existing user profile
+
+    :param user_profile_id: ID of user profile
+    :type user_profile_id: int
+    :returns: Empty string; status code
+    :rtype: (str, int)
+    """
 
     # get user_profile
     user_profile = UserProfile.query.get(user_profile_id)

@@ -1,3 +1,5 @@
+"""Terms of Service controller"""
+
 from flask import Blueprint, jsonify
 
 from app.models.TermsOfService import TermsOfService
@@ -10,6 +12,11 @@ terms_of_service = Blueprint('terms_of_service', __name__)
 @terms_of_service.route("/terms_of_service/current", methods=['GET'])
 @require_appkey
 def get_terms_of_service():
+    """Retrieves the most recent Terms of Service
+
+    :returns: JSON string of the Terms of Service; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     terms_of_service_query = TermsOfService.query.filter(

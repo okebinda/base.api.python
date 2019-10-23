@@ -1,3 +1,5 @@
+"""Password controller"""
+
 import re
 from datetime import datetime, timedelta
 import time
@@ -23,6 +25,11 @@ password = Blueprint('password', __name__)
 @auth.login_required
 @user_permission.require(http_exception=403)
 def put_password():
+    """Updates the current user's password
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = g.user
@@ -77,6 +84,11 @@ def put_password():
 @password.route('/password/request-reset-code', methods=['POST'])
 @require_appkey
 def post_password_request_reset_code():
+    """Creates a password reset code for the current user, send via email
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
 
     # initialize user
     user = None
@@ -139,6 +151,11 @@ def post_password_request_reset_code():
 @password.route('/password/reset', methods=['PUT'])
 @require_appkey
 def put_password_reset():
+    """Updates the current user's password using a reset code
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
 
     # initialize user
     user = None

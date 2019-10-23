@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate Notification model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class NotificationSchema(ma.Schema):
+    """Schema for Notification model"""
 
     class Meta:
+        """NotificationSchema meta data"""
+
         model = Notification
 
         # fields to expose

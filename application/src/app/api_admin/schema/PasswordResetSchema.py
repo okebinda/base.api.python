@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate PasswordReset model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class PasswordResetSchema(ma.Schema):
+    """Schema for PasswordReset model"""
 
     class Meta:
+        """PasswordResetSchema meta data"""
+
         model = PasswordReset
 
         # fields to expose

@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate Role model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class RoleSchema(ma.Schema):
+    """Schema for Role model"""
 
     class Meta:
+        """RoleSchema meta data"""
+
         model = Role
 
         # fields to expose

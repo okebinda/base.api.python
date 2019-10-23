@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate User model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -7,6 +9,7 @@ from .UserTermsOfServiceSchema import UserTermsOfServiceSchema
 
 
 class UserSchema(ma.Schema):
+    """Schema for User model"""
 
     # Rules:
     #  1) 3 out of 4:
@@ -24,6 +27,8 @@ class UserSchema(ma.Schema):
     ])
 
     class Meta:
+        """UserSchema meta data"""
+
         model = User
 
         # fields to expose

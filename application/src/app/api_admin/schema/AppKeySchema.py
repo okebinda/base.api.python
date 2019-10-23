@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate AppKey model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class AppKeySchema(ma.Schema):
+    """Schema for AppKey model"""
 
     class Meta:
+        """AppKeySchema meta data"""
+
         model = AppKey
 
         # fields to expose

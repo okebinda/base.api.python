@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate UserProfile model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class UserProfileSchema(ma.Schema):
+    """Schema for UserProfile model"""
 
     class Meta:
+        """UserProfileSchema meta data"""
+
         model = UserProfile
 
         # fields to expose

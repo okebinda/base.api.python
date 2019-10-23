@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate UserTermsOfService model"""
+
 from marshmallow import fields
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class UserTermsOfServiceSchema(ma.Schema):
+    """Schema for UserTermsOfService model"""
 
     class Meta:
+        """UserTermsOfServiceSchema meta data"""
+
         model = UserTermsOfService
 
         # fields to expose

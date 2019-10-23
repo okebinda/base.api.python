@@ -1,3 +1,5 @@
+"""A collection of helper functions and a class for API security"""
+
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -21,10 +23,20 @@ admin_permission = Permission(RoleNeed('SUPER_ADMIN'))
 
 
 def require_appkey(view_function):
+    """A Decorator function to check a request endpoint for a valid
+    application key
+
+    :param view_function: The function to decorate
+    :type view_function: function
+    :return: The internal decorator function
+    :rtype: function
+    """
     # pylint: disable=inconsistent-return-statements
 
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
+        """Internal decorator function"""
+
         if request.args.get('app_key'):
             try:
                 AppKey.query.filter(
@@ -39,8 +51,19 @@ def require_appkey(view_function):
 
 
 def check_password_expiration(view_function):
+    """A Decorator function to check if the current user's password has
+    expired
+
+    :param view_function: The function to decorate
+    :type view_function: function
+    :return: The internal decorator function
+    :rtype: function
+    """
+
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
+        """Internal decorator function"""
+
         if hasattr(g, 'user'):
             password_valid_window = g.user.password_changed_at + timedelta(
                 days=g.user.roles[0].password_reset_days)
@@ -52,9 +75,21 @@ def check_password_expiration(view_function):
 
 
 class Authentication:
+    """Helper class for administrator authentication"""
 
     @staticmethod
     def verify_password(username_or_token, password):
+        """Verifies that the requested user's password matches what is on file
+        or that the access token is valid, and that the user's account is not
+        locked
+
+        :param username_or_token: The user's username or access token
+        :type username_or_token: str
+        :param password: The user's password
+        :type password: str
+        :return: True on success or abort on failure
+        :rtype: bool
+        """
 
         # first try to authenticate by token
         user = Administrator.verify_auth_token(username_or_token)
@@ -108,6 +143,11 @@ class Authentication:
 
     @staticmethod
     def on_identity_loaded(sender, identity):
+        """Initialize user with roles
+
+        :param sender:
+        :param identity:
+        """
         # pylint: disable=unused-argument
 
         # Set the identity user object
@@ -126,6 +166,14 @@ class Authentication:
 
     @staticmethod
     def is_account_locked(username_or_token):
+        """Checks if user's account has been locked
+
+        :param username_or_token: The user's username or access token
+        :type username_or_token: str
+        :return: True if locked or False if available
+        :rtype: bool
+        """
+
         admin_role = Role.query.filter(Role.name == 'SUPER_ADMIN').first()
         if admin_role.login_lockout_policy:
             login_query = Login.query

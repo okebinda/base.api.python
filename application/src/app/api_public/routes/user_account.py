@@ -1,3 +1,5 @@
+"""User Account controller"""
+
 from datetime import datetime
 
 from flask import Blueprint, jsonify, request, g
@@ -13,13 +15,17 @@ from app.api_public.authentication import auth, user_permission,\
     require_appkey, check_password_expiration
 from app.api_public.schema.UserAccountSchema import UserAccountSchema
 
-
 user_account = Blueprint('user_account', __name__)
 
 
 @user_account.route('/user_account/step1', methods=['POST'])
 @require_appkey
 def post_user_account_step1():
+    """User registration step 1
+
+    :returns: JSON string of the user's account information; status code
+    :rtype: (str, int)
+    """
 
     # init vars
     errors = {}
@@ -113,6 +119,11 @@ def post_user_account_step1():
 @user_permission.require(http_exception=403)
 @check_password_expiration
 def post_user_account_step2():
+    """User registration step 2
+
+    :returns: JSON string of the user's account information; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = g.user
@@ -168,6 +179,11 @@ def post_user_account_step2():
 @user_permission.require(http_exception=403)
 @check_password_expiration
 def get_user_account():
+    """Retrieves user's account information
+
+    :returns: JSON string of the user's account information; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = g.user
@@ -195,6 +211,11 @@ def get_user_account():
 @user_permission.require(http_exception=403)
 @check_password_expiration
 def put_user_account():
+    """Updates the current user's account information
+
+    :returns: JSON string of the user's account information; status code
+    :rtype: (str, int)
+    """
 
     # init vars
     user = g.user
@@ -274,6 +295,11 @@ def put_user_account():
 @user_permission.require(http_exception=403)
 @check_password_expiration
 def delete_user_account():
+    """Set's the current user's account to `delete` status
+
+    :returns: JSON string of the user's account information; status code
+    :rtype: (str, int)
+    """
 
     # get user
     user = g.user

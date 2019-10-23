@@ -1,3 +1,3 @@
 [MESSAGES CONTROL]
 
-disable=no-else-return,no-member,too-few-public-methods,invalid-name,duplicate-code,missing-docstring,too-many-branches
+disable=no-else-return,no-member,too-few-public-methods,invalid-name,duplicate-code,too-many-branches

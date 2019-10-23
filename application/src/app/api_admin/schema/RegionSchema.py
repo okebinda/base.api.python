@@ -1,3 +1,5 @@
+"""Schema to serialize/deserialize/validate Region model"""
+
 from marshmallow import fields, validate
 
 from app import ma
@@ -6,8 +8,11 @@ from app.lib.datetime.Formats import Formats
 
 
 class RegionSchema(ma.Schema):
+    """Schema for Region model"""
 
     class Meta:
+        """RegionSchema meta data"""
+
         model = Region
 
         # fields to expose

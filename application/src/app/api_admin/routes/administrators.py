@@ -1,3 +1,5 @@
+"""Administrators controller"""
+
 from datetime import datetime
 
 from flask import Blueprint, jsonify, abort, request, url_for
@@ -22,6 +24,15 @@ administrators = Blueprint('administrators', __name__)
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_administrators(page=1, limit=10):
+    """Retrieves a list of administrators
+
+    :param page: Page number
+    :type page: int
+    :param limit: Maximum number of results to show
+    :type limit: int
+    :returns: JSON string of list of administrators; status code
+    :rtype: (str, int)
+    """
 
     # initialize query
     administrator_query = Administrator.query
@@ -96,6 +107,11 @@ def get_administrators(page=1, limit=10):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def post_administrator():
+    """Creates a new administrator
+
+    :returns: JSON string of the new administrator's data; status code
+    :rtype: (str, int)
+    """
 
     # init vars
     errors = {}
@@ -152,6 +168,13 @@ def post_administrator():
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def get_administrator(administrator_id=None):
+    """Retrieves an existing administrator
+
+    :param administrator_id: ID of administrator
+    :type administrator_id: int
+    :returns: JSON string of the administrator's data; status code
+    :rtype: (str, int)
+    """
 
     # get administrator
     if administrator_id is not None:
@@ -170,6 +193,13 @@ def get_administrator(administrator_id=None):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def put_administrator(administrator_id):
+    """Updates an existing administrator
+
+    :param administrator_id: ID of administrator
+    :type administrator_id: int
+    :returns: JSON string of the administrator's data; status code
+    :rtype: (str, int)
+    """
 
     # get administrator
     administrator = Administrator.query.get(administrator_id)
@@ -244,6 +274,13 @@ def put_administrator(administrator_id):
 @admin_permission.require(http_exception=403)
 @check_password_expiration
 def delete_administrator(administrator_id):
+    """Deletes an existing administrator
+
+    :param administrator_id: ID of administrator
+    :type administrator_id: int
+    :returns: Empty string; status code
+    :rtype: (str, int)
+    """
 
     # get administrator
     administrator = Administrator.query.get(administrator_id)
