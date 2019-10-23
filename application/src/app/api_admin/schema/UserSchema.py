@@ -2,8 +2,8 @@ from marshmallow import fields, validate
 
 from app import ma
 from app.models.User import User
-from .UserTermsOfServiceSchema import UserTermsOfServiceSchema
 from app.lib.datetime.Formats import Formats
+from .UserTermsOfServiceSchema import UserTermsOfServiceSchema
 
 
 class UserSchema(ma.Schema):

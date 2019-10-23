@@ -12,8 +12,8 @@ class Config:
 
     # authentication properties
     AUTH_SECRET_KEY = os.environ.get('AUTH_SECRET_KEY')
-    AUTH_TOKEN_EXPIRATION = int(os.getenv('AUTH_TOKEN_EXPIRATION', 1800))
-    AUTH_HASH_ROUNDS = int(os.getenv('AUTH_HASH_ROUNDS', 15))
+    AUTH_TOKEN_EXPIRATION = int(os.getenv('AUTH_TOKEN_EXPIRATION', '1800'))
+    AUTH_HASH_ROUNDS = int(os.getenv('AUTH_HASH_ROUNDS', '15'))
 
     # encryption properties
     CRYPT_SYM_SECRET_KEY = os.environ.get('CRYPT_SYM_SECRET_KEY')

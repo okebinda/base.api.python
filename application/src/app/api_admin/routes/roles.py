@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, abort, request, url_for
 from marshmallow import ValidationError
+from sqlalchemy.orm.exc import NoResultFound
 
 from app import db
 from app.models.Role import Role
@@ -120,7 +121,7 @@ def get_role(role_id=None, name=None):
     elif name is not None:
         try:
             role = Role.query.filter(Role.name == name).one()
-        except Exception:
+        except NoResultFound:
             role = None
     if role is None:
         abort(404)

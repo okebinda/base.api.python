@@ -2,6 +2,7 @@ from datetime import datetime
 
 from flask import Blueprint, jsonify, abort, request, url_for
 from marshmallow import ValidationError
+from sqlalchemy.orm.exc import NoResultFound
 
 from app import db
 from app.models.User import User
@@ -148,7 +149,7 @@ def get_user(user_id=None, username=None):
     elif username is not None:
         try:
             user = User.query.filter(User.username == username).one()
-        except Exception:
+        except NoResultFound:
             user = None
     if user is None:
         abort(404)

@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, make_response
-from flask_principal import Principal
+from flask_principal import Principal, identity_loaded
 from flask_cors import CORS
-from flask_principal import identity_loaded
 
 from app import db, ma
 from app.lib.wsgi.ReverseProxied import ReverseProxied
@@ -9,7 +8,7 @@ from app.api_public.authentication import auth, Authentication
 
 
 def create_app(config):
-    # pylint: disable=unused-variable
+    # pylint: disable=unused-variable,unused-argument,too-many-locals
 
     # init app
     app = Flask(__name__)
@@ -47,7 +46,7 @@ def create_app(config):
     def error_400(error):
         return make_response(jsonify(
             {'error': error.description if
-                error.description else 'Bad data'}), 400)
+                      error.description else 'Bad data'}), 400)
 
     @app.errorhandler(401)
     def error_401(error):
@@ -57,7 +56,7 @@ def create_app(config):
     def error_403(error):
         return make_response(jsonify(
             {'error': error.description if
-                error.description else "Permission denied"}), 403)
+                      error.description else "Permission denied"}), 403)
 
     @app.errorhandler(404)
     def error_404(error):

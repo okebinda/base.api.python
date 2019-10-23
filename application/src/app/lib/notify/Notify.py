@@ -82,7 +82,7 @@ class Notify:
             )
 
             # parse response for output
-            if response and type(response) is dict:
+            if response and isinstance(response, dict):
                 if 'id' in response:
                     output['notification_id'] = response['id']
                 if 'total_accepted_recipients' in response:

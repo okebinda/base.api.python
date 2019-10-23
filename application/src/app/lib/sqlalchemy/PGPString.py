@@ -15,5 +15,5 @@ class PGPString(BYTEA):
         return func.pgp_sym_encrypt(bindvalue, self.passphrase,
                                     'compress-algo=1, cipher-algo=aes256')
 
-    def column_expression(self, col):
-        return func.pgp_sym_decrypt(col, self.passphrase)
+    def column_expression(self, colexpr):
+        return func.pgp_sym_decrypt(colexpr, self.passphrase)

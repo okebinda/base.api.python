@@ -173,7 +173,7 @@ def put_password_reset():
             PasswordReset.status == PasswordReset.STATUS_ENABLED,
             PasswordReset.code == request.json.get('code'),
             PasswordReset.user_id == user.id,
-            PasswordReset.is_used == False,  # noqa
+            PasswordReset.is_used == False,  # noqa; pylint: disable=singleton-comparison
             (PasswordReset.requested_at +
              timedelta(seconds=3600)) >= datetime.now()
         ).first()

@@ -5,6 +5,7 @@ from flask import g, current_app, request, abort
 from flask_httpauth import HTTPBasicAuth
 from flask_principal import Identity, Permission, RoleNeed, UserNeed,\
     identity_changed
+from sqlalchemy.orm.exc import NoResultFound
 
 from app import db
 from app.models.Administrator import Administrator
@@ -20,6 +21,8 @@ admin_permission = Permission(RoleNeed('SUPER_ADMIN'))
 
 
 def require_appkey(view_function):
+    # pylint: disable=inconsistent-return-statements
+
     @wraps(view_function)
     def decorated_function(*args, **kwargs):
         if request.args.get('app_key'):
@@ -27,7 +30,7 @@ def require_appkey(view_function):
                 AppKey.query.filter(
                     AppKey.key == request.args.get('app_key'),
                     AppKey.status == AppKey.STATUS_ENABLED).one()
-            except Exception:
+            except NoResultFound:
                 abort(401, "Bad application key")
             return view_function(*args, **kwargs)
         else:
@@ -98,12 +101,14 @@ class Authentication:
         g.user = user
 
         # Tell Flask-Principal the identity changed
+        # pylint: disable=protected-access
         identity_changed.send(current_app._get_current_object(),
                               identity=Identity(user.id))
         return True
 
     @staticmethod
     def on_identity_loaded(sender, identity):
+        # pylint: disable=unused-argument
 
         # Set the identity user object
         if hasattr(g, 'user'):
@@ -139,7 +144,7 @@ class Authentication:
                         lambda x: 1 if not x.success else 0, recent_logins
                 ))) >= admin_role.login_max_attempts:
                     if ((recent_logins[0].attempt_date -
-                            recent_logins[-1].attempt_date).total_seconds() <=
+                         recent_logins[-1].attempt_date).total_seconds() <=
                             admin_role.login_timeframe):
                         banned_window = recent_logins[0].attempt_date + \
                                         timedelta(
