@@ -30,7 +30,7 @@ from test_fixtures import *
 from app import db
 from app.api_admin import create_app
 from app.Config import Config
-from app import models
+import models
 
 class MockTest(TestCase):
 

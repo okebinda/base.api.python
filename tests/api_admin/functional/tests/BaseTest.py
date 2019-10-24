@@ -3,7 +3,7 @@ from fixture import SQLAlchemyFixture
 from fixture.style import NamedDataStyle
 
 from test_fixtures import *
-from . import models
+import models
 
 # application imports
 from app import db
