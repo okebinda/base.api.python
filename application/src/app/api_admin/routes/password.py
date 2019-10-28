@@ -12,7 +12,7 @@ from app.api_admin.schema.AdministratorSchema import AdministratorSchema
 password = Blueprint('password', __name__)
 
 
-@password.route('/account/password', methods=['PUT'])
+@password.route('/user_account/password', methods=['PUT'])
 @require_appkey
 @auth.login_required
 @admin_permission.require(http_exception=403)
