@@ -26,6 +26,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user1@test.com", response.json['users'][0]['email'])
         self.assertEqual("Fiona", response.json['users'][0]['profile']['first_name'])
         self.assertEqual("Farnham", response.json['users'][0]['profile']['last_name'])
+        self.assertEqual("2018-12-01T00:00:00+0000", response.json['users'][0]['profile']['joined_at'])
         self.assertEqual("2019-01-01T00:00:00+0000", response.json['users'][0]['terms_of_services'][0]['accept_date'])
         self.assertEqual("1.1.1.1", response.json['users'][0]['terms_of_services'][0]['ip_address'])
         self.assertEqual(2, response.json['users'][0]['terms_of_services'][0]['terms_of_service']['id'])
@@ -49,6 +50,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user2@test.com", response.json['users'][1]['email'])
         self.assertEqual("Lynne", response.json['users'][1]['profile']['first_name'])
         self.assertEqual("Harford", response.json['users'][1]['profile']['last_name'])
+        self.assertEqual("2018-12-10T00:00:00+0000", response.json['users'][1]['profile']['joined_at'])
         self.assertEqual("2019-01-06T00:00:00+0000", response.json['users'][1]['terms_of_services'][0]['accept_date'])
         self.assertEqual("1.1.1.2", response.json['users'][1]['terms_of_services'][0]['ip_address'])
         self.assertEqual(2, response.json['users'][1]['terms_of_services'][0]['terms_of_service']['id'])
@@ -73,6 +75,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user3@test.com", response.json['users'][2]['email'])
         self.assertEqual("Duane", response.json['users'][2]['profile']['first_name'])
         self.assertEqual("Hargrave", response.json['users'][2]['profile']['last_name'])
+        self.assertEqual("2018-12-15T00:00:00+0000", response.json['users'][2]['profile']['joined_at'])
         self.assertEqual("2019-01-02T00:00:00+0000", response.json['users'][2]['terms_of_services'][0]['accept_date'])
         self.assertEqual("1.1.1.3", response.json['users'][2]['terms_of_services'][0]['ip_address'])
         self.assertEqual(2, response.json['users'][2]['terms_of_services'][0]['terms_of_service']['id'])
@@ -93,6 +96,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user5@test.com", response.json['users'][3]['email'])
         self.assertEqual("Elroy", response.json['users'][3]['profile']['first_name'])
         self.assertEqual("Hunnicutt", response.json['users'][3]['profile']['last_name'])
+        self.assertEqual("2018-12-20T00:00:00+0000", response.json['users'][3]['profile']['joined_at'])
         self.assertEqual([], response.json['users'][3]['terms_of_services'])
         self.assertIn("password_changed_at", response.json['users'][3])
         self.assertEqual(False, response.json['users'][3]['is_verified'])
@@ -110,6 +114,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user6@test.com", response.json['users'][4]['email'])
         self.assertEqual("Alease", response.json['users'][4]['profile']['first_name'])
         self.assertEqual("Richards", response.json['users'][4]['profile']['last_name'])
+        self.assertEqual("2018-12-29T00:00:00+0000", response.json['users'][4]['profile']['joined_at'])
         self.assertIn("password_changed_at", response.json['users'][4])
         self.assertEqual(True, response.json['users'][4]['is_verified'])
         self.assertEqual(5, response.json['users'][4]['status'])
@@ -126,6 +131,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user8@test.com", response.json['users'][5]['email'])
         self.assertEqual("Luke", response.json['users'][5]['profile']['first_name'])
         self.assertEqual("Tennyson", response.json['users'][5]['profile']['last_name'])
+        self.assertEqual("2019-01-10T00:00:00+0000", response.json['users'][5]['profile']['joined_at'])
         self.assertIn("password_changed_at", response.json['users'][5])
         self.assertEqual(False, response.json['users'][5]['is_verified'])
         self.assertEqual(1, response.json['users'][5]['status'])
@@ -482,6 +488,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user1@test.com", response.json['user']['email'])
         self.assertEqual("Fiona", response.json['user']['profile']['first_name'])
         self.assertEqual("Farnham", response.json['user']['profile']['last_name'])
+        self.assertEqual("2018-12-01T00:00:00+0000", response.json['user']['profile']['joined_at'])
         self.assertEqual("2019-01-01T00:00:00+0000", response.json['user']['terms_of_services'][0]['accept_date'])
         self.assertEqual("1.1.1.1", response.json['user']['terms_of_services'][0]['ip_address'])
         self.assertEqual(2, response.json['user']['terms_of_services'][0]['terms_of_service']['id'])
@@ -513,6 +520,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user2@test.com", response.json['user']['email'])
         self.assertEqual("Lynne", response.json['user']['profile']['first_name'])
         self.assertEqual("Harford", response.json['user']['profile']['last_name'])
+        self.assertEqual("2018-12-10T00:00:00+0000", response.json['user']['profile']['joined_at'])
         self.assertEqual("2019-01-06T00:00:00+0000", response.json['user']['terms_of_services'][0]['accept_date'])
         self.assertEqual("1.1.1.2", response.json['user']['terms_of_services'][0]['ip_address'])
         self.assertEqual(2, response.json['user']['terms_of_services'][0]['terms_of_service']['id'])
@@ -623,6 +631,7 @@ class UsersTest(BaseTest):
         self.assertIn("password", response.json['error'])
         self.assertEqual("Please choose a more complex password.", response.json['error']['password'][0])
         self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("username", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
         self.assertNotIn("status", response.json['error'])
     
@@ -739,7 +748,98 @@ class UsersTest(BaseTest):
         self.assertNotIn("is_verified", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
-    
+
+    def test_post_profile_error(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","roles":[1],"status":1,"profile":{}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("first_name", response.json['error']['profile'])
+        self.assertIn("last_name", response.json['error']['profile'])
+        self.assertIn("joined_at", response.json['error']['profile'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+
+    def test_post_profile_first_name_length_error(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","roles":[1],"status":1,"profile":{"first_name":"","last_name":"Account","joined_at":"2019-02-04T00:00:00+0000"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("first_name", response.json['error']['profile'])
+        self.assertEqual(["Value must be between 1 and 40 characters long."], response.json['error']['profile']['first_name'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("last_name", response.json['error']['profile'])
+        self.assertNotIn("joined_at", response.json['error']['profile'])
+
+    def test_post_profile_last_name_length_error(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","roles":[1],"status":1,"profile":{"first_name":"Service","last_name":"A","joined_at":"2019-02-04T00:00:00+0000"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("last_name", response.json['error']['profile'])
+        self.assertEqual(["Value must be between 2 and 40 characters long."], response.json['error']['profile']['last_name'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("first_name", response.json['error']['profile'])
+        self.assertNotIn("joined_at", response.json['error']['profile'])
+
+    def test_post_profile_joined_at_format_error(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","roles":[1],"status":1,"profile":{"first_name":"Service","last_name":"Account","joined_at":"BAD DATE"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("joined_at", response.json['error']['profile'])
+        self.assertEqual(["Not a valid datetime."], response.json['error']['profile']['joined_at'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("first_name", response.json['error']['profile'])
+        self.assertNotIn("last_name", response.json['error']['profile'])
+
     # @todo: test 500 error for bad role
 
     def test_post_user_success(self):
@@ -795,7 +895,36 @@ class UsersTest(BaseTest):
         self.assertIn("created_at", response.json['user'])
         self.assertIn("updated_at", response.json['user'])
         self.assertNotIn("password", response.json['user'])
-    
+
+    def test_post_user_with_profile_success(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","roles":[1],"status":1,"profile":{"first_name":"Service","last_name":"Account","joined_at":"2019-02-04T00:00:00+0000"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(10, response.json['user']['id'])
+        self.assertEqual("user9", response.json['user']['username'])
+        self.assertEqual("user9@test.com", response.json['user']['email'])
+        self.assertEqual("Service", response.json['user']['profile']['first_name'])
+        self.assertEqual("Account", response.json['user']['profile']['last_name'])
+        self.assertEqual("2019-02-04T00:00:00+0000", response.json['user']['profile']['joined_at'])
+        self.assertEqual([], response.json['user']['terms_of_services'])
+        self.assertIn("password_changed_at", response.json['user'])
+        self.assertEqual(False, response.json['user']['is_verified'])
+        self.assertEqual(1, response.json['user']['status'])
+        self.assertIn("status_changed_at", response.json['user'])
+        self.assertEqual(1, response.json['user']['roles'][0]['id'])
+        self.assertEqual("USER", response.json['user']['roles'][0]['name'])
+        self.assertTrue(response.json['user']['uri'].endswith('/user/10'))
+        self.assertIn("created_at", response.json['user'])
+        self.assertIn("updated_at", response.json['user'])
+        self.assertNotIn("password", response.json['user'])
+
     def test_post_user_no_app_key(self):
 
         response = self.client.post(
@@ -1006,6 +1135,97 @@ class UsersTest(BaseTest):
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
 
+    def test_put_user_profile_error(self):
+
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","roles":[1],"status":2,"profile":{}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("first_name", response.json['error']['profile'])
+        self.assertIn("last_name", response.json['error']['profile'])
+        self.assertIn("joined_at", response.json['error']['profile'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+
+    def test_put_user_profile_first_name_length_error(self):
+
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","roles":[1],"status":2,"profile":{"first_name":"","last_name":"HarfordA","joined_at":"2019-01-15T00:00:00+0000"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("first_name", response.json['error']['profile'])
+        self.assertEqual(["Value must be between 1 and 40 characters long."], response.json['error']['profile']['first_name'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("last_name", response.json['error']['profile'])
+        self.assertNotIn("joined_at", response.json['error']['profile'])
+
+    def test_put_user_profile_last_name_length_error(self):
+
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","roles":[1],"status":2,"profile":{"first_name":"LynneA","last_name":"H","joined_at":"2019-01-15T00:00:00+0000"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("last_name", response.json['error']['profile'])
+        self.assertEqual(["Value must be between 2 and 40 characters long."], response.json['error']['profile']['last_name'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("first_name", response.json['error']['profile'])
+        self.assertNotIn("joined_at", response.json['error']['profile'])
+
+    def test_put_user_profile_joined_at_format_error(self):
+
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","roles":[1],"status":2,"profile":{"first_name":"LynneA","last_name":"HarfordA","joined_at":"BAD DATE"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("profile", response.json['error'])
+        self.assertIn("joined_at", response.json['error']['profile'])
+        self.assertEqual(["Not a valid datetime."], response.json['error']['profile']['joined_at'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("first_name", response.json['error']['profile'])
+        self.assertNotIn("last_name", response.json['error']['profile'])
+
     def test_put_user_user_2(self):
 
         response = self.client.put(
@@ -1022,6 +1242,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user2a@test.com", response.json['user']['email'])
         self.assertEqual("Lynne", response.json['user']['profile']['first_name'])
         self.assertEqual("Harford", response.json['user']['profile']['last_name'])
+        self.assertEqual("2018-12-10T00:00:00+0000", response.json['user']['profile']['joined_at'])
         self.assertEqual("2019-01-06T00:00:00+0000", response.json['user']['terms_of_services'][0]['accept_date'])
         self.assertEqual("1.1.1.2", response.json['user']['terms_of_services'][0]['ip_address'])
         self.assertEqual(2, response.json['user']['terms_of_services'][0]['terms_of_service']['id'])
@@ -1057,6 +1278,7 @@ class UsersTest(BaseTest):
         self.assertEqual("user2a@test.com", response.json['user']['email'])
         self.assertEqual("Lynne", response.json['user']['profile']['first_name'])
         self.assertEqual("Harford", response.json['user']['profile']['last_name'])
+        self.assertEqual("2018-12-10T00:00:00+0000", response.json['user']['profile']['joined_at'])
         self.assertEqual("2019-01-06T00:00:00+0000", response.json['user']['terms_of_services'][0]['accept_date'])
         self.assertEqual("1.1.1.2", response.json['user']['terms_of_services'][0]['ip_address'])
         self.assertEqual(2, response.json['user']['terms_of_services'][0]['terms_of_service']['id'])
@@ -1075,7 +1297,43 @@ class UsersTest(BaseTest):
         self.assertIn("created_at", response.json['user'])
         self.assertIn("updated_at", response.json['user'])
         self.assertNotIn("password", response.json['user'])
-    
+
+    def test_put_user_user_2_with_profile(self):
+
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","roles":[1],"status":2,"profile":{"first_name":"LynneA","last_name":"HarfordA","joined_at":"2019-01-15T00:00:00+0000"}}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(2, response.json['user']['id'])
+        self.assertEqual("user2a", response.json['user']['username'])
+        self.assertEqual("user2a@test.com", response.json['user']['email'])
+        self.assertEqual("LynneA", response.json['user']['profile']['first_name'])
+        self.assertEqual("HarfordA", response.json['user']['profile']['last_name'])
+        self.assertEqual("2019-01-15T00:00:00+0000", response.json['user']['profile']['joined_at'])
+        self.assertEqual("2019-01-06T00:00:00+0000", response.json['user']['terms_of_services'][0]['accept_date'])
+        self.assertEqual("1.1.1.2", response.json['user']['terms_of_services'][0]['ip_address'])
+        self.assertEqual(2, response.json['user']['terms_of_services'][0]['terms_of_service']['id'])
+        self.assertEqual("1.1", response.json['user']['terms_of_services'][0]['terms_of_service']['version'])
+        self.assertEqual("2018-12-10T00:00:00+0000", response.json['user']['terms_of_services'][1]['accept_date'])
+        self.assertEqual("1.1.1.2", response.json['user']['terms_of_services'][1]['ip_address'])
+        self.assertEqual(1, response.json['user']['terms_of_services'][1]['terms_of_service']['id'])
+        self.assertEqual("1.0", response.json['user']['terms_of_services'][1]['terms_of_service']['version'])
+        self.assertIn("password_changed_at", response.json['user'])
+        self.assertEqual(False, response.json['user']['is_verified'])
+        self.assertEqual(2, response.json['user']['status'])
+        self.assertIn("status_changed_at", response.json['user'])
+        self.assertEqual(1, response.json['user']['roles'][0]['id'])
+        self.assertEqual("USER", response.json['user']['roles'][0]['name'])
+        self.assertTrue(response.json['user']['uri'].endswith('/user/2'))
+        self.assertIn("created_at", response.json['user'])
+        self.assertIn("updated_at", response.json['user'])
+        self.assertNotIn("password", response.json['user'])
+
     def test_put_user_no_app_key(self):
 
         response = self.client.put(

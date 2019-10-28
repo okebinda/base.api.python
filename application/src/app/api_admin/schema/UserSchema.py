@@ -58,7 +58,7 @@ class UserSchema(ma.Schema):
         dump_only=True)
     profile = fields.Nested(
         'UserProfileSchema',
-        only=('first_name', 'last_name', 'title'))
+        only=('first_name', 'last_name', 'joined_at'))
 
     # field validation
     id = fields.Integer()

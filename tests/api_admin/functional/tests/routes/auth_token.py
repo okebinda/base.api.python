@@ -15,6 +15,7 @@ class AuthTokenTest(BaseTest):
         self.assertIn("token", response.json)
         self.assertIn("user_id", response.json)
         self.assertEqual(1, response.json['user_id'])
+        self.assertEqual('admin1', response.json['username'])
         self.assertIn("expiration", response.json)
     
     def test_get_auth_token_no_app_key(self):

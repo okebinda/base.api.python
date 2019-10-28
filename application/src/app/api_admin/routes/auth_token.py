@@ -23,6 +23,7 @@ def get_auth_token():
         current_app.config['AUTH_TOKEN_EXPIRATION'])
     return jsonify(
         {'token': token.decode('ascii'), 'user_id': g.user.id,
+         'username': g.user.username,
          'expiration': current_app.config['AUTH_TOKEN_EXPIRATION']}), 200
 
 
