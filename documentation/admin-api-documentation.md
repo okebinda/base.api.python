@@ -78,6 +78,15 @@ To obtain an access token, a client should send a Basic HTTP Authentication head
 | Path       | /token                                                        |
 | Headers    | `Authorization`: 'Basic ' + base_64_encode(username:password) |
 
+##### Response Payload
+
+| Key          | Value                                               |
+| ------------ | --------------------------------------------------- | 
+| `expiration` | Lifetime (in seconds) for the newly granted token.  | 
+| `token`      | The token itself.                                   |
+| `user_id`    | The system id of the user the token was granted to. |
+| `username`   | The username of the user the token was granted to.  |
+
 ##### Errors
 
 | Code | Description      | Solution                                                                                                       |
@@ -103,6 +112,14 @@ curl https://api.admin.domain.com/v/1.0/token -u username:password
   "user_id": 1,
   "username": "username"
 }
+```
+
+Once a token has been obtained, use the `token` in place of "username" in the Basic Auth header. Leave the password empty.
+
+###### Following Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/users -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
 ```
 
 _For brevity the `Authorization` header will be ignored for the rest of the documentation, but its requirements still apply._
