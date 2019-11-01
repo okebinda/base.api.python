@@ -18,6 +18,25 @@ The admin API uses a REST interface using JSON responses. It uses standard HTTP 
 | 500  | Internal Server Error | There was an unexpected error on the server.                                                     |
 
 
+## Endpoints
+
+As a RESTful API, resource endpoints (URLs) are one of the most important parts of the interface. While the application describes "paths" to resources, these are not the complete endpoints. The system also prepends the protocol, domain name, and version information to the path to produce the final endpoint.
+
+##### Format
+
+```
+{PROTOCOL}://{DOMAIN_NAME}/v/{VERSION_NUMBER}{PATH}
+```
+
+##### Example
+
+For example, if the domain is "api.admin.domain.com", the API version is "1.0" and the path is "/users", then the endpoint would be (assuming HTTPS of course):
+
+```
+https://api.admin.domain.com/v/1.0/users
+```
+
+
 ## Authorization
  
 ### Application Keys
@@ -26,8 +45,8 @@ All requests to any endpoint must contain a valid application key as a URL param
 
 | HTTP       | Value                                     |
 | ---------- | ----------------------------------------- | 
-| Method     | *                                         | 
-| Endpoint   | *                                         |
+| Methods    | *                                         | 
+| Path       | *                                         |
 | Parameters | `app_key`: 32 character string (required) |
 
 ##### Errors
@@ -45,7 +64,7 @@ All requests to any endpoint must contain a valid application key as a URL param
 curl https://api.admin.domain.com/v/1.0/users?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx
 ```
 
-For brevity the `app_key` URL parameter will be ignored for the rest of the documentation, but its requirements still apply.
+_For brevity the `app_key` URL parameter will be ignored for the rest of the documentation, but its requirements still apply._
 
 ### Access Tokens
 
@@ -56,7 +75,7 @@ To obtain an access token, a client should send a Basic HTTP Authentication head
 | HTTP       | Value                                                         |
 | ---------- | ------------------------------------------------------------- | 
 | Methods    | GET                                                           | 
-| Endpoint   | /token                                                        |
+| Path       | /token                                                        |
 | Headers    | `Authorization`: 'Basic ' + base_64_encode(username:password) |
 
 ##### Errors
@@ -82,6 +101,8 @@ curl https://api.admin.domain.com/v/1.0/token -u username:password
   "expiration": 14400,
   "token": "eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg",
   "user_id": 1,
-  "username": "admin1"
+  "username": "username"
 }
 ```
+
+_For brevity the `Authorization` header will be ignored for the rest of the documentation, but its requirements still apply._
