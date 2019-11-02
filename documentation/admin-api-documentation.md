@@ -266,3 +266,63 @@ curl -X PUT -H "Content-Type: application/json" \
   }
 }
 ```
+
+
+## User Password
+
+### Update User Password
+
+Use the following to update the password for the currently logged in user.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- | 
+| Methods    | PUT                              |
+| Path       | /user_account/password           |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key                   | Value                                     | Validation                                                                                                 |
+| --------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- | 
+| `previous_password`   | The user's current password.              | Required; Must match current password.                                                                     | 
+| `password1`           | The new password.                         | Required; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
+| `password2`           | The new password again, for confirmation. | Required; Must match `password1` value                                                                     |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                               |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 200  | OK           | Update successful.                                                                                                  |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                  |
+
+##### Response Payload
+
+| Key       | Value  |
+| --------- | ------ | 
+| `success` | 'true' | 
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X PUT -H "Content-Type: application/json" \
+    -d '{
+        "previous_password":"admin1pass",
+        "password1":"admin1Pass2",
+        "password2":"admin1Pass2"
+    }' \
+    https://api.admin.domain.com/v/1.0/user_account/password?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "success": "true"
+}
+```
