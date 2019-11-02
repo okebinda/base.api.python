@@ -48,7 +48,7 @@ All requests to any endpoint must contain a valid application key as a URL param
 | HTTP       | Value                                     |
 | ---------- | ----------------------------------------- | 
 | Methods    | *                                         | 
-| Path       | *                                         |
+| Paths      | *                                         |
 | Parameters | `app_key`: 32 character string (required) |
 
 ##### Errors
@@ -78,7 +78,7 @@ To obtain an access token, a client should send a Basic HTTP Authentication head
 
 | HTTP       | Value                                                         |
 | ---------- | ------------------------------------------------------------- | 
-| Methods    | GET                                                           | 
+| Method     | GET                                                           | 
 | Path       | /token                                                        |
 | Headers    | `Authorization`: 'Basic ' + base_64_encode(username:password) |
 
@@ -141,7 +141,7 @@ Use the following to read the account information for the currently logged in us
 
 | HTTP       | Value          |
 | ---------- | -------------- | 
-| Methods    | GET            | 
+| Method     | GET            | 
 | Path       | /user_account  |
 
 ##### Response Codes
@@ -199,7 +199,7 @@ Use the following to update the account information for the currently logged in 
 
 | HTTP       | Value                            |
 | ---------- | -------------------------------- | 
-| Methods    | PUT                              |
+| Method     | PUT                              |
 | Path       | /user_account                    |
 | Headers    | `Content-Type`: application/json |
 
@@ -278,7 +278,7 @@ Use the following to update the password for the currently logged in user.
 
 | HTTP       | Value                            |
 | ---------- | -------------------------------- | 
-| Methods    | PUT                              |
+| Method     | PUT                              |
 | Path       | /user_account/password           |
 | Headers    | `Content-Type`: application/json |
 
@@ -324,5 +324,92 @@ curl -X PUT -H "Content-Type: application/json" \
 ```json
 {
   "success": "true"
+}
+```
+
+
+## Application Keys
+
+### List Application Keys
+
+Use the following to read a list of application keys.
+
+##### Request
+
+| HTTP       | Value                                                                  |
+| ---------- | ---------------------------------------------------------------------- | 
+| Method     | GET                                                                    | 
+| Paths      | /app_keys<br>/app_keys/{int:page}<br>/app_keys/{int:page}/{int:limit}  |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no application keys on this page.        |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                              | Value                                                                      |
+| -------------------------------- | -------------------------------------------------------------------------- | 
+| `app_keys`                       | The top-level application key list resource.                               | 
+| `app_keys`[].`application`       | List item property: The name of the application assigned to the app key.   | 
+| `app_keys`[].`created_at`        | List item property: The datetime the app key was created.                  |
+| `app_keys`[].`id`                | List item property: The app key's system id.                               |
+| `app_keys`[].`key`               | List item property: The application key itself.                            |
+| `app_keys`[].`status`            | List item property: The status of the app key.                             |
+| `app_keys`[].`status_changed_at` | List item property: The datetime of the last time the status was changed.  |
+| `app_keys`[].`updated_at`        | List item property: The datetime of the last time the app key was updated. |
+| `limit`                          | The limit of items to show on a single page.                               |
+| `page`                           | The current list page number.                                              |
+| `total`                          | The total count of items found.                                            |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/app_keys/1/3?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "app_keys": [
+    {
+      "application": "Application 1", 
+      "created_at": "2019-10-23T15:03:37+0000", 
+      "id": 1, 
+      "key": "7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW", 
+      "status": 1, 
+      "status_changed_at": "2019-10-30T13:38:47+0000", 
+      "updated_at": "2019-10-30T13:38:47+0000"
+    }, 
+    {
+      "application": "Application 2", 
+      "created_at": "2019-10-23T15:03:37+0000", 
+      "id": 2, 
+      "key": "cvBtQGgL9gNnSZk4DmKnva4QMcpTV7Mx", 
+      "status": 1, 
+      "status_changed_at": "2018-01-05T00:00:00+0000", 
+      "updated_at": "2019-10-23T15:03:37+0000"
+    }, 
+    {
+      "application": "Application 3", 
+      "created_at": "2019-10-23T15:03:37+0000", 
+      "id": 3, 
+      "key": "9CR45hFpTahbqDvmZFJdENAKz5VPqLG3", 
+      "status": 2, 
+      "status_changed_at": "2018-01-10T00:00:00+0000", 
+      "updated_at": "2019-10-30T13:18:10+0000"
+    }
+  ], 
+  "limit": 3, 
+  "next_uri": "http://base.api.admin.python.vm/v/dev/app_keys/2/3", 
+  "page": 1, 
+  "total": 4
 }
 ```
