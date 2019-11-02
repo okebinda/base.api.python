@@ -53,7 +53,7 @@ All requests to any endpoint must contain a valid application key as a URL param
 
 ##### Errors
 
-| Code | Description             | Solution                                                                                           |
+| Code | Description             | Notes                                                                                              |
 | ---- | ----------------------- | -------------------------------------------------------------------------------------------------- |
 | 401  | Bad application key     | Change the `app_key` parameter to a correct key. Request a new one from system owner if necessary. | 
 | 401  | Missing application key | Add the `app_key` parameter to the endpoint.                                                       | 
@@ -93,7 +93,7 @@ To obtain an access token, a client should send a Basic HTTP Authentication head
 
 ##### Errors
  
-| Code | Description       | Solution                                                                                                                        |
+| Code | Description       | Notes                                                                                                                           |
 | ---- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | 401  | Bad credentials   | Change user credentials, try again.                                                                                             | 
 | 401  | Account locked    | Authentication failed too many times during attempt window - wait for the lockout period to expire, try again.                  |
@@ -146,9 +146,10 @@ Use the following to read the account information for the currently logged in us
 
 ##### Response Codes
  
-| Code | Description | Solution            |
-| ---- | ----------- | ------------------- |
-| 200  | OK          | Request successful. |
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 500  | Server error | Generic application error. Check application logs. |
 
 ##### Response Payload
 
@@ -196,10 +197,11 @@ Use the following to update the account information for the currently logged in 
 
 ##### Request
 
-| HTTP       | Value          |
-| ---------- | -------------- | 
-| Methods    | PUT            | 
-| Path       | /user_account  |
+| HTTP       | Value                            |
+| ---------- | -------------------------------- | 
+| Methods    | PUT                              |
+| Path       | /user_account                    |
+| Headers    | `Content-Type`: application/json |
 
 ##### Request Payload
 
@@ -212,10 +214,11 @@ Use the following to update the account information for the currently logged in 
 
 ##### Response Codes
  
-| Code | Description | Solution                                                                                                            |
-| ---- | ----------- | ------------------------------------------------------------------------------------------------------------------- |
-| 200  | OK          | Update successful.                                                                                                  |
-| 400  | Bad Request | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
+| Code | Description  | Notes                                                                                                               |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 200  | OK           | Update successful.                                                                                                  |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                  |
 
 ##### Response Payload
 
@@ -237,7 +240,12 @@ Use the following to update the account information for the currently logged in 
 
 ```ssh
 curl -X PUT -H "Content-Type: application/json" \
-    -d '{"email":"admin1a@test.com","first_name":"Thomas","last_name":"Luhnd","username":"admin1a"}'\
+    -d '{
+        "email":"admin1a@test.com",
+        "first_name":"Thomas",
+        "last_name":"Luhnd",
+        "username":"admin1a"
+    }' \
     https://api.admin.domain.com/v/1.0/user_account?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
 ```
