@@ -75,11 +75,11 @@ All requests to any endpoint must contain a valid application key as a URL param
 
 ##### Request
 
-| HTTP       | Value                                     |
-| ---------- | ----------------------------------------- | 
-| Methods    | *                                         | 
-| Paths      | *                                         |
-| Parameters | `app_key`: 32 character string (required) |
+| HTTP       | Value                                       |
+| ---------- | ------------------------------------------- | 
+| Methods    | *                                           | 
+| Paths      | *                                           |
+| Parameters | - `app_key`: 32 character string (required) |
 
 ##### Errors
 
@@ -369,10 +369,11 @@ Use the following to read a list of application keys. By default the page number
 
 ##### Request
 
-| HTTP       | Value                                                                  |
-| ---------- | ---------------------------------------------------------------------- | 
-| Method     | GET                                                                    | 
-| Paths      | /app_keys<br>/app_keys/{int:page}<br>/app_keys/{int:page}/{int:limit}  |
+| HTTP       | Value                                                                                                                                                                               |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | 
+| Method     | GET                                                                                                                                                                                 | 
+| Paths      | /app_keys<br>/app_keys/{int:page}<br>/app_keys/{int:page}/{int:limit}                                                                                                               |
+| Parameters | - `status`: Resource status code to filter results by (optional)<br>- `order_by`: How to order results (optional; values: [`id.asc`, `id.desc`, `application.asc`, `application.desc`]) |
 
 ##### Response Codes
  
@@ -578,3 +579,103 @@ curl -X POST -H "Content-Type: application/json" \
 }
 ```
 
+### Update an Application Key
+
+Use the following to update an existing application key.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- | 
+| Method     | PUT                              | 
+| Path       | /app_key/{int:id}                |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key           | Value                                                | Validation                          |
+| ------------- | ---------------------------------------------------- | ----------------------------------- | 
+| `application` | The name of the application assigned to the app key. | Required; Length: 2-200 chars       | 
+| `key`         | The application key itself.                          | Required; Unique; Length: 32 chars; |
+| `status`      | The status of the app key.                           | Required; Must be an integer        |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                               |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 200  | OK           | Update successful.                                                                                                  |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
+| 404  | Not Found    | No app key matching the supplied ID was found.                                                                      |
+| 500  | Server error | Generic application error. Check application logs.                                                                  |
+
+##### Response Payload
+
+| Key                           | Value                                                  |
+| ----------------------------- | ------------------------------------------------------ | 
+| `app_key`                     | The top-level application key resource.                | 
+| `app_key`.`application`       | The name of the application assigned to the app key.   | 
+| `app_key`.`created_at`        | The datetime the app key was created.                  |
+| `app_key`.`id`                | The app key's system id.                               |
+| `app_key`.`key`               | The application key itself.                            |
+| `app_key`.`status`            | The status of the app key.                             |
+| `app_key`.`status_changed_at` | The datetime of the last time the status was changed.  |
+| `app_key`.`updated_at`        | The datetime of the last time the app key was updated. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X PUT -H "Content-Type: application/json" \
+    -d '{
+        "application": "Application 1 A",
+        "key": "ERgZwgDUtSgN5dLxAdXdAPQJ6tCyVGQH",
+        "status": 2
+    }' \
+    https://api.admin.domain.com/v/1.0/app_key/1?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "app_key": {
+    "application": "Application 1 A", 
+    "created_at": "2019-10-23T15:03:37+0000", 
+    "id": 1, 
+    "key": "ERgZwgDUtSgN5dLxAdXdAPQJ6tCyVGQH", 
+    "status": 2, 
+    "status_changed_at": "2019-11-03T00:55:25+0000", 
+    "updated_at": "2019-11-03T00:55:25+0000"
+  }
+}
+```
+
+### Delete an Application Key
+
+Use the following to permanently delete an existing application key.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- | 
+| Method     | DELETE                           | 
+| Path       | /app_key/{int:id}                |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                               |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 204  | No Content   | Delete successful.                                                                                                  |
+| 404  | Not Found    | No app key matching the supplied ID was found.                                                                      |
+| 500  | Server error | Generic application error. Check application logs.                                                                  |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X DELETE https://api.admin.domain.com/v/1.0/app_key/1?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
