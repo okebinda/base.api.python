@@ -3,7 +3,11 @@
 The admin API uses a REST interface using JSON responses. It uses standard HTTP response codes, verbs and authentication. All endpoints should use HTTPS for security and privacy.
 
 
-## Status Codes
+## Definitions
+
+### HTTP Status Codes
+
+The following table describes the HTTP status codes supported by this API.
 
 | Code | Short Description     | Long Description                                                                                 |
 | ---- | --------------------- | ------------------------------------------------------------------------------------------------ |
@@ -18,7 +22,7 @@ The admin API uses a REST interface using JSON responses. It uses standard HTTP 
 | 500  | Internal Server Error | There was an unexpected error on the server.                                                     |
 
 
-## Endpoints
+### Endpoints
 
 As a RESTful API, resource endpoints (URLs) are one of the most important parts of the interface. While the application describes "paths" to resources, these are not the complete endpoints. The system also prepends the protocol, domain name, and version information to the path to produce the final endpoint.
 
@@ -35,6 +39,30 @@ For example, if the domain is "api.admin.domain.com", the API version is "1.0" a
 ```
 https://api.admin.domain.com/v/1.0/users
 ```
+
+
+### Timestamps
+
+Timestamps should all be formatted to the ISO 8601 datetime standard: `%Y-%m-%dT%H:%M:%S%z`
+
+##### Example
+
+```
+2018-11-01T00:00:00+0000
+```
+
+
+### Resource Status Codes
+
+Most resources have a status code associated with them to determine their availability. Note that these are separate from the HTTP status codes described above for endpoints. Below is the table of available status codes.
+
+| Code | Label    | Description                                                                                   |
+| ---- | -------- | --------------------------------------------------------------------------------------------- | 
+| 1    | Enabled  | Generally available to the public.                                                            |
+| 2    | Disabled | Temporarily unavailable to the public.                                                        |
+| 3    | Archived | Removed long-term from both the public and administrators, but not deleted.                   |
+| 4    | Deleted  | Removed from both the public and administrators, flagged for eventual permanent deletion.     |
+| 5    | Pending  | Currently unavailable to the public, pending some action from an administrator or the system. |
 
 
 ## Authentication
@@ -332,7 +360,7 @@ curl -X PUT -H "Content-Type: application/json" \
 
 ### List Application Keys
 
-Use the following to read a list of application keys.
+Use the following to read a list of application keys. By default the page numbering starts at 1 and the limit is 10 results per page.
 
 ##### Request
 
@@ -362,7 +390,9 @@ Use the following to read a list of application keys.
 | `app_keys`[].`status_changed_at` | List item property: The datetime of the last time the status was changed.  |
 | `app_keys`[].`updated_at`        | List item property: The datetime of the last time the app key was updated. |
 | `limit`                          | The limit of items to show on a single page.                               |
+| `next_uri`                       | The URI of the next page of results, if available.                         |
 | `page`                           | The current list page number.                                              |
+| `previous_uri`                   | The URI of the previous page of results, if available.                     |
 | `total`                          | The total count of items found.                                            |
 
 ##### Example
@@ -408,7 +438,7 @@ curl https://api.admin.domain.com/v/1.0/app_keys/1/3?app_key=y84pSJ7PA4E9Lnj936p
     }
   ], 
   "limit": 3, 
-  "next_uri": "http://base.api.admin.python.vm/v/dev/app_keys/2/3", 
+  "next_uri": "https://api.admin.domain.com/v/1.0/app_keys/2/3", 
   "page": 1, 
   "total": 4
 }
