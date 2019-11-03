@@ -2,6 +2,7 @@
 
 The admin API uses a REST interface using JSON responses. It uses standard HTTP response codes, verbs and authentication. All endpoints should use HTTPS for security and privacy.
 
+<br><br>
 
 ## Definitions
 
@@ -64,6 +65,7 @@ Most resources have a status code associated with them to determine their availa
 | 4    | Deleted  | Removed from both the public and administrators, flagged for eventual permanent deletion.     |
 | 5    | Pending  | Currently unavailable to the public, pending some action from an administrator or the system. |
 
+<br><br>
 
 ## Authentication
  
@@ -158,6 +160,7 @@ curl https://api.admin.domain.com/v/1.0/users?app_key=y84pSJ7PA4E9Lnj936ptdqj9jm
 
 _For brevity the `Authorization` header will be ignored for the rest of the documentation, but its requirements still apply._
 
+<br><br>
 
 ## User Account
 
@@ -295,6 +298,7 @@ curl -X PUT -H "Content-Type: application/json" \
 }
 ```
 
+<br><br>
 
 ## User Password
 
@@ -355,6 +359,7 @@ curl -X PUT -H "Content-Type: application/json" \
 }
 ```
 
+<br><br>
 
 ## Application Keys
 
