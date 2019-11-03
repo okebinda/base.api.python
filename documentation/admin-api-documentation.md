@@ -272,10 +272,10 @@ Use the following to update the account information for the currently logged in 
 ```ssh
 curl -X PUT -H "Content-Type: application/json" \
     -d '{
-        "email":"admin1a@test.com",
-        "first_name":"Thomas",
-        "last_name":"Luhnd",
-        "username":"admin1a"
+        "email": "admin1a@test.com",
+        "first_name": "Thomas",
+        "last_name": "Luhnd",
+        "username": "admin1a"
     }' \
     https://api.admin.domain.com/v/1.0/user_account?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
@@ -343,9 +343,9 @@ Use the following to update the password for the currently logged in user.
 ```ssh
 curl -X PUT -H "Content-Type: application/json" \
     -d '{
-        "previous_password":"admin1pass",
-        "password1":"admin1Pass2",
-        "password2":"admin1Pass2"
+        "previous_password": "admin1pass",
+        "password1": "admin1Pass2",
+        "password2": "admin1Pass2"
     }' \
     https://api.admin.domain.com/v/1.0/user_account/password?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
@@ -448,3 +448,133 @@ curl https://api.admin.domain.com/v/1.0/app_keys/1/3?app_key=y84pSJ7PA4E9Lnj936p
   "total": 4
 }
 ```
+
+### Read Application Key Data
+
+Use the following to read the information for a specific application key.
+
+##### Request
+
+| HTTP       | Value             |
+| ---------- | ----------------- | 
+| Method     | GET               | 
+| Path       | /app_key/{int:id} |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 404  | Not Found    | No app key matching the supplied ID was found.     |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                           | Value                                                  |
+| ----------------------------- | ------------------------------------------------------ | 
+| `app_key`                     | The top-level application key resource.                | 
+| `app_key`.`application`       | The name of the application assigned to the app key.   | 
+| `app_key`.`created_at`        | The datetime the app key was created.                  |
+| `app_key`.`id`                | The app key's system id.                               |
+| `app_key`.`key`               | The application key itself.                            |
+| `app_key`.`status`            | The status of the app key.                             |
+| `app_key`.`status_changed_at` | The datetime of the last time the status was changed.  |
+| `app_key`.`updated_at`        | The datetime of the last time the app key was updated. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/app_key/1?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "app_key": {
+    "application": "Application 1", 
+    "created_at": "2019-10-23T15:03:37+0000", 
+    "id": 1, 
+    "key": "7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW", 
+    "status": 1, 
+    "status_changed_at": "2019-10-30T13:38:47+0000", 
+    "updated_at": "2019-10-30T13:38:47+0000"
+  }
+}
+```
+
+### Create an Application Key
+
+Use the following to create a new application key.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- | 
+| Method     | POST                             | 
+| Path       | /app_keys                        |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key           | Value                                                | Validation                          |
+| ------------- | ---------------------------------------------------- | ----------------------------------- | 
+| `application` | The name of the application assigned to the app key. | Required; Length: 2-200 chars       | 
+| `key`         | The application key itself.                          | Required; Unique; Length: 32 chars; |
+| `status`      | The status of the app key.                           | Required; Must be an integer        |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                               |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 201  | Created      | Resource successfully created.                                                                                      |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                  |
+
+##### Response Payload
+
+| Key                           | Value                                                  |
+| ----------------------------- | ------------------------------------------------------ | 
+| `app_key`                     | The top-level application key resource.                | 
+| `app_key`.`application`       | The name of the application assigned to the app key.   | 
+| `app_key`.`created_at`        | The datetime the app key was created.                  |
+| `app_key`.`id`                | The app key's system id.                               |
+| `app_key`.`key`               | The application key itself.                            |
+| `app_key`.`status`            | The status of the app key.                             |
+| `app_key`.`status_changed_at` | The datetime of the last time the status was changed.  |
+| `app_key`.`updated_at`        | The datetime of the last time the app key was updated. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X POST -H "Content-Type: application/json" \
+    -d '{
+        "application": "Some Application Name",
+        "key": "AHvy6Wk5kqrFzAe3HVKzxfVtqwPK3ELZ",
+        "status": 1
+    }' \
+    https://api.admin.domain.com/v/1.0/app_keys?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "app_key": {
+    "application": "Some Application Name", 
+    "created_at": "2019-11-03T00:37:29+0000", 
+    "id": 7, 
+    "key": "AHvy6Wk5kqrFzAe3HVKzxfVtqwPK3ELZ", 
+    "status": 1, 
+    "status_changed_at": "2019-11-03T00:37:29+0000", 
+    "updated_at": "2019-11-03T00:37:29+0000"
+  }
+}
+```
+

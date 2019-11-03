@@ -98,6 +98,8 @@ def post_app_keys():
     :rtype: (str, int)
     """
 
+    # @todo: validate unique `key`
+
     # validate data
     try:
         data, _ = AppKeySchema(strict=True).load(request.json)
