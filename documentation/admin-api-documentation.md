@@ -365,15 +365,16 @@ curl -X PUT -H "Content-Type: application/json" \
 
 ### List Application Keys
 
-Use the following to read a list of application keys. By default the page numbering starts at 1 and the limit is 10 results per page.
+Use the following to read a list of application keys.
 
 ##### Request
 
-| HTTP       | Value                                                                                                                                                                               |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | 
-| Method     | GET                                                                                                                                                                                 | 
-| Paths      | /app_keys<br>/app_keys/{int:page}<br>/app_keys/{int:page}/{int:limit}                                                                                                               |
-| Parameters | - `status`: Resource status code to filter results by (optional)<br>- `order_by`: How to order results (optional; values: [`id.asc`, `id.desc`, `application.asc`, `application.desc`]) |
+| HTTP            | Value                                                                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                       |
+| Paths           | /app_keys<br>/app_keys/{page}<br>/app_keys/{page}/{limit}                                                                                                                                                                 |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                 |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'application.asc', 'application.desc']; Default: 'id.asc' |
 
 ##### Response Codes
  
@@ -450,16 +451,17 @@ curl https://api.admin.domain.com/v/1.0/app_keys/1/3?app_key=y84pSJ7PA4E9Lnj936p
 }
 ```
 
-### Read Application Key Data
+### Read an Application Key
 
 Use the following to read the information for a specific application key.
 
 ##### Request
 
-| HTTP       | Value             |
-| ---------- | ----------------- | 
-| Method     | GET               | 
-| Path       | /app_key/{int:id} |
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | GET                                             | 
+| Path            | /app_key/{id}                                   |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
 
 ##### Response Codes
  
@@ -585,11 +587,12 @@ Use the following to update an existing application key.
 
 ##### Request
 
-| HTTP       | Value                            |
-| ---------- | -------------------------------- | 
-| Method     | PUT                              | 
-| Path       | /app_key/{int:id}                |
-| Headers    | `Content-Type`: application/json |
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | PUT                                             | 
+| Path            | /app_key/{id}                                   |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+| Headers         | `Content-Type`: application/json                |
 
 ##### Request Payload
 
@@ -658,18 +661,19 @@ Use the following to permanently delete an existing application key.
 
 ##### Request
 
-| HTTP       | Value                            |
-| ---------- | -------------------------------- | 
-| Method     | DELETE                           | 
-| Path       | /app_key/{int:id}                |
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | DELETE                                          | 
+| Path            | /app_key/{id}                                   |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
 
 ##### Response Codes
  
-| Code | Description  | Notes                                                                                                               |
-| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| 204  | No Content   | Delete successful.                                                                                                  |
-| 404  | Not Found    | No app key matching the supplied ID was found.                                                                      |
-| 500  | Server error | Generic application error. Check application logs.                                                                  |
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 204  | No Content   | Delete successful.                                 |
+| 404  | Not Found    | No app key matching the supplied ID was found.     |
+| 500  | Server error | Generic application error. Check application logs. |
 
 ##### Example
 
@@ -677,5 +681,431 @@ Use the following to permanently delete an existing application key.
 
 ```ssh
 curl -X DELETE https://api.admin.domain.com/v/1.0/app_key/1?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+<br><br>
+
+## User Roles
+
+### List User Roles
+
+Use the following to read a list of user roles.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                         |
+| Paths           | /roles<br>/roles/{page}<br>/roles/{page}/{limit}<br>/roles/{type}<br>/roles/{type}/{page}                                                                                                                   |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10<br>- `type`: String; The type of role to filter by (values: ['admin', 'user'])    |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'name.asc', 'name.desc']; Default: 'id.asc' |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no roles on this page.                   |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                                | Value                                                                                                                                 |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | 
+| `roles`                            | The top-level role list resource.                                                                                                     |  
+| `roles`[].`created_at`             | List item property: The datetime the role was created.                                                                                |
+| `roles`[].`id`                     | List item property: The role's system id.                                                                                             |
+| `roles`[].`is_admin_role`          | List item property: 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    |
+| `roles`[].`login_ban_by_ip`        | List item property: 'true' if lockout policy uses client IP to ban further login attempts.                                            |
+| `roles`[].`login_ban_time`         | List item property: Number of seconds the lockout policy will ban further login attempts once triggered.                              |
+| `roles`[].`login_lockout_policy`   | List item property: 'true' if lockout policy is enabled.                                                                              |
+| `roles`[].`login_max_attempts`     | List item property: Number of failed login attempts to allow within timeframe before locking account.                                 |
+| `roles`[].`login_timeframe`        | List item property: Window of time (in seconds) to allow max login attempts before locking account.                                   |
+| `roles`[].`name`                   | List item property: The name of the role.                                                                                             |
+| `roles`[].`password_policy`        | List item property: 'true' if the password policy is enabled.                                                                         |
+| `roles`[].`password_reset_days`    | List item property: Number of days a password is valid until user must change it.                                                     |
+| `roles`[].`password_reuse_history` | List item property: Number of previous passwords to disallow when a user updates password.                                            |
+| `roles`[].`priority`               | List item property: The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. |
+| `roles`[].`updated_at`             | List item property: The datetime of the last time the app key was updated.                                                            |
+| `limit`                            | The limit of items to show on a single page.                                                                                          |
+| `next_uri`                         | The URI of the next page of results, if available.                                                                                    |
+| `page`                             | The current list page number.                                                                                                         |
+| `previous_uri`                     | The URI of the previous page of results, if available.                                                                                |
+| `total`                            | The total count of items found.                                                                                                       |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/roles?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 10, 
+  "page": 1, 
+  "roles": [
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 1, 
+      "is_admin_role": false, 
+      "login_ban_by_ip": true, 
+      "login_ban_time": 1800, 
+      "login_lockout_policy": false, 
+      "login_max_attempts": 10, 
+      "login_timeframe": 600, 
+      "name": "USER", 
+      "password_policy": false, 
+      "password_reset_days": 365, 
+      "password_reuse_history": 10, 
+      "priority": 100, 
+      "updated_at": "2019-11-05T02:16:56+0000"
+    }, 
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 2, 
+      "is_admin_role": true, 
+      "login_ban_by_ip": true, 
+      "login_ban_time": 1800, 
+      "login_lockout_policy": true, 
+      "login_max_attempts": 5, 
+      "login_timeframe": 300, 
+      "name": "SUPER_ADMIN", 
+      "password_policy": true, 
+      "password_reset_days": 90, 
+      "password_reuse_history": 24, 
+      "priority": 10, 
+      "updated_at": "2019-11-05T02:16:56+0000"
+    }, 
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 3, 
+      "is_admin_role": false, 
+      "login_ban_by_ip": true, 
+      "login_ban_time": 1800, 
+      "login_lockout_policy": true, 
+      "login_max_attempts": 5, 
+      "login_timeframe": 300, 
+      "name": "SERVICE", 
+      "password_policy": true, 
+      "password_reset_days": 365, 
+      "password_reuse_history": 24, 
+      "priority": 50, 
+      "updated_at": "2019-11-05T02:16:56+0000"
+    }
+  ], 
+  "total": 3
+}
+```
+
+### Read a User Role
+
+Use the following to read the information for a specific role.
+
+##### Request
+
+| HTTP            | Value                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------- | 
+| Method          | GET                                                                                           | 
+| Path            | /role/{id}<br>/role/{name]                                                                    |
+| Path Parameters | - `id`: Integer; The system ID for the resource<br>- `name`: String; The name of the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                               |
+| ---- | ------------ | --------------------------------------------------- |
+| 200  | OK           | Request successful.                                 |
+| 404  | Not Found    | No role matching the supplied ID or name was found. |
+| 500  | Server error | Generic application error. Check application logs.  |
+
+##### Response Payload
+
+| Key                             | Value                                                                                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------- | 
+| `role`                          | The top-level role resource.                                                                                      | 
+| `role`.`created_at`             | The datetime the role was created.                                                                                |
+| `role`.`id`                     | The role's system id.                                                                                             |
+| `role`.`is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    |
+| `role`.`login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            |
+| `role`.`login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              |
+| `role`.`login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              |
+| `role`.`login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 |
+| `role`.`login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   |
+| `role`.`name`                   | The name of the role.                                                                                             |
+| `role`.`password_policy`        | 'true' if the password policy is enabled.                                                                         |
+| `role`.`password_reset_days`    | Number of days a password is valid until user must change it.                                                     |
+| `role`.`password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            |
+| `role`.`priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. |
+| `role`.`updated_at`             | The datetime of the last time the app key was updated.                                                            |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/role/1?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "role": {
+    "created_at": "2019-11-05T02:16:56+0000", 
+    "id": 1, 
+    "is_admin_role": false, 
+    "login_ban_by_ip": true, 
+    "login_ban_time": 1800, 
+    "login_lockout_policy": false, 
+    "login_max_attempts": 10, 
+    "login_timeframe": 600, 
+    "name": "USER", 
+    "password_policy": false, 
+    "password_reset_days": 365, 
+    "password_reuse_history": 10, 
+    "priority": 100, 
+    "updated_at": "2019-11-05T02:16:56+0000"
+  }
+}
+```
+
+### Create a User Role
+
+Use the following to create a new role.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- | 
+| Method     | POST                             | 
+| Path       | /roles                        |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key                      | Value                                                                                                             | Validation                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    | Required; Boolean                    |
+| `login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            | Required; Boolean                    |
+| `login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              | Required; Must be an integer         |
+| `login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              | Required; Boolean                    |
+| `login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 | Required; Must be an integer         |
+| `login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   | Required; Must be an integer         |
+| `name`                   | The name of the role.                                                                                             | Required; Unique; Length: 2-32 chars |
+| `password_policy`        | 'true' if the password policy is enabled.                                                                         | Required; Boolean                    |
+| `password_reset_days`    | Number of days a password is valid until user must change it.                                                     | Required; Must be an integer         |
+| `password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            | Required; Must be an integer         |
+| `priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. | Required; Must be an integer         |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                               |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 201  | Created      | Resource successfully created.                                                                                      |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                  |
+
+##### Response Payload
+
+| Key                             | Value                                                                                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------- | 
+| `role`                          | The top-level role resource.                                                                                      | 
+| `role`.`created_at`             | The datetime the role was created.                                                                                |
+| `role`.`id`                     | The role's system id.                                                                                             |
+| `role`.`is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    |
+| `role`.`login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            |
+| `role`.`login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              |
+| `role`.`login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              |
+| `role`.`login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 |
+| `role`.`login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   |
+| `role`.`name`                   | The name of the role.                                                                                             |
+| `role`.`password_policy`        | 'true' if the password policy is enabled.                                                                         |
+| `role`.`password_reset_days`    | Number of days a password is valid until user must change it.                                                     |
+| `role`.`password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            |
+| `role`.`priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. |
+| `role`.`updated_at`             | The datetime of the last time the app key was updated.                                                            |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X POST -H "Content-Type: application/json" \
+    -d '{
+        "is_admin_role": false,
+        "login_ban_by_ip": true,
+        "login_ban_time": 3600,
+        "login_lockout_policy": true,
+        "login_max_attempts": 10,
+        "login_timeframe": 900,
+        "name": "TEST_ROLE",
+        "password_policy": true,
+        "password_reset_days": 180,
+        "password_reuse_history": 10,
+        "priority": 200
+    }' \
+    https://api.admin.domain.com/v/1.0/roles?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "role": {
+    "created_at": "2019-11-05T03:14:39+0000", 
+    "id": 4, 
+    "is_admin_role": false, 
+    "login_ban_by_ip": true, 
+    "login_ban_time": 3600, 
+    "login_lockout_policy": true, 
+    "login_max_attempts": 10, 
+    "login_timeframe": 900, 
+    "name": "TEST_ROLE", 
+    "password_policy": true, 
+    "password_reset_days": 180, 
+    "password_reuse_history": 10, 
+    "priority": 200, 
+    "updated_at": "2019-11-05T03:14:39+0000"
+  }
+}
+```
+
+### Update a User Role
+
+Use the following to update an existing role.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | PUT                                             | 
+| Path            | /role/{id}                                      |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+| Headers         | `Content-Type`: application/json                |
+
+##### Request Payload
+
+| Key                      | Value                                                                                                             | Validation                           |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    | Required; Boolean                    |
+| `login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            | Required; Boolean                    |
+| `login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              | Required; Must be an integer         |
+| `login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              | Required; Boolean                    |
+| `login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 | Required; Must be an integer         |
+| `login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   | Required; Must be an integer         |
+| `name`                   | The name of the role.                                                                                             | Required; Unique; Length: 2-32 chars |
+| `password_policy`        | 'true' if the password policy is enabled.                                                                         | Required; Boolean                    |
+| `password_reset_days`    | Number of days a password is valid until user must change it.                                                     | Required; Must be an integer         |
+| `password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            | Required; Must be an integer         |
+| `priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. | Required; Must be an integer         |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                               |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| 200  | OK           | Update successful.                                                                                                  |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
+| 404  | Not Found    | No role matching the supplied ID was found.                                                                         |
+| 500  | Server error | Generic application error. Check application logs.                                                                  |
+
+##### Response Payload
+
+| Key                             | Value                                                                                                             |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------- | 
+| `role`                          | The top-level role resource.                                                                                      | 
+| `role`.`created_at`             | The datetime the role was created.                                                                                |
+| `role`.`id`                     | The role's system id.                                                                                             |
+| `role`.`is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    |
+| `role`.`login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            |
+| `role`.`login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              |
+| `role`.`login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              |
+| `role`.`login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 |
+| `role`.`login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   |
+| `role`.`name`                   | The name of the role.                                                                                             |
+| `role`.`password_policy`        | 'true' if the password policy is enabled.                                                                         |
+| `role`.`password_reset_days`    | Number of days a password is valid until user must change it.                                                     |
+| `role`.`password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            |
+| `role`.`priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. |
+| `role`.`updated_at`             | The datetime of the last time the app key was updated.                                                            |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X PUT -H "Content-Type: application/json" \
+    -d '{
+        "is_admin_role": false,
+        "login_ban_by_ip": false,
+        "login_ban_time": 7200,
+        "login_lockout_policy": true,
+        "login_max_attempts": 15,
+        "login_timeframe": 1200,
+        "name": "TEST_ROLE_A",
+        "password_policy": false,
+        "password_reset_days": 90,
+        "password_reuse_history": 5,
+        "priority": 250
+    }' \
+    https://api.admin.domain.com/v/1.0/role/4?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "role": {
+    "created_at": "2019-11-05T03:14:39+0000", 
+    "id": 4, 
+    "is_admin_role": false, 
+    "login_ban_by_ip": false, 
+    "login_ban_time": 7200, 
+    "login_lockout_policy": true, 
+    "login_max_attempts": 15, 
+    "login_timeframe": 1200, 
+    "name": "TEST_ROLE_A", 
+    "password_policy": false, 
+    "password_reset_days": 90, 
+    "password_reuse_history": 5, 
+    "priority": 250, 
+    "updated_at": "2019-11-05T03:20:38+0000"
+  }
+}
+```
+
+### Delete a User Role
+
+Use the following to permanently delete an existing role.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | DELETE                                          | 
+| Path            | /role/{id}                                      |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 204  | No Content   | Delete successful.                                 |
+| 404  | Not Found    | No role matching the supplied ID was found.        |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X DELETE https://api.admin.domain.com/v/1.0/role/4?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
 ```

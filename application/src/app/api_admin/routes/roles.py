@@ -99,6 +99,8 @@ def post_roles():
     :rtype: (str, int)
     """
 
+    # todo: add unique validation for `name`
+
     # validate data
     try:
         data, _ = RoleSchema(strict=True).load(request.json)
