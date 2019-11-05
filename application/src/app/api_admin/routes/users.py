@@ -106,6 +106,7 @@ def post_user():
 
     # init vars
     errors = {}
+    roles = []
 
     # pre-validate data
     if request.json.get('username', None):
@@ -113,12 +114,23 @@ def post_user():
             User.username == request.json.get('username')).first()
         if user_query:
             errors["username"] = ["Value must be unique."]
+
     if request.json.get('email', None):
         temp_user = User(email=request.json.get('email'))
         user_query = User.query.filter(
             User.email_digest == temp_user.email_digest).first()
         if user_query:
             errors["email"] = ["Value must be unique."]
+
+    if not request.json.get('roles', None):
+        errors["roles"] = ["Missing data for required field."]
+    else:
+        for role_id in request.json.get('roles'):
+            role = Role.query.get(role_id)
+            if role is None:
+                errors["roles"] = ["Invalid value."]
+            else:
+                roles.append(role.id)
 
     # validate data
     try:
@@ -138,12 +150,9 @@ def post_user():
                 status=data['status'],
                 status_changed_at=datetime.now())
 
-    if request.json.get('roles', []) and request.json.get('roles'):
-        for role_id in request.json.get('roles'):
-            if role_id:
-                role = Role.query.get(role_id)
-            if role:
-                user.roles.append(role)
+    for role_id in roles:
+        role = Role.query.get(role_id)
+        user.roles.append(role)
 
     # save user profile
     if 'profile' in data:
@@ -216,6 +225,7 @@ def put_user(user_id):
 
     # init vars
     errors = {}
+    roles = []
 
     # pre-validate data
     if (request.json.get('username', None) and
@@ -224,6 +234,7 @@ def put_user(user_id):
             User.username == request.json.get('username')).first()
         if user_query:
             errors["username"] = ["Value must be unique."]
+
     if (request.json.get('email', None) and
             request.json.get('email') != user.email):
         temp_user = User(email=request.json.get('email'))
@@ -231,6 +242,16 @@ def put_user(user_id):
             User.email_digest == temp_user.email_digest).first()
         if user_query:
             errors["email"] = ["Value must be unique."]
+
+    if not request.json.get('roles', None):
+        errors["roles"] = ["Missing data for required field."]
+    else:
+        for role_id in request.json.get('roles'):
+            role = Role.query.get(role_id)
+            if role is None:
+                errors["roles"] = ["Invalid value."]
+            else:
+                roles.append(role.id)
 
     # validate data
     try:
@@ -255,12 +276,9 @@ def put_user(user_id):
         user.password = data['password']
 
     user.roles[:] = []
-    if (request.json.get('roles') and
-            isinstance(request.json.get('roles'), list)):
-        for role_id in request.json.get('roles'):
-            role = Role.query.get(role_id)
-            if role is not None:
-                user.roles.append(role)
+    for role_id in roles:
+        role = Role.query.get(role_id)
+        user.roles.append(role)
 
     if user.status != data['status']:
         user.status = data['status']

@@ -614,6 +614,7 @@ class UsersTest(BaseTest):
         self.assertIn("is_verified", response.json['error'])
         self.assertIn("status", response.json['error'])
         self.assertIn("password", response.json['error'])
+        self.assertIn("roles", response.json['error'])
         self.assertNotIn("password_changed_at", response.json['error'])
     
     def test_post_user_password_comlexity(self):
@@ -633,6 +634,7 @@ class UsersTest(BaseTest):
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("username", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
     
     def test_post_user_unique_username_error(self):
@@ -651,6 +653,7 @@ class UsersTest(BaseTest):
         self.assertEqual(["Value must be unique."], response.json['error']['username'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
     
@@ -670,6 +673,7 @@ class UsersTest(BaseTest):
         self.assertEqual(["Value must be unique."], response.json['error']['email'])
         self.assertNotIn("username", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
     
@@ -688,6 +692,7 @@ class UsersTest(BaseTest):
         self.assertIn("username", response.json['error'])
         self.assertEqual(["Value must be unique."], response.json['error']['username'])
         self.assertIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
@@ -708,6 +713,7 @@ class UsersTest(BaseTest):
         self.assertEqual(["Value must be between 2 and 40 characters long."], response.json['error']['username'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
     
@@ -727,6 +733,7 @@ class UsersTest(BaseTest):
         self.assertEqual(["Value must not be a number."], response.json['error']['username'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
     
@@ -746,6 +753,7 @@ class UsersTest(BaseTest):
         self.assertEqual(["Value must contain only alphanumeric characters and the underscore."], response.json['error']['username'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
 
@@ -768,6 +776,7 @@ class UsersTest(BaseTest):
         self.assertNotIn("username", response.json['error'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
 
@@ -789,6 +798,7 @@ class UsersTest(BaseTest):
         self.assertNotIn("username", response.json['error'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
         self.assertNotIn("last_name", response.json['error']['profile'])
@@ -812,6 +822,7 @@ class UsersTest(BaseTest):
         self.assertNotIn("username", response.json['error'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
         self.assertNotIn("first_name", response.json['error']['profile'])
@@ -835,12 +846,74 @@ class UsersTest(BaseTest):
         self.assertNotIn("username", response.json['error'])
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
         self.assertNotIn("first_name", response.json['error']['profile'])
         self.assertNotIn("last_name", response.json['error']['profile'])
 
-    # @todo: test 500 error for bad role
+    def test_post_user_no_roles_error(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("profile", response.json['error'])
+
+    def test_post_user_empty_roles_error(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","roles":[],"status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("profile", response.json['error'])
+
+    def test_post_user_invalid_roles_error(self):
+
+        response = self.client.post(
+            '/users?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user9","email":"user9@test.com","is_verified":false,"password":"user9Pass","roles":[250, 305],"status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Invalid value."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("profile", response.json['error'])
 
     def test_post_user_success(self):
 
@@ -1225,6 +1298,69 @@ class UsersTest(BaseTest):
         self.assertNotIn("password", response.json['error'])
         self.assertNotIn("first_name", response.json['error']['profile'])
         self.assertNotIn("last_name", response.json['error']['profile'])
+
+    def test_put_user_no_roles_error(self):
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                                 + get_http_basic_auth_credentials(
+                    AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("profile", response.json['error'])
+
+    def test_put_user_empty_roles_error(self):
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","roles":[],"status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                                 + get_http_basic_auth_credentials(
+                    AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("profile", response.json['error'])
+
+    def test_put_user_invalid_roles_error(self):
+        response = self.client.put(
+            '/user/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"user2a","email":"user2a@test.com","is_verified":false,"password":"user2Pass","roles":[250, 305],"status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                                 + get_http_basic_auth_credentials(
+                    AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Invalid value."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("is_verified", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("profile", response.json['error'])
 
     def test_put_user_user_2(self):
 

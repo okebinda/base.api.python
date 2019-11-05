@@ -498,10 +498,6 @@ class AppKeysTest(BaseTest):
         self.assertEqual(404, response.status_code)
         self.assertEqual("Not found", response.json['error'])
 
-
-
-
-
     def test_put_app_key_unique_key_error(self):
 
         response = self.client.put(
@@ -518,10 +514,6 @@ class AppKeysTest(BaseTest):
         self.assertEqual(["Value must be unique."], response.json['error']['key'])
         self.assertNotIn("application", response.json['error'])
         self.assertNotIn("status", response.json['error'])
-
-
-
-
 
     def test_put_app_key_id2(self):
 

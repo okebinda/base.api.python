@@ -32,8 +32,8 @@ This project is a starter package for a REST API written in Python 3.
 * Manage administrators
 * Manage users and user profiles
 * Manage terms of services
-* Manage countries
-* Manage regions
+* List countries
+* List regions
 * List logins
 * List password reset requests
 * List notifications

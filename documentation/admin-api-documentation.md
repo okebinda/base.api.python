@@ -527,7 +527,7 @@ Use the following to create a new application key.
 | ------------- | ---------------------------------------------------- | ----------------------------------- | 
 | `application` | The name of the application assigned to the app key. | Required; Length: 2-200 chars       | 
 | `key`         | The application key itself.                          | Required; Unique; Length: 32 chars; |
-| `status`      | The status of the app key.                           | Required; Must be an integer        |
+| `status`      | The status of the app key.                           | Required; Integer                   |
 
 ##### Response Codes
  
@@ -600,7 +600,7 @@ Use the following to update an existing application key.
 | ------------- | ---------------------------------------------------- | ----------------------------------- | 
 | `application` | The name of the application assigned to the app key. | Required; Length: 2-200 chars       | 
 | `key`         | The application key itself.                          | Required; Unique; Length: 32 chars; |
-| `status`      | The status of the app key.                           | Required; Must be an integer        |
+| `status`      | The status of the app key.                           | Required; Integer                   |
 
 ##### Response Codes
  
@@ -893,15 +893,15 @@ Use the following to create a new role.
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    | Required; Boolean                    |
 | `login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            | Required; Boolean                    |
-| `login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              | Required; Must be an integer         |
+| `login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              | Required; Integer                    |
 | `login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              | Required; Boolean                    |
-| `login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 | Required; Must be an integer         |
-| `login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   | Required; Must be an integer         |
+| `login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 | Required; Integer                    |
+| `login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   | Required; Integer                    |
 | `name`                   | The name of the role.                                                                                             | Required; Unique; Length: 2-32 chars |
 | `password_policy`        | 'true' if the password policy is enabled.                                                                         | Required; Boolean                    |
-| `password_reset_days`    | Number of days a password is valid until user must change it.                                                     | Required; Must be an integer         |
-| `password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            | Required; Must be an integer         |
-| `priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. | Required; Must be an integer         |
+| `password_reset_days`    | Number of days a password is valid until user must change it.                                                     | Required; Integer                    |
+| `password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            | Required; Integer                    |
+| `priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. | Required; Integer                    |
 
 ##### Response Codes
  
@@ -996,15 +996,15 @@ Use the following to update an existing role.
 | ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | `is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    | Required; Boolean                    |
 | `login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            | Required; Boolean                    |
-| `login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              | Required; Must be an integer         |
+| `login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              | Required; Integer                    |
 | `login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              | Required; Boolean                    |
-| `login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 | Required; Must be an integer         |
-| `login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   | Required; Must be an integer         |
+| `login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 | Required; Integer                    |
+| `login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   | Required; Integer                    |
 | `name`                   | The name of the role.                                                                                             | Required; Unique; Length: 2-32 chars |
 | `password_policy`        | 'true' if the password policy is enabled.                                                                         | Required; Boolean                    |
-| `password_reset_days`    | Number of days a password is valid until user must change it.                                                     | Required; Must be an integer         |
-| `password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            | Required; Must be an integer         |
-| `priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. | Required; Must be an integer         |
+| `password_reset_days`    | Number of days a password is valid until user must change it.                                                     | Required; Integer                    |
+| `password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            | Required; Integer                    |
+| `priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. | Required; Integer                    |
 
 ##### Response Codes
  
@@ -1319,7 +1319,7 @@ Use the following to create a administrator.
 | `last_name`  | The administrator's last name.           | Required; Length: 2-40 chars                                                                               |
 | `password`   | The administrator's password.            | Required; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
 | `roles`      | List of the administrator's role IDs.    | Required; List literal of Role IDs (integers)                                                              |
-| `status`     | The status of the administrator.         | Required; Must be an integer                                                                               |
+| `status`     | The status of the administrator.         | Required; Integer                                                                                          |
 | `username`   | The administrator's username.            | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
 
 ##### Response Codes
@@ -1421,7 +1421,7 @@ Use the following to update an existing administrator.
 | `last_name`  | The administrator's last name.           | Required; Length: 2-40 chars                                                                               |
 | `password`   | The administrator's password.            | Optional; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
 | `roles`      | List of the administrator's role IDs.    | Required; List literal of Role IDs (integers)                                                              |
-| `status`     | The status of the administrator.         | Required; Must be an integer                                                                               |
+| `status`     | The status of the administrator.         | Required; Integer                                                                                          |
 | `username`   | The administrator's username.            | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
 
 ##### Response Codes
@@ -1527,5 +1527,516 @@ Use the following to permanently delete an existing administrator.
 
 ```ssh
 curl -X DELETE https://api.admin.domain.com/v/1.0/administrator/8?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+<br><br>
+
+## Users
+
+### List Users
+
+Use the following to read a list of users.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                                                 |
+| Paths           | /users<br>/users/{page}<br>/users/{page}/{limit}                                                                                                                                                                                                                                    |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                                                           |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'username.asc', 'username.desc']; Default: 'id.asc'<br>- `role`: Integer; ID of role to filter results by; Optional |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no users on this page.                   |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                                                          | Value                                                                                                                  |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | 
+| `limit`                                                      | The limit of items to show on a single page.                                                                           |
+| `next_uri`                                                   | The URI of the next page of results, if available.                                                                     |
+| `page`                                                       | The current list page number.                                                                                          |
+| `previous_uri`                                               | The URI of the previous page of results, if available.                                                                 |
+| `total`                                                      | The total count of items found.                                                                                        |
+| `users`                                                      | The top-level users list resource.                                                                                     | 
+| `users`[].`created_at`                                       | The datetime the user was created.                                                                                     |
+| `users`[].`email`                                            | The user's email address.                                                                                              |
+| `users`[].`id`                                               | The user's system id.                                                                                                  |
+| `users`[].`is_verified`                                      | 'true' if user has been verified - this determination is for the system owner to define, and can be ignored if unused. |
+| `users`[].`password_changed_at`                              | The last time the user changed their password.                                                                         |
+| `users`[].`profile`                                          | The user's profile object.                                                                                             |
+| `users`[].`profile`.`first_name`                             | The user's first name.                                                                                                 |
+| `users`[].`profile`.`joined_at`                              | The datetime the user joined the system.                                                                               |
+| `users`[].`profile`.`last_name`                              | The user's last name.                                                                                                  |
+| `users`[].`roles`                                            | List of the user's roles.                                                                                              |
+| `users`[].`roles`[].`id`                                     | The role's system ID.                                                                                                  |
+| `users`[].`roles`[].`name`                                   | The role's name.                                                                                                       |
+| `users`[].`status`                                           | The status of the user.                                                                                                |
+| `users`[].`status_changed_at`                                | The datetime of the last time the status was changed.                                                                  |
+| `users`[].`terms_of_services`                                | List of Terms of Services the user has accepted.                                                                       |
+| `users`[].`terms_of_services`[].`accept_date`                | The datetime the user accepted the Terms of Service.                                                                   |
+| `users`[].`terms_of_services`[].`ip_address`                 | The IP address of the system the user accepted the Terms of Service on.                                                |
+| `users`[].`terms_of_services`[].`terms_of_service`           | The Terms of Service object.                                                                                           |
+| `users`[].`terms_of_services`[].`terms_of_service`.`id`      | The Terms of Service system id.                                                                                        |
+| `users`[].`terms_of_services`[].`terms_of_service`.`version` | The Terms of Service version number.                                                                                   |
+| `users`[].`updated_at`                                       | The datetime of the last time user was updated.                                                                        |
+| `users`[].`uri`                                              | The API endpoint for the user's resource.                                                                              |
+| `users`[].`username`                                         | The user's username.                                                                                                   |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/users/2/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 2, 
+  "next_uri": "https://api.admin.domain.com/v/1.0/users/3/2", 
+  "page": 2, 
+  "previous_uri": "https://api.admin.domain.com/v/1.0/users/1/2", 
+  "total": 7, 
+  "users": [
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "email": "user3@test.com", 
+      "id": 3, 
+      "is_verified": true, 
+      "password_changed_at": "2019-11-05T02:16:45+0000", 
+      "profile": {
+        "first_name": "Duane", 
+        "joined_at": "2018-12-15T00:00:00+0000", 
+        "last_name": "Hargrave"
+      }, 
+      "roles": [
+        {
+          "id": 1, 
+          "name": "USER"
+        }
+      ], 
+      "status": 1, 
+      "status_changed_at": "2018-12-15T00:00:00+0000", 
+      "terms_of_services": [
+        {
+          "accept_date": "2019-01-02T00:00:00+0000", 
+          "ip_address": "1.1.1.3", 
+          "terms_of_service": {
+            "id": 2, 
+            "version": "1.1"
+          }
+        }
+      ], 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "uri": "https://api.admin.domain.com/v/1.0/user/3", 
+      "username": "user3"
+    }, 
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "email": "user5@test.com", 
+      "id": 5, 
+      "is_verified": false, 
+      "password_changed_at": "2019-11-05T02:16:49+0000", 
+      "profile": {
+        "first_name": "Elroy", 
+        "joined_at": "2018-12-20T00:00:00+0000", 
+        "last_name": "Hunnicutt"
+      }, 
+      "roles": [
+        {
+          "id": 1, 
+          "name": "USER"
+        }
+      ], 
+      "status": 2, 
+      "status_changed_at": "2018-12-25T00:00:00+0000", 
+      "terms_of_services": [], 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "uri": "https://api.admin.domain.com/v/1.0/user/5", 
+      "username": "user5"
+    }
+  ]
+}
+```
+
+### Read a User
+
+Use the following to read the information for a specific user.
+
+##### Request
+
+| HTTP            | Value                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------- | 
+| Method          | GET                                                                                           | 
+| Path            | /user/{id}<br>/user/{username}                                                                |
+| Path Parameters | - `id`: Integer; The system ID for the resource<br>- `username`: String; The user's username. |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                               |
+| ---- | ------------ | --------------------------------------------------- |
+| 200  | OK           | Request successful.                                 |
+| 404  | Not Found    | No user matching the supplied ID or name was found. |
+| 500  | Server error | Generic application error. Check application logs.  |
+
+##### Response Payload
+
+| Key                                                       | Value                                                                                                                  |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | 
+| `user`                                                    | The top-level users list resource.                                                                                     | 
+| `user`.`created_at`                                       | The datetime the user was created.                                                                                     |
+| `user`.`email`                                            | The user's email address.                                                                                              |
+| `user`.`id`                                               | The user's system id.                                                                                                  |
+| `user`.`is_verified`                                      | 'true' if user has been verified - this determination is for the system owner to define, and can be ignored if unused. |
+| `user`.`password_changed_at`                              | The last time the user changed their password.                                                                         |
+| `user`.`profile`                                          | The user's profile object.                                                                                             |
+| `user`.`profile`.`first_name`                             | The user's first name.                                                                                                 |
+| `user`.`profile`.`joined_at`                              | The datetime the user joined the system.                                                                               |
+| `user`.`profile`.`last_name`                              | The user's last name.                                                                                                  |
+| `user`.`roles`                                            | List of the user's roles.                                                                                              |
+| `user`.`roles`[].`id`                                     | The role's system ID.                                                                                                  |
+| `user`.`roles`[].`name`                                   | The role's name.                                                                                                       |
+| `user`.`status`                                           | The status of the user.                                                                                                |
+| `user`.`status_changed_at`                                | The datetime of the last time the status was changed.                                                                  |
+| `user`.`terms_of_services`                                | List of Terms of Services the user has accepted.                                                                       |
+| `user`.`terms_of_services`[].`accept_date`                | The datetime the user accepted the Terms of Service.                                                                   |
+| `user`.`terms_of_services`[].`ip_address`                 | The IP address of the system the user accepted the Terms of Service on.                                                |
+| `user`.`terms_of_services`[].`terms_of_service`           | The Terms of Service object.                                                                                           |
+| `user`.`terms_of_services`[].`terms_of_service`.`id`      | The Terms of Service system id.                                                                                        |
+| `user`.`terms_of_services`[].`terms_of_service`.`version` | The Terms of Service version number.                                                                                   |
+| `user`.`updated_at`                                       | The datetime of the last time user was updated.                                                                        |
+| `user`.`uri`                                              | The API endpoint for the user's resource.                                                                              |
+| `user`.`username`                                         | The user's username.                                                                                                   |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/user/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "user": {
+    "created_at": "2019-11-05T02:16:56+0000", 
+    "email": "user2@test.com", 
+    "id": 2, 
+    "is_verified": true, 
+    "password_changed_at": "2019-11-05T02:16:43+0000", 
+    "profile": {
+      "first_name": "Lynne", 
+      "joined_at": "2018-12-10T00:00:00+0000", 
+      "last_name": "Harford"
+    }, 
+    "roles": [
+      {
+        "id": 1, 
+        "name": "USER"
+      }
+    ], 
+    "status": 1, 
+    "status_changed_at": "2018-12-10T00:00:00+0000", 
+    "terms_of_services": [
+      {
+        "accept_date": "2019-01-06T00:00:00+0000", 
+        "ip_address": "1.1.1.2", 
+        "terms_of_service": {
+          "id": 2, 
+          "version": "1.1"
+        }
+      }, 
+      {
+        "accept_date": "2018-12-10T00:00:00+0000", 
+        "ip_address": "1.1.1.2", 
+        "terms_of_service": {
+          "id": 1, 
+          "version": "1.0"
+        }
+      }
+    ], 
+    "updated_at": "2019-11-05T02:16:56+0000", 
+    "uri": "https://api.admin.domain.com/v/1.0/user/2", 
+    "username": "user2"
+  }
+}
+```
+
+### Create a User
+
+Use the following to create a user.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- |
+| Method     | POST                             |
+| Path       | /users                           |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key                    | Value                                    | Validation                                                                                                 |
+| ---------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `email`                | The user's email address.                | Required; Unique; Valid email address format                                                               |
+| `is_verified`          | 'true' if user has been verified         | Required; Boolean                                                                                          |
+| `password`             | The users's password.                    | Required; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
+| `profile`              | The user's profile object.               | Optional; Object                                                                                           |
+| `profile`.`first_name` | The user's first name.                   | Required; Length: 1-40 chars                                                                               |
+| `profile`.`joined_at`  | The datetime the user joined the system. | Required; Datetime                                                                                         |
+| `profile`.`last_name`  | The user's last name.                    | Required; Length: 2-40 chars                                                                               |
+| `roles`                | List of the users's role IDs.            | Required; List literal of Role IDs (integers)                                                              |
+| `status`               | The status of the user.                  | Required; Integer                                                                                          |
+| `username`             | The user's username.                     | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 201  | Created      | Resource successfully created.                                                                                     |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                                       | Value                                                                                                                  |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | 
+| `user`                                                    | The top-level users list resource.                                                                                     | 
+| `user`.`created_at`                                       | The datetime the user was created.                                                                                     |
+| `user`.`email`                                            | The user's email address.                                                                                              |
+| `user`.`id`                                               | The user's system id.                                                                                                  |
+| `user`.`is_verified`                                      | 'true' if user has been verified - this determination is for the system owner to define, and can be ignored if unused. |
+| `user`.`password_changed_at`                              | The last time the user changed their password.                                                                         |
+| `user`.`profile`                                          | The user's profile object.                                                                                             |
+| `user`.`profile`.`first_name`                             | The user's first name.                                                                                                 |
+| `user`.`profile`.`joined_at`                              | The datetime the user joined the system.                                                                               |
+| `user`.`profile`.`last_name`                              | The user's last name.                                                                                                  |
+| `user`.`roles`                                            | List of the user's roles.                                                                                              |
+| `user`.`roles`[].`id`                                     | The role's system ID.                                                                                                  |
+| `user`.`roles`[].`name`                                   | The role's name.                                                                                                       |
+| `user`.`status`                                           | The status of the user.                                                                                                |
+| `user`.`status_changed_at`                                | The datetime of the last time the status was changed.                                                                  |
+| `user`.`terms_of_services`                                | List of Terms of Services the user has accepted.                                                                       |
+| `user`.`terms_of_services`[].`accept_date`                | The datetime the user accepted the Terms of Service.                                                                   |
+| `user`.`terms_of_services`[].`ip_address`                 | The IP address of the system the user accepted the Terms of Service on.                                                |
+| `user`.`terms_of_services`[].`terms_of_service`           | The Terms of Service object.                                                                                           |
+| `user`.`terms_of_services`[].`terms_of_service`.`id`      | The Terms of Service system id.                                                                                        |
+| `user`.`terms_of_services`[].`terms_of_service`.`version` | The Terms of Service version number.                                                                                   |
+| `user`.`updated_at`                                       | The datetime of the last time user was updated.                                                                        |
+| `user`.`uri`                                              | The API endpoint for the user's resource.                                                                              |
+| `user`.`username`                                         | The user's username.                                                                                                   |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X POST -H "Content-Type: application/json" \
+    -d '{
+        "email": "user10@test.com",
+        "is_verified": false,
+        "password": "user10Pass",
+        "profile": {
+            "first_name": "Vivyan",
+            "joined_at": "2019-05-21T08:30:00+0000",
+            "last_name": "Joyce"
+        },
+        "roles": [1],
+        "status": 5,
+        "username": "user10"
+    }' \
+    https://api.admin.domain.com/v/1.0/users?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "user": {
+    "created_at": "2019-11-05T11:03:56+0000", 
+    "email": "user10@test.com", 
+    "id": 10, 
+    "is_verified": false, 
+    "password_changed_at": "2019-11-05T11:03:58+0000", 
+    "profile": {
+      "first_name": "Vivyan", 
+      "joined_at": "2019-05-21T08:30:00+0000", 
+      "last_name": "Joyce"
+    }, 
+    "roles": [
+      {
+        "id": 1, 
+        "name": "USER"
+      }
+    ], 
+    "status": 5, 
+    "status_changed_at": "2019-11-05T11:03:56+0000", 
+    "terms_of_services": [], 
+    "updated_at": "2019-11-05T11:03:56+0000", 
+    "uri": "https://api.admin.domain.com/v/1.0/user/10", 
+    "username": "user10"
+  }
+}
+```
+
+### Update a User
+
+Use the following to update an existing user.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | PUT                                             | 
+| Path            | /user/{id}                                      |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+| Headers         | `Content-Type`: application/json                |
+
+##### Request Payload
+
+| Key                    | Value                                    | Validation                                                                                                 |
+| ---------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `email`                | The user's email address.                | Required; Unique; Valid email address format                                                               |
+| `is_verified`          | 'true' if user has been verified         | Required; Boolean                                                                                          |
+| `password`             | The users's password.                    | Optional; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
+| `profile`              | The user's profile object.               | Optional; Object                                                                                           |
+| `profile`.`first_name` | The user's first name.                   | Required; Length: 1-40 chars                                                                               |
+| `profile`.`joined_at`  | The datetime the user joined the system. | Required; Datetime                                                                                         |
+| `profile`.`last_name`  | The user's last name.                    | Required; Length: 2-40 chars                                                                               |
+| `roles`                | List of the users's role IDs.            | Required; List literal of Role IDs (integers)                                                              |
+| `status`               | The status of the user.                  | Required; Integer                                                                                          |
+| `username`             | The user's username.                     | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 404  | Not Found    | No user matching the supplied ID was found.                                                                        |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                                       | Value                                                                                                                  |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | 
+| `user`                                                    | The top-level users list resource.                                                                                     | 
+| `user`.`created_at`                                       | The datetime the user was created.                                                                                     |
+| `user`.`email`                                            | The user's email address.                                                                                              |
+| `user`.`id`                                               | The user's system id.                                                                                                  |
+| `user`.`is_verified`                                      | 'true' if user has been verified - this determination is for the system owner to define, and can be ignored if unused. |
+| `user`.`password_changed_at`                              | The last time the user changed their password.                                                                         |
+| `user`.`profile`                                          | The user's profile object.                                                                                             |
+| `user`.`profile`.`first_name`                             | The user's first name.                                                                                                 |
+| `user`.`profile`.`joined_at`                              | The datetime the user joined the system.                                                                               |
+| `user`.`profile`.`last_name`                              | The user's last name.                                                                                                  |
+| `user`.`roles`                                            | List of the user's roles.                                                                                              |
+| `user`.`roles`[].`id`                                     | The role's system ID.                                                                                                  |
+| `user`.`roles`[].`name`                                   | The role's name.                                                                                                       |
+| `user`.`status`                                           | The status of the user.                                                                                                |
+| `user`.`status_changed_at`                                | The datetime of the last time the status was changed.                                                                  |
+| `user`.`terms_of_services`                                | List of Terms of Services the user has accepted.                                                                       |
+| `user`.`terms_of_services`[].`accept_date`                | The datetime the user accepted the Terms of Service.                                                                   |
+| `user`.`terms_of_services`[].`ip_address`                 | The IP address of the system the user accepted the Terms of Service on.                                                |
+| `user`.`terms_of_services`[].`terms_of_service`           | The Terms of Service object.                                                                                           |
+| `user`.`terms_of_services`[].`terms_of_service`.`id`      | The Terms of Service system id.                                                                                        |
+| `user`.`terms_of_services`[].`terms_of_service`.`version` | The Terms of Service version number.                                                                                   |
+| `user`.`updated_at`                                       | The datetime of the last time user was updated.                                                                        |
+| `user`.`uri`                                              | The API endpoint for the user's resource.                                                                              |
+| `user`.`username`                                         | The user's username.                                                                                                   |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X PUT -H "Content-Type: application/json" \
+    -d '{
+        "email": "user10a@test.com",
+        "is_verified": true,
+        "profile": {
+            "first_name": "Vivian",
+            "joined_at": "2019-06-21T08:30:00+0000",
+            "last_name": "Joycee"
+        },
+        "roles": [1],
+        "status": 2,
+        "username": "user10a"
+    }' \
+    https://api.admin.domain.com/v/1.0/user/10?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "user": {
+    "created_at": "2019-11-05T11:03:56+0000", 
+    "email": "user10a@test.com", 
+    "id": 10, 
+    "is_verified": true, 
+    "password_changed_at": "2019-11-05T11:03:58+0000", 
+    "profile": {
+      "first_name": "Vivian", 
+      "joined_at": "2019-06-21T08:30:00+0000", 
+      "last_name": "Joycee"
+    }, 
+    "roles": [
+      {
+        "id": 1, 
+        "name": "USER"
+      }
+    ], 
+    "status": 2, 
+    "status_changed_at": "2019-11-05T11:35:31+0000", 
+    "terms_of_services": [], 
+    "updated_at": "2019-11-05T11:35:31+0000", 
+    "uri": "https://api.admin.domain.com/v/1.0/user/10", 
+    "username": "user10a"
+  }
+}
+```
+
+### Delete a User
+
+Use the following to permanently delete an existing user.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | DELETE                                          | 
+| Path            | /user/{id}                                      |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                |
+| ---- | ------------ | ---------------------------------------------------- |
+| 204  | No Content   | Delete successful.                                   |
+| 404  | Not Found    | No user matching the supplied ID was found.          |
+| 500  | Server error | Generic application error. Check application logs.   |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X DELETE https://api.admin.domain.com/v/1.0/user/10?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
 ```
