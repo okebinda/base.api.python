@@ -53,8 +53,15 @@ class AdministratorSchema(ma.Schema):
     id = fields.Integer()
     username = fields.String(
         required=True,
-        validate=validate.Regexp(
-            r'(?!^\d+$)^.+$', 0, 'Value must not be a number'))
+        validate=[
+            validate.Length(
+                2, 40, "Value must be between 2 and 40 characters long."),
+            validate.Regexp(
+                r'(?!^\d+$)^.+$', 0, 'Value must not be a number.'),
+            validate.Regexp(
+                r'^\w+$', 0, ''.join(["Value must contain only alphanumeric ",
+                                      "characters and the underscore."])),
+        ])
     email = fields.Email(required=True)
     first_name = fields.String(
         required=True,

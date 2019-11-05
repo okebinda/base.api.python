@@ -99,13 +99,25 @@ def post_roles():
     :rtype: (str, int)
     """
 
-    # todo: add unique validation for `name`
+    # init vars
+    errors = {}
+
+    # pre-validate data
+    if request.json.get('name', None):
+        role_query = Role.query.filter(
+            Role.name == request.json.get('name')).first()
+        if role_query:
+            errors["name"] = ["Value must be unique."]
 
     # validate data
     try:
         data, _ = RoleSchema(strict=True).load(request.json)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        errors = dict(list(errors.items()) + list(err.messages.items()))
+
+    # return any errors
+    if errors:
+        return jsonify({"error": errors}), 400
 
     # save role
     role = Role(
@@ -178,11 +190,26 @@ def put_role(role_id):
     if role is None:
         abort(404)
 
+    # init vars
+    errors = {}
+
+    # pre-validate data
+    if (request.json.get('name', None) and
+            request.json.get('name') != role.name):
+        role_query = Role.query.filter(
+            Role.name == request.json.get('name')).first()
+        if role_query:
+            errors["name"] = ["Value must be unique."]
+
     # validate data
     try:
         data, _ = RoleSchema(strict=True).load(request.json)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        errors = dict(list(errors.items()) + list(err.messages.items()))
+
+    # return any errors
+    if errors:
+        return jsonify({"error": errors}), 400
 
     # save role
     role.name = data['name']

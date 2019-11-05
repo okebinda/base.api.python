@@ -375,7 +375,32 @@ class RolesTest(BaseTest):
         self.assertEqual(400, response.status_code)
         self.assertIn("error", response.json)
         self.assertIn("name", response.json['error'])
-    
+
+    def test_post_role_unique_name_error(self):
+
+        response = self.client.post(
+            '/roles?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"name":"USER","is_admin_role":true,"priority":50,"login_lockout_policy":true,"login_max_attempts":6,"login_timeframe":360,"login_ban_time":3600,"login_ban_by_ip":false,"password_policy":true,"password_reuse_history":5,"password_reset_days":180}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("name", response.json['error'])
+        self.assertEqual(["Value must be unique."], response.json['error']['name'])
+        self.assertNotIn("is_admin_role", response.json['error'])
+        self.assertNotIn("priority", response.json['error'])
+        self.assertNotIn("login_lockout_policy", response.json['error'])
+        self.assertNotIn("login_max_attempts", response.json['error'])
+        self.assertNotIn("login_timeframe", response.json['error'])
+        self.assertNotIn("login_ban_time", response.json['error'])
+        self.assertNotIn("login_ban_by_ip", response.json['error'])
+        self.assertNotIn("password_policy", response.json['error'])
+        self.assertNotIn("password_reuse_history", response.json['error'])
+        self.assertNotIn("password_reset_days", response.json['error'])
+
     def test_post_role_success(self):
 
         response = self.client.post(
@@ -491,7 +516,32 @@ class RolesTest(BaseTest):
 
         self.assertEqual(404, response.status_code)
         self.assertEqual("Not found", response.json['error'])
-    
+
+    def test_put_role_unique_role_error(self):
+
+        response = self.client.put(
+            '/role/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"name":"USER","is_admin_role":false,"priority":200,"login_lockout_policy":true,"login_max_attempts":6,"login_timeframe":360,"login_ban_time":3600,"login_ban_by_ip":false,"password_policy":false,"password_reuse_history":8,"password_reset_days":45}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("name", response.json['error'])
+        self.assertEqual(["Value must be unique."], response.json['error']['name'])
+        self.assertNotIn("is_admin_role", response.json['error'])
+        self.assertNotIn("priority", response.json['error'])
+        self.assertNotIn("login_lockout_policy", response.json['error'])
+        self.assertNotIn("login_max_attempts", response.json['error'])
+        self.assertNotIn("login_timeframe", response.json['error'])
+        self.assertNotIn("login_ban_time", response.json['error'])
+        self.assertNotIn("login_ban_by_ip", response.json['error'])
+        self.assertNotIn("password_policy", response.json['error'])
+        self.assertNotIn("password_reuse_history", response.json['error'])
+        self.assertNotIn("password_reset_days", response.json['error'])
+
     def test_put_role_admin(self):
 
         response = self.client.put(

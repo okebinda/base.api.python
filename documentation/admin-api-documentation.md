@@ -1318,7 +1318,7 @@ Use the following to create a administrator.
 | `joined_at`  | The datetime the user joined the system. | Required; Datetime                                                                                         |
 | `last_name`  | The administrator's last name.           | Required; Length: 2-40 chars                                                                               |
 | `password`   | The administrator's password.            | Required; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
-| `roles`      | List of the administrator's role IDs.    | Optional; List literal of Role IDs (integers)                                                              |
+| `roles`      | List of the administrator's role IDs.    | Required; List literal of Role IDs (integers)                                                              |
 | `status`     | The status of the administrator.         | Required; Must be an integer                                                                               |
 | `username`   | The administrator's username.            | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
 
@@ -1420,7 +1420,7 @@ Use the following to update an existing administrator.
 | `joined_at`  | The datetime the user joined the system. | Required; Datetime                                                                                         |
 | `last_name`  | The administrator's last name.           | Required; Length: 2-40 chars                                                                               |
 | `password`   | The administrator's password.            | Optional; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
-| `roles`      | List of the administrator's role IDs.    | Optional; List literal of Role IDs (integers)                                                              |
+| `roles`      | List of the administrator's role IDs.    | Required; List literal of Role IDs (integers)                                                              |
 | `status`     | The status of the administrator.         | Required; Must be an integer                                                                               |
 | `username`   | The administrator's username.            | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
 

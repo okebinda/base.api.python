@@ -539,6 +539,7 @@ class AdministratorsTest(BaseTest):
         self.assertIn("first_name", response.json['error'])
         self.assertIn("last_name", response.json['error'])
         self.assertIn("joined_at", response.json['error'])
+        self.assertIn("roles", response.json['error'])
         self.assertIn("status", response.json['error'])
         self.assertIn("password", response.json['error'])
         self.assertNotIn("password_changed_at", response.json['error'])
@@ -562,6 +563,7 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("first_name", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
 
     def test_post_administrator_unique_username_error(self):
@@ -583,6 +585,7 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("first_name", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
 
     def test_post_administrator_unique_email_error(self):
@@ -604,6 +607,7 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("first_name", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
     
     def test_post_administrator_unique_username_and_no_first_name_error(self):
@@ -625,9 +629,141 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("email", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
 
-    # @todo: test 500 error for bad role
+    def test_post_administrator_numeric_username_error(self):
+
+        response = self.client.post(
+            '/administrators?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"1234","email":"admin8@test.com","first_name":"Blanch","last_name":"Causer","joined_at":"2019-02-10T00:00:00+0000","password":"user8Pass","roles":[2],"status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("username", response.json['error'])
+        self.assertEqual(["Value must not be a number."], response.json['error']['username'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_post_administrator_username_length_error(self):
+
+        response = self.client.post(
+            '/administrators?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"a","email":"admin8@test.com","first_name":"Blanch","last_name":"Causer","joined_at":"2019-02-10T00:00:00+0000","password":"user8Pass","roles":[2],"status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                                 + get_http_basic_auth_credentials(
+                    AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("username", response.json['error'])
+        self.assertEqual(["Value must be between 2 and 40 characters long."], response.json['error']['username'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_post_administrator_username_character_error(self):
+        response = self.client.post(
+            '/administrators?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"a^j&s@","email":"admin8@test.com","first_name":"Blanch","last_name":"Causer","joined_at":"2019-02-10T00:00:00+0000","password":"user8Pass","roles":[2],"status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                                 + get_http_basic_auth_credentials(
+                    AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("username", response.json['error'])
+        self.assertEqual(["Value must contain only alphanumeric characters and the underscore."],  response.json['error']['username'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_post_administrator_no_roles_error(self):
+
+        response = self.client.post(
+            '/administrators?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"admin8","email":"admin8@test.com","first_name":"Blanch","last_name":"Causer","joined_at":"2019-02-10T00:00:00+0000","password":"user8Pass","status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_post_administrator_empty_roles_error(self):
+
+        response = self.client.post(
+            '/administrators?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"admin8","email":"admin8@test.com","first_name":"Blanch","last_name":"Causer","joined_at":"2019-02-10T00:00:00+0000","password":"user8Pass","roles":[],"status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_post_administrator_invalid_roles_error(self):
+
+        response = self.client.post(
+            '/administrators?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"admin8","email":"admin8@test.com","first_name":"Blanch","last_name":"Causer","joined_at":"2019-02-10T00:00:00+0000","password":"user8Pass","roles":[250, 305],"status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Invalid value."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
 
     def test_post_administrator_success(self):
 
@@ -722,6 +858,7 @@ class AdministratorsTest(BaseTest):
         self.assertIn("first_name", response.json['error'])
         self.assertIn("last_name", response.json['error'])
         self.assertIn("joined_at", response.json['error'])
+        self.assertIn("roles", response.json['error'])
         self.assertIn("status", response.json['error'])
         self.assertNotIn("password", response.json['error'])
         self.assertNotIn("password_changed_at", response.json['error'])
@@ -758,6 +895,7 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("first_name", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
     
     def test_put_administrator_unique_username_error(self):
@@ -779,6 +917,7 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("first_name", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
 
     def test_put_administrator_unique_email_error(self):
@@ -800,6 +939,7 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("first_name", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
     
     def test_put_administrator_unique_username_and_no_first_name_error(self):
@@ -821,7 +961,144 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("password", response.json['error'])
         self.assertNotIn("last_name", response.json['error'])
         self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
         self.assertNotIn("status", response.json['error'])
+
+    def test_put_administrator_numeric_username_error(self):
+
+        response = self.client.put(
+            '/administrator/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"1234","email":"admin2a@test.com","first_name":"Selmma","last_name":"Keyyes","joined_at":"2018-11-06T00:00:00+0000","password":"user8Pass","roles":[2],"status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("username", response.json['error'])
+        self.assertEqual(["Value must not be a number."], response.json['error']['username'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_put_administrator_username_length_error(self):
+
+        response = self.client.put(
+            '/administrator/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"a","email":"admin2a@test.com","first_name":"Selmma","last_name":"Keyyes","joined_at":"2018-11-06T00:00:00+0000","password":"user8Pass","roles":[2],"status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("username", response.json['error'])
+        self.assertEqual(["Value must be between 2 and 40 characters long."], response.json['error']['username'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_put_administrator_username_characters_error(self):
+
+        response = self.client.put(
+            '/administrator/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"a$g&j@","email":"admin2a@test.com","first_name":"Selmma","last_name":"Keyyes","joined_at":"2018-11-06T00:00:00+0000","password":"user8Pass","roles":[2],"status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("username", response.json['error'])
+        self.assertEqual(["Value must contain only alphanumeric characters and the underscore."], response.json['error']['username'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("roles", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_put_administrator_no_roles_error(self):
+
+        response = self.client.put(
+            '/administrator/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"admin2a","email":"admin2a@test.com","first_name":"Selmma","last_name":"Keyyes","joined_at":"2018-11-06T00:00:00+0000","password":"user8Pass","status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_put_administrator_empty_roles_error(self):
+
+        response = self.client.put(
+            '/administrator/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"admin2a","email":"admin2a@test.com","first_name":"Selmma","last_name":"Keyyes","joined_at":"2018-11-06T00:00:00+0000","password":"user8Pass","roles":[],"status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Missing data for required field."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+    def test_put_administrator_invalid_roles_error(self):
+
+        response = self.client.put(
+            '/administrator/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"username":"admin2a","email":"admin2a@test.com","first_name":"Selmma","last_name":"Keyyes","joined_at":"2018-11-06T00:00:00+0000","password":"user8Pass","roles":[250, 305],"status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("roles", response.json['error'])
+        self.assertEqual(["Invalid value."], response.json['error']['roles'])
+        self.assertNotIn("username", response.json['error'])
+        self.assertNotIn("email", response.json['error'])
+        self.assertNotIn("password", response.json['error'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+
+
+
 
     def test_put_administrator_admin_2(self):
 

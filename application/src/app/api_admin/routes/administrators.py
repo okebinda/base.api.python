@@ -115,6 +115,7 @@ def post_administrator():
 
     # init vars
     errors = {}
+    roles = []
 
     # pre-validate data
     if request.json.get('username', None):
@@ -122,12 +123,23 @@ def post_administrator():
             Administrator.username == request.json.get('username')).first()
         if administrator_query:
             errors["username"] = ["Value must be unique."]
+
     if request.json.get('email', None):
         temp_admin = Administrator(email=request.json.get('email'))
         administrator_query = Administrator.query.filter(
             Administrator.email_digest == temp_admin.email_digest).first()
         if administrator_query:
             errors["email"] = ["Value must be unique."]
+
+    if not request.json.get('roles', None):
+        errors["roles"] = ["Missing data for required field."]
+    else:
+        for role_id in request.json.get('roles'):
+            role = Role.query.get(role_id)
+            if role is None:
+                errors["roles"] = ["Invalid value."]
+            else:
+                roles.append(role.id)
 
     # validate data
     try:
@@ -149,10 +161,9 @@ def post_administrator():
                           status=data['status'],
                           status_changed_at=datetime.now())
 
-    if request.json.get('roles'):
-        for role_id in request.json.get('roles'):
-            role = Role.query.get(role_id)
-            admin.roles.append(role)
+    for role_id in roles:
+        role = Role.query.get(role_id)
+        admin.roles.append(role)
 
     db.session.add(admin)
     db.session.commit()
@@ -208,6 +219,7 @@ def put_administrator(administrator_id):
 
     # init vars
     errors = {}
+    roles = []
 
     # pre-validate data
     if (request.json.get('username', None) and
@@ -216,6 +228,7 @@ def put_administrator(administrator_id):
             Administrator.username == request.json.get('username')).first()
         if administrator_query:
             errors["username"] = ["Value must be unique."]
+
     if (request.json.get('email', None) and
             request.json.get('email') != administrator.email):
         temp_admin = Administrator(email=request.json.get('email'))
@@ -223,6 +236,16 @@ def put_administrator(administrator_id):
             Administrator.email_digest == temp_admin.email_digest).first()
         if administrator_query:
             errors["email"] = ["Value must be unique."]
+
+    if not request.json.get('roles', None):
+        errors["roles"] = ["Missing data for required field."]
+    else:
+        for role_id in request.json.get('roles'):
+            role = Role.query.get(role_id)
+            if role is None:
+                errors["roles"] = ["Invalid value."]
+            else:
+                roles.append(role.id)
 
     # validate data
     try:
@@ -249,12 +272,9 @@ def put_administrator(administrator_id):
         administrator.password = data['password']
 
     administrator.roles[:] = []
-    if (request.json.get('roles') and
-            isinstance(request.json.get('roles'), list)):
-        for role_id in request.json.get('roles'):
-            role = Role.query.get(role_id)
-            if role is not None:
-                administrator.roles.append(role)
+    for role_id in roles:
+        role = Role.query.get(role_id)
+        administrator.roles.append(role)
 
     if administrator.status != data['status']:
         administrator.status = data['status']

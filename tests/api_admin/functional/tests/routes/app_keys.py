@@ -384,7 +384,24 @@ class AppKeysTest(BaseTest):
         self.assertIn("application", response.json['error'])
         self.assertIn("key", response.json['error'])
         self.assertIn("status", response.json['error'])
-    
+
+    def test_post_app_keys_unique_key_error(self):
+
+        response = self.client.post(
+            '/app_keys?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"application":"Application 7","key":"7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW","status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("key", response.json['error'])
+        self.assertEqual(["Value must be unique."], response.json['error']['key'])
+        self.assertNotIn("application", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
     def test_post_app_keys_success(self):
 
         response = self.client.post(
@@ -480,7 +497,32 @@ class AppKeysTest(BaseTest):
 
         self.assertEqual(404, response.status_code)
         self.assertEqual("Not found", response.json['error'])
-    
+
+
+
+
+
+    def test_put_app_key_unique_key_error(self):
+
+        response = self.client.put(
+            '/app_key/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"application":"Application 2a","key":"7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW","status":5}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("key", response.json['error'])
+        self.assertEqual(["Value must be unique."], response.json['error']['key'])
+        self.assertNotIn("application", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
+
+
+
+
     def test_put_app_key_id2(self):
 
         response = self.client.put(

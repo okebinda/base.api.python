@@ -98,13 +98,25 @@ def post_app_keys():
     :rtype: (str, int)
     """
 
-    # @todo: validate unique `key`
+    # init vars
+    errors = {}
+
+    # pre-validate data
+    if request.json.get('key', None):
+        app_key_query = AppKey.query.filter(
+            AppKey.key == request.json.get('key')).first()
+        if app_key_query:
+            errors["key"] = ["Value must be unique."]
 
     # validate data
     try:
         data, _ = AppKeySchema(strict=True).load(request.json)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        errors = dict(list(errors.items()) + list(err.messages.items()))
+
+    # return any errors
+    if errors:
+        return jsonify({"error": errors}), 400
 
     # save app key
     app_key = AppKey(application=data['application'],
@@ -161,11 +173,26 @@ def put_app_key(app_key_id):
     if app_key is None:
         abort(404)
 
+    # init vars
+    errors = {}
+
+    # pre-validate data
+    if (request.json.get('key', None) and
+            request.json.get('key') != app_key.key):
+        app_key_query = AppKey.query.filter(
+            AppKey.key == request.json.get('key')).first()
+        if app_key_query:
+            errors["key"] = ["Value must be unique."]
+
     # validate data
     try:
         data, _ = AppKeySchema(strict=True).load(request.json)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        errors = dict(list(errors.items()) + list(err.messages.items()))
+
+    # return any errors
+    if errors:
+        return jsonify({"error": errors}), 400
 
     # save app key
     app_key.application = data['application']
