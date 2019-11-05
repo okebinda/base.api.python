@@ -245,11 +245,11 @@ Use the following to update the account information for the currently logged in 
 
 ##### Response Codes
  
-| Code | Description  | Notes                                                                                                               |
-| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| 200  | OK           | Update successful.                                                                                                  |
-| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
-| 500  | Server error | Generic application error. Check application logs.                                                                  |
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
 
 ##### Response Payload
 
@@ -324,11 +324,11 @@ Use the following to update the password for the currently logged in user.
 
 ##### Response Codes
  
-| Code | Description  | Notes                                                                                                               |
-| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| 200  | OK           | Update successful.                                                                                                  |
-| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
-| 500  | Server error | Generic application error. Check application logs.                                                                  |
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
 
 ##### Response Payload
 
@@ -386,21 +386,21 @@ Use the following to read a list of application keys.
 
 ##### Response Payload
 
-| Key                              | Value                                                                      |
-| -------------------------------- | -------------------------------------------------------------------------- | 
-| `app_keys`                       | The top-level application key list resource.                               | 
-| `app_keys`[].`application`       | List item property: The name of the application assigned to the app key.   | 
-| `app_keys`[].`created_at`        | List item property: The datetime the app key was created.                  |
-| `app_keys`[].`id`                | List item property: The app key's system id.                               |
-| `app_keys`[].`key`               | List item property: The application key itself.                            |
-| `app_keys`[].`status`            | List item property: The status of the app key.                             |
-| `app_keys`[].`status_changed_at` | List item property: The datetime of the last time the status was changed.  |
-| `app_keys`[].`updated_at`        | List item property: The datetime of the last time the app key was updated. |
-| `limit`                          | The limit of items to show on a single page.                               |
-| `next_uri`                       | The URI of the next page of results, if available.                         |
-| `page`                           | The current list page number.                                              |
-| `previous_uri`                   | The URI of the previous page of results, if available.                     |
-| `total`                          | The total count of items found.                                            |
+| Key                              | Value                                                  |
+| -------------------------------- | ------------------------------------------------------ | 
+| `app_keys`                       | The top-level application key list resource.           | 
+| `app_keys`[].`application`       | The name of the application assigned to the app key.   | 
+| `app_keys`[].`created_at`        | The datetime the app key was created.                  |
+| `app_keys`[].`id`                | The app key's system id.                               |
+| `app_keys`[].`key`               | The application key itself.                            |
+| `app_keys`[].`status`            | The status of the app key.                             |
+| `app_keys`[].`status_changed_at` | The datetime of the last time the status was changed.  |
+| `app_keys`[].`updated_at`        | The datetime of the last time the app key was updated. |
+| `limit`                          | The limit of items to show on a single page.           |
+| `next_uri`                       | The URI of the next page of results, if available.     |
+| `page`                           | The current list page number.                          |
+| `previous_uri`                   | The URI of the previous page of results, if available. |
+| `total`                          | The total count of items found.                        |
 
 ##### Example
 
@@ -531,11 +531,11 @@ Use the following to create a new application key.
 
 ##### Response Codes
  
-| Code | Description  | Notes                                                                                                               |
-| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| 201  | Created      | Resource successfully created.                                                                                      |
-| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
-| 500  | Server error | Generic application error. Check application logs.                                                                  |
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 201  | Created      | Resource successfully created.                                                                                     |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
 
 ##### Response Payload
 
@@ -604,11 +604,11 @@ Use the following to update an existing application key.
 
 ##### Response Codes
  
-| Code | Description  | Notes                                                                                                               |
-| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| 200  | OK           | Update successful.                                                                                                  |
-| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
-| 404  | Not Found    | No app key matching the supplied ID was found.                                                                      |
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 404  | Not Found    | No app key matching the supplied ID was found.                                                                     |
 | 500  | Server error | Generic application error. Check application logs.                                                                  |
 
 ##### Response Payload
@@ -711,28 +711,28 @@ Use the following to read a list of user roles.
 
 ##### Response Payload
 
-| Key                                | Value                                                                                                                                 |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | 
-| `roles`                            | The top-level role list resource.                                                                                                     |  
-| `roles`[].`created_at`             | List item property: The datetime the role was created.                                                                                |
-| `roles`[].`id`                     | List item property: The role's system id.                                                                                             |
-| `roles`[].`is_admin_role`          | List item property: 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    |
-| `roles`[].`login_ban_by_ip`        | List item property: 'true' if lockout policy uses client IP to ban further login attempts.                                            |
-| `roles`[].`login_ban_time`         | List item property: Number of seconds the lockout policy will ban further login attempts once triggered.                              |
-| `roles`[].`login_lockout_policy`   | List item property: 'true' if lockout policy is enabled.                                                                              |
-| `roles`[].`login_max_attempts`     | List item property: Number of failed login attempts to allow within timeframe before locking account.                                 |
-| `roles`[].`login_timeframe`        | List item property: Window of time (in seconds) to allow max login attempts before locking account.                                   |
-| `roles`[].`name`                   | List item property: The name of the role.                                                                                             |
-| `roles`[].`password_policy`        | List item property: 'true' if the password policy is enabled.                                                                         |
-| `roles`[].`password_reset_days`    | List item property: Number of days a password is valid until user must change it.                                                     |
-| `roles`[].`password_reuse_history` | List item property: Number of previous passwords to disallow when a user updates password.                                            |
-| `roles`[].`priority`               | List item property: The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. |
-| `roles`[].`updated_at`             | List item property: The datetime of the last time the app key was updated.                                                            |
-| `limit`                            | The limit of items to show on a single page.                                                                                          |
-| `next_uri`                         | The URI of the next page of results, if available.                                                                                    |
-| `page`                             | The current list page number.                                                                                                         |
-| `previous_uri`                     | The URI of the previous page of results, if available.                                                                                |
-| `total`                            | The total count of items found.                                                                                                       |
+| Key                                | Value                                                                                                             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------- | 
+| `roles`                            | The top-level role list resource.                                                                                 |  
+| `roles`[].`created_at`             | The datetime the role was created.                                                                                |
+| `roles`[].`id`                     | The role's system id.                                                                                             |
+| `roles`[].`is_admin_role`          | 'true' if role is applicable to admin users, 'false' if role is applicable to non-admin users.                    |
+| `roles`[].`login_ban_by_ip`        | 'true' if lockout policy uses client IP to ban further login attempts.                                            |
+| `roles`[].`login_ban_time`         | Number of seconds the lockout policy will ban further login attempts once triggered.                              |
+| `roles`[].`login_lockout_policy`   | 'true' if lockout policy is enabled.                                                                              |
+| `roles`[].`login_max_attempts`     | Number of failed login attempts to allow within timeframe before locking account.                                 |
+| `roles`[].`login_timeframe`        | Window of time (in seconds) to allow max login attempts before locking account.                                   |
+| `roles`[].`name`                   | The name of the role.                                                                                             |
+| `roles`[].`password_policy`        | 'true' if the password policy is enabled.                                                                         |
+| `roles`[].`password_reset_days`    | Number of days a password is valid until user must change it.                                                     |
+| `roles`[].`password_reuse_history` | Number of previous passwords to disallow when a user updates password.                                            |
+| `roles`[].`priority`               | The priority (an integer, lower is higher priority) of the role, used to apply policies if more than one applies. |
+| `roles`[].`updated_at`             | The datetime of the last time the app key was updated.                                                            |
+| `limit`                            | The limit of items to show on a single page.                                                                      |
+| `next_uri`                         | The URI of the next page of results, if available.                                                                |
+| `page`                             | The current list page number.                                                                                     |
+| `previous_uri`                     | The URI of the previous page of results, if available.                                                            |
+| `total`                            | The total count of items found.                                                                                   |
 
 ##### Example
 
@@ -812,7 +812,7 @@ Use the following to read the information for a specific role.
 | HTTP            | Value                                                                                         |
 | --------------- | --------------------------------------------------------------------------------------------- | 
 | Method          | GET                                                                                           | 
-| Path            | /role/{id}<br>/role/{name]                                                                    |
+| Path            | /role/{id}<br>/role/{name}                                                                    |
 | Path Parameters | - `id`: Integer; The system ID for the resource<br>- `name`: String; The name of the resource |
 
 ##### Response Codes
@@ -884,7 +884,7 @@ Use the following to create a new role.
 | HTTP       | Value                            |
 | ---------- | -------------------------------- | 
 | Method     | POST                             | 
-| Path       | /roles                        |
+| Path       | /roles                           |
 | Headers    | `Content-Type`: application/json |
 
 ##### Request Payload
@@ -905,11 +905,11 @@ Use the following to create a new role.
 
 ##### Response Codes
  
-| Code | Description  | Notes                                                                                                               |
-| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| 201  | Created      | Resource successfully created.                                                                                      |
-| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
-| 500  | Server error | Generic application error. Check application logs.                                                                  |
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 201  | Created      | Resource successfully created.                                                                                     |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
 
 ##### Response Payload
 
@@ -1008,12 +1008,12 @@ Use the following to update an existing role.
 
 ##### Response Codes
  
-| Code | Description  | Notes                                                                                                               |
-| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| 200  | OK           | Update successful.                                                                                                  |
-| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `errors` field and resubmit. |
-| 404  | Not Found    | No role matching the supplied ID was found.                                                                         |
-| 500  | Server error | Generic application error. Check application logs.                                                                  |
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 404  | Not Found    | No role matching the supplied ID was found.                                                                        |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
 
 ##### Response Payload
 
@@ -1107,5 +1107,425 @@ Use the following to permanently delete an existing role.
 
 ```ssh
 curl -X DELETE https://api.admin.domain.com/v/1.0/role/4?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+<br><br>
+
+## Administrators
+
+### List Administrators
+
+Use the following to read a list of administrators.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                                                                                  |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                                                                                    |
+| Paths           | /administrators<br>/administrators/{page}<br>/administrators/{page}/{limit}                                                                                                                                                                                                                                            |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                                                                                              |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'username.asc', 'username.desc', 'joined_at.asc', 'joined_at.desc']; Default: 'id.asc'<br>- `role`: Integer; ID of role to filter results by; Optional |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no administrators on this page.          |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                                      | Value                                                    |
+| ---------------------------------------- | -------------------------------------------------------- | 
+| `administrators`                         | The top-level administrator list resource.               |  
+| `administrators`[].`created_at`          | The datetime the administrator was created.              |
+| `administrators`[].`email`               | The administrator's email address.                       |
+| `administrators`[].`first_name`          | The administrator's first name.                          |
+| `administrators`[].`id`                  | The administrator's system id.                           |
+| `administrators`[].`joined_at`           | The datetime the user joined the system.                 |
+| `administrators`[].`last_name`           | The administrator's last name.                           |
+| `administrators`[].`password_changed_at` | The last time the administrator changed their password.  |
+| `administrators`[].`roles`               | List of the administrator's roles.                       |
+| `administrators`[].`roles`[].`id`        | The role's system ID.                                    |
+| `administrators`[].`roles`[].`name`      | The role's name.                                         |
+| `administrators`[].`status`              | The status of the administrator.                         |
+| `administrators`[].`status_changed_at`   | The datetime of the last time the status was changed.    |
+| `administrators`[].`updated_at`          | The datetime of the last time administrator was updated. |
+| `administrators`[].`uri`                 | The API endpoint for the administrator's resource.       |
+| `administrators`[].`username`            | The administrator's username.                            |
+| `limit`                                  | The limit of items to show on a single page.             |
+| `next_uri`                               | The URI of the next page of results, if available.       |
+| `page`                                   | The current list page number.                            |
+| `previous_uri`                           | The URI of the previous page of results, if available.   |
+| `total`                                  | The total count of items found.                          |
+
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/administrators/2/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "administrators": [
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "email": "admin3@test.com", 
+      "first_name": "Victor", 
+      "id": 3, 
+      "joined_at": "2018-11-15T00:00:00+0000", 
+      "last_name": "Landon", 
+      "password_changed_at": "2019-11-05T02:16:29+0000", 
+      "roles": [], 
+      "status": 1, 
+      "status_changed_at": "2018-11-15T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "uri": "https://api.admin.domain.com/v/1.0/administrator/3", 
+      "username": "admin3"
+    }, 
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "email": "admin4@test.com", 
+      "first_name": "Tamela", 
+      "id": 4, 
+      "joined_at": "2018-11-20T00:00:00+0000", 
+      "last_name": "Coburn", 
+      "password_changed_at": "2019-11-05T02:16:32+0000", 
+      "roles": [
+        {
+          "id": 2, 
+          "name": "SUPER_ADMIN"
+        }
+      ], 
+      "status": 2, 
+      "status_changed_at": "2018-11-20T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "uri": "https://api.admin.domain.com/v/1.0/administrator/4", 
+      "username": "admin4"
+    }
+  ], 
+  "limit": 2, 
+  "next_uri": "https://api.admin.domain.com/v/1.0/administrators/3/2", 
+  "page": 2, 
+  "previous_uri": "https://api.admin.domain.com/v/1.0/administrators/1/2", 
+  "total": 5
+}
+```
+
+### Read an Administrator
+
+Use the following to read the information for a specific administrator.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | GET                                             | 
+| Path            | /administrator/{id}                             |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                        |
+| ---- | ------------ | ------------------------------------------------------------ |
+| 200  | OK           | Request successful.                                          |
+| 404  | Not Found    | No administrator matching the supplied ID or name was found. |
+| 500  | Server error | Generic application error. Check application logs.           |
+
+##### Response Payload
+
+| Key                                   | Value                                                    |
+| ------------------------------------- | -------------------------------------------------------- | 
+| `administrator`                       | The top-level administrator list resource.               |  
+| `administrator`.`created_at`          | The datetime the administrator was created.              |
+| `administrator`.`email`               | The administrator's email address.                       |
+| `administrator`.`first_name`          | The administrator's first name.                          |
+| `administrator`.`id`                  | The administrator's system id.                           |
+| `administrator`.`joined_at`           | The datetime the user joined the system.                 |
+| `administrator`.`last_name`           | The administrator's last name.                           |
+| `administrator`.`password_changed_at` | The last time the administrator changed their password.  |
+| `administrator`.`roles`               | List of the administrator's roles.                       |
+| `administrator`.`roles`[].`id`        | The role's system ID.                                    |
+| `administrator`.`roles`[].`name`      | The role's name.                                         |
+| `administrator`.`status`              | The status of the administrator.                         |
+| `administrator`.`status_changed_at`   | The datetime of the last time the status was changed.    |
+| `administrator`.`updated_at`          | The datetime of the last time administrator was updated. |
+| `administrator`.`uri`                 | The API endpoint for the administrator's resource.       |
+| `administrator`.`username`            | The administrator's username.                            |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/administrator/1?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "administrator": {
+    "created_at": "2019-11-05T02:16:56+0000", 
+    "email": "admin1@test.com", 
+    "first_name": "Tommy", 
+    "id": 1, 
+    "joined_at": "2018-11-01T00:00:00+0000", 
+    "last_name": "Lund", 
+    "password_changed_at": "2019-11-05T02:16:25+0000", 
+    "roles": [
+      {
+        "id": 2, 
+        "name": "SUPER_ADMIN"
+      }
+    ], 
+    "status": 1, 
+    "status_changed_at": "2018-11-01T00:00:00+0000", 
+    "updated_at": "2019-11-05T02:16:56+0000", 
+    "uri": "https://api.admin.domain.com/v/1.0/administrator/1", 
+    "username": "admin1"
+  }
+}
+```
+
+### Create an Administrator
+
+Use the following to create a administrator.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- | 
+| Method     | POST                             | 
+| Path       | /administrators                  |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key          | Value                                    | Validation                                                                                                 |
+| ------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `email`      | The administrator's email address.       | Required; Unique; Valid email address format                                                               |
+| `first_name` | The administrator's first name.          | Required; Length: 1-40 chars                                                                               |
+| `joined_at`  | The datetime the user joined the system. | Required; Datetime                                                                                         |
+| `last_name`  | The administrator's last name.           | Required; Length: 2-40 chars                                                                               |
+| `password`   | The administrator's password.            | Required; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
+| `roles`      | List of the administrator's role IDs.    | Optional; List literal of Role IDs (integers)                                                              |
+| `status`     | The status of the administrator.         | Required; Must be an integer                                                                               |
+| `username`   | The administrator's username.            | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 201  | Created      | Resource successfully created.                                                                                     |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                   | Value                                                    |
+| ------------------------------------- | -------------------------------------------------------- | 
+| `administrator`                       | The top-level administrator list resource.               |  
+| `administrator`.`created_at`          | The datetime the administrator was created.              |
+| `administrator`.`email`               | The administrator's email address.                       |
+| `administrator`.`first_name`          | The administrator's first name.                          |
+| `administrator`.`id`                  | The administrator's system id.                           |
+| `administrator`.`joined_at`           | The datetime the user joined the system.                 |
+| `administrator`.`last_name`           | The administrator's last name.                           |
+| `administrator`.`password_changed_at` | The last time the administrator changed their password.  |
+| `administrator`.`roles`               | List of the administrator's roles.                       |
+| `administrator`.`roles`[].`id`        | The role's system ID.                                    |
+| `administrator`.`roles`[].`name`      | The role's name.                                         |
+| `administrator`.`status`              | The status of the administrator.                         |
+| `administrator`.`status_changed_at`   | The datetime of the last time the status was changed.    |
+| `administrator`.`updated_at`          | The datetime of the last time administrator was updated. |
+| `administrator`.`uri`                 | The API endpoint for the administrator's resource.       |
+| `administrator`.`username`            | The administrator's username.                            |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X POST -H "Content-Type: application/json" \
+    -d '{
+        "email": "admin8@test.com",
+        "first_name": "Zena",
+        "joined_at": "2019-11-02T12:00:00+0000",
+        "last_name": "Clyde",
+        "password": "admin8Pass",
+        "roles": [2],
+        "status": 5,
+        "username": "admin8"
+    }' \
+    https://api.admin.domain.com/v/1.0/administrators?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "administrator": {
+    "created_at": "2019-11-05T04:22:04+0000", 
+    "email": "admin8@test.com", 
+    "first_name": "Zena", 
+    "id": 8, 
+    "joined_at": "2019-11-02T12:00:00+0000", 
+    "last_name": "Clyde", 
+    "password_changed_at": "2019-11-05T04:22:06+0000", 
+    "roles": [
+      {
+        "id": 2, 
+        "name": "SUPER_ADMIN"
+      }
+    ], 
+    "status": 5, 
+    "status_changed_at": "2019-11-05T04:22:04+0000", 
+    "updated_at": "2019-11-05T04:22:04+0000", 
+    "uri": "https://api.admin.domain.com/v/1.0/administrator/8", 
+    "username": "admin8"
+  }
+}
+```
+
+### Update an Administrator
+
+Use the following to update an existing administrator.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | PUT                                             | 
+| Path            | /administrator/{id}                             |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+| Headers         | `Content-Type`: application/json                |
+
+##### Request Payload
+
+| Key          | Value                                    | Validation                                                                                                 |
+| ------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `email`      | The administrator's email address.       | Required; Unique; Valid email address format                                                               |
+| `first_name` | The administrator's first name.          | Required; Length: 1-40 chars                                                                               |
+| `joined_at`  | The datetime the user joined the system. | Required; Datetime                                                                                         |
+| `last_name`  | The administrator's last name.           | Required; Length: 2-40 chars                                                                               |
+| `password`   | The administrator's password.            | Optional; Length: 8-40 chars; Must have 3 out of 4: (lowercase char, uppercase char, number, special char) |
+| `roles`      | List of the administrator's role IDs.    | Optional; List literal of Role IDs (integers)                                                              |
+| `status`     | The status of the administrator.         | Required; Must be an integer                                                                               |
+| `username`   | The administrator's username.            | Required; Unique; Length: 2-40 chars; Not a number; Alphanumeric chars and the underscore only             |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 404  | Not Found    | No administrator matching the supplied ID was found.                                                               |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                   | Value                                                    |
+| ------------------------------------- | -------------------------------------------------------- | 
+| `administrator`                       | The top-level administrator list resource.               |  
+| `administrator`.`created_at`          | The datetime the administrator was created.              |
+| `administrator`.`email`               | The administrator's email address.                       |
+| `administrator`.`first_name`          | The administrator's first name.                          |
+| `administrator`.`id`                  | The administrator's system id.                           |
+| `administrator`.`joined_at`           | The datetime the user joined the system.                 |
+| `administrator`.`last_name`           | The administrator's last name.                           |
+| `administrator`.`password_changed_at` | The last time the administrator changed their password.  |
+| `administrator`.`roles`               | List of the administrator's roles.                       |
+| `administrator`.`roles`[].`id`        | The role's system ID.                                    |
+| `administrator`.`roles`[].`name`      | The role's name.                                         |
+| `administrator`.`status`              | The status of the administrator.                         |
+| `administrator`.`status_changed_at`   | The datetime of the last time the status was changed.    |
+| `administrator`.`updated_at`          | The datetime of the last time administrator was updated. |
+| `administrator`.`uri`                 | The API endpoint for the administrator's resource.       |
+| `administrator`.`username`            | The administrator's username.                            |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X PUT -H "Content-Type: application/json" \
+    -d '{
+        "email": "admin8a@test.com",
+        "first_name": "Zeena",
+        "joined_at": "2019-11-03T12:00:00+0000",
+        "last_name": "Clide",
+        "password": "admin8Pass",
+        "roles": [2],
+        "status": 1,
+        "username": "admin8a"
+    }' \
+    https://api.admin.domain.com/v/1.0/administrator/8?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "administrator": {
+    "created_at": "2019-11-05T04:22:04+0000", 
+    "email": "admin8a@test.com", 
+    "first_name": "Zeena", 
+    "id": 8, 
+    "joined_at": "2019-11-03T12:00:00+0000", 
+    "last_name": "Clide", 
+    "password_changed_at": "2019-11-05T04:33:16+0000", 
+    "roles": [
+      {
+        "id": 2, 
+        "name": "SUPER_ADMIN"
+      }
+    ], 
+    "status": 1, 
+    "status_changed_at": "2019-11-05T04:33:16+0000", 
+    "updated_at": "2019-11-05T04:33:14+0000", 
+    "uri": "https://api.admin.domain.com/v/1.0/administrator/8", 
+    "username": "admin8a"
+  }
+}
+```
+
+### Delete an Administrator
+
+Use the following to permanently delete an existing administrator.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | DELETE                                          | 
+| Path            | /administrator/{id}                             |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                |
+| ---- | ------------ | ---------------------------------------------------- |
+| 204  | No Content   | Delete successful.                                   |
+| 404  | Not Found    | No administrator matching the supplied ID was found. |
+| 500  | Server error | Generic application error. Check application logs.   |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X DELETE https://api.admin.domain.com/v/1.0/administrator/8?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
 ```
