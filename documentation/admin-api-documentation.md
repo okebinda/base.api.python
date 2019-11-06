@@ -1693,7 +1693,7 @@ Use the following to read the information for a specific user.
 
 | Key                                                       | Value                                                                                                                  |
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | 
-| `user`                                                    | The top-level users list resource.                                                                                     | 
+| `user`                                                    | The top-level users resource.                                                                                          | 
 | `user`.`created_at`                                       | The datetime the user was created.                                                                                     |
 | `user`.`email`                                            | The user's email address.                                                                                              |
 | `user`.`id`                                               | The user's system id.                                                                                                  |
@@ -2038,5 +2038,351 @@ Use the following to permanently delete an existing user.
 
 ```ssh
 curl -X DELETE https://api.admin.domain.com/v/1.0/user/10?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+<br><br>
+
+## User Profiles
+
+User profiles can be managed on their own or via the `profile` property of a User resource.
+
+### List User Profiles
+
+Use the following to read a list of user profiles.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                  |
+| Paths           | /user_profiles<br>/user_profiles/{page}<br>/user_profiles/{page}/{limit}                                                                                                                                                                             |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                            |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'user_id.asc', 'user_id.desc', 'joined_at.asc', 'joined_at.desc']; Default: 'id.asc' |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no user profiles on this page.           |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                                   | Value                                                     |
+| ------------------------------------- | --------------------------------------------------------- | 
+| `limit`                               | The limit of items to show on a single page.              |
+| `next_uri`                            | The URI of the next page of results, if available.        |
+| `page`                                | The current list page number.                             |
+| `previous_uri`                        | The URI of the previous page of results, if available.    |
+| `total`                               | The total count of items found.                           |
+| `user_profiles`                       | The top-level user profile list resource.                 | 
+| `user_profiles`[].`created_at`        | The datetime the user profile was created.                |
+| `user_profiles`[].`first_name`        | The user's first name.                                    |
+| `user_profiles`[].`id`                | The user profile's system id.                             |
+| `user_profiles`[].`joined_at`         | The datetime the user joined the system.                  |
+| `user_profiles`[].`last_name`         | The user's last name.                                     |
+| `user_profiles`[].`status`            | The status of the user profile.                           |
+| `user_profiles`[].`status_changed_at` | The datetime of the last time the status was changed.     |
+| `user_profiles`[].`updated_at`        | The datetime of the last time user profile was updated.   |
+| `user_profiles`[].`user_id`           | The system id of the user the profile is associated with. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/user_profiles/2/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 2, 
+  "next_uri": "https://api.admin.domain.com/v/1.0/user_profiles/3/2", 
+  "page": 2, 
+  "previous_uri": "https://api.admin.domain.com/v/1.0/user_profiles/1/2", 
+  "total": 6, 
+  "user_profiles": [
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "first_name": "Duane", 
+      "id": 3, 
+      "joined_at": "2018-12-15T00:00:00+0000", 
+      "last_name": "Hargrave", 
+      "status": 1, 
+      "status_changed_at": "2018-12-15T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user_id": 3
+    }, 
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "first_name": "Elroy", 
+      "id": 5, 
+      "joined_at": "2018-12-20T00:00:00+0000", 
+      "last_name": "Hunnicutt", 
+      "status": 2, 
+      "status_changed_at": "2018-12-25T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user_id": 5
+    }
+  ]
+}
+```
+
+### Read a User Profile
+
+Use the following to read the information for a specific user profile.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- |
+| Method          | GET                                             |
+| Path            | /user_profile/{id}                              |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                       |
+| ---- | ------------ | ----------------------------------------------------------- |
+| 200  | OK           | Request successful.                                         |
+| 404  | Not Found    | No user profile matching the supplied ID or name was found. |
+| 500  | Server error | Generic application error. Check application logs.          |
+
+##### Response Payload
+
+| Key                                 | Value                                                    |
+| ----------------------------------- | -------------------------------------------------------- |
+| `user_profile`                     | The top-level user profile resource.                      |
+| `user_profile`.`created_at`        | The datetime the user profile was created.                |
+| `user_profile`.`first_name`        | The user's first name.                                    |
+| `user_profile`.`id`                | The user profile's system id.                             |
+| `user_profile`.`joined_at`         | The datetime the user joined the system.                  |
+| `user_profile`.`last_name`         | The user's last name.                                     |
+| `user_profile`.`status`            | The status of the user profile.                           |
+| `user_profile`.`status_changed_at` | The datetime of the last time the status was changed.     |
+| `user_profile`.`updated_at`        | The datetime of the last time user profile was updated.   |
+| `user_profile`.`user_id`           | The system id of the user the profile is associated with. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/user_profile/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "user_profile": {
+    "created_at": "2019-11-05T02:16:56+0000", 
+    "first_name": "Lynne", 
+    "id": 2, 
+    "joined_at": "2018-12-10T00:00:00+0000", 
+    "last_name": "Harford", 
+    "status": 1, 
+    "status_changed_at": "2018-12-10T00:00:00+0000", 
+    "updated_at": "2019-11-05T02:16:56+0000", 
+    "user_id": 2
+  }
+}
+```
+
+### Create a User Profile
+
+Use the following to create a user profile.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- |
+| Method     | POST                             |
+| Path       | /user_profiles                   |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key          | Value                                                     | Validation                   |
+| ------------ | --------------------------------------------------------- | -----------------------------|
+| `first_name` | The user's first name.                                    | Required; Length: 1-40 chars |
+| `joined_at`  | The datetime the user joined the system.                  | Required; Datetime           |
+| `last_name`  | The user's last name.                                     | Required; Length: 2-40 chars |
+| `status`     | The status of the user profile.                           | Required; Integer            |
+| `user_id`    | The system id of the user the profile is associated with. | Required; Integer            |
+
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 201  | Created      | Resource successfully created.                                                                                     |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                 | Value                                                    |
+| ----------------------------------- | -------------------------------------------------------- |
+| `user_profile`                     | The top-level user profile resource.                      |
+| `user_profile`.`created_at`        | The datetime the user profile was created.                |
+| `user_profile`.`first_name`        | The user's first name.                                    |
+| `user_profile`.`id`                | The user profile's system id.                             |
+| `user_profile`.`joined_at`         | The datetime the user joined the system.                  |
+| `user_profile`.`last_name`         | The user's last name.                                     |
+| `user_profile`.`status`            | The status of the user profile.                           |
+| `user_profile`.`status_changed_at` | The datetime of the last time the status was changed.     |
+| `user_profile`.`updated_at`        | The datetime of the last time user profile was updated.   |
+| `user_profile`.`user_id`           | The system id of the user the profile is associated with. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X POST -H "Content-Type: application/json" \
+    -d '{
+        "first_name": "Vivyan",
+        "joined_at": "2019-05-21T08:30:00+0000",
+        "last_name": "Joyce",
+        "status": 5,
+        "user_id": 9
+    }' \
+    https://api.admin.domain.com/v/1.0/user_profiles?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "user_profile": {
+    "created_at": "2019-11-05T13:59:07+0000", 
+    "first_name": "Vivyan", 
+    "id": 10, 
+    "joined_at": "2019-05-21T08:30:00+0000", 
+    "last_name": "Joyce", 
+    "status": 5, 
+    "status_changed_at": "2019-11-05T13:59:07+0000", 
+    "updated_at": "2019-11-05T13:59:07+0000", 
+    "user_id": 9
+  }
+}
+```
+
+### Update a User Profile
+
+Use the following to update an existing user profile.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | PUT                                             | 
+| Path            | /user_profile/{id}                              |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+| Headers         | `Content-Type`: application/json                |
+
+##### Request Payload
+
+| Key          | Value                                                     | Validation                   |
+| ------------ | --------------------------------------------------------- | -----------------------------|
+| `first_name` | The user's first name.                                    | Required; Length: 1-40 chars |
+| `joined_at`  | The datetime the user joined the system.                  | Required; Datetime           |
+| `last_name`  | The user's last name.                                     | Required; Length: 2-40 chars |
+| `status`     | The status of the user profile.                           | Required; Integer            |
+| `user_id`    | The system id of the user the profile is associated with. | Required; Integer            |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 404  | Not Found    | No user profile matching the supplied ID was found.                                                                |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                | Value                                                     |
+| ---------------------------------- | --------------------------------------------------------- |
+| `user_profile`                     | The top-level user profile resource.                      |
+| `user_profile`.`created_at`        | The datetime the user profile was created.                |
+| `user_profile`.`first_name`        | The user's first name.                                    |
+| `user_profile`.`id`                | The user profile's system id.                             |
+| `user_profile`.`joined_at`         | The datetime the user joined the system.                  |
+| `user_profile`.`last_name`         | The user's last name.                                     |
+| `user_profile`.`status`            | The status of the user profile.                           |
+| `user_profile`.`status_changed_at` | The datetime of the last time the status was changed.     |
+| `user_profile`.`updated_at`        | The datetime of the last time user profile was updated.   |
+| `user_profile`.`user_id`           | The system id of the user the profile is associated with. |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X PUT -H "Content-Type: application/json" \
+    -d '{
+        "first_name": "Vivian",
+        "joined_at": "2019-06-21T08:30:00+0000",
+        "last_name": "Joycee",
+        "status": 2,
+        "user_id": 9
+    }' \
+    https://api.admin.domain.com/v/1.0/user_profile/10?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "user_profile": {
+    "created_at": "2019-11-05T13:59:07+0000", 
+    "first_name": "Vivian", 
+    "id": 10, 
+    "joined_at": "2019-06-21T08:30:00+0000", 
+    "last_name": "Joycee", 
+    "status": 2, 
+    "status_changed_at": "2019-11-05T14:03:05+0000", 
+    "updated_at": "2019-11-05T14:03:05+0000", 
+    "user_id": 9
+  }
+}
+```
+
+### Delete a User Profile
+
+Use the following to permanently delete an existing user profile.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | DELETE                                          | 
+| Path            | /user_profile/{id}                              |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                |
+| ---- | ------------ | ---------------------------------------------------- |
+| 204  | No Content   | Delete successful.                                   |
+| 404  | Not Found    | No user profile matching the supplied ID was found.  |
+| 500  | Server error | Generic application error. Check application logs.   |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X DELETE https://api.admin.domain.com/v/1.0/user_profile/10?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
 ```

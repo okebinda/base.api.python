@@ -485,8 +485,26 @@ class UserProfilesTest(BaseTest):
         self.assertIn("last_name", response.json['error'])
         self.assertIn("joined_at", response.json['error'])
         self.assertIn("status", response.json['error'])
-        self.assertNotIn("region_id", response.json['error'])
-    
+
+    def test_post_user_profiles_bad_user_error(self):
+
+        response = self.client.post(
+            '/user_profiles?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"user_id":250,"first_name":"Service","last_name":"Account","joined_at":"2019-02-04T00:00:00+0000","status":1}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("user_id", response.json['error'])
+        self.assertEqual(["Invalid value."], response.json['error']['user_id'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
+
     def test_post_user_profiles_success(self):
 
         response = self.client.post(
@@ -597,6 +615,25 @@ class UserProfilesTest(BaseTest):
         self.assertIn("joined_at", response.json['error'])
         self.assertIn("status", response.json['error'])
         self.assertNotIn("region_id", response.json['error'])
+
+    def test_put_user_profile_invalid_user_id(self):
+
+        response = self.client.put(
+            '/user_profile/2?app_key=' + AppKeyData.id1_appkey1.key,
+            data='{"user_id":250,"first_name":"LynneA","last_name":"HarfordA","joined_at":"2019-01-15T00:00:00+0000","status":2}',
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": 'Basic '
+                    + get_http_basic_auth_credentials(AdministratorData.id1_admin1)})
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("error", response.json)
+        self.assertIn("user_id", response.json['error'])
+        self.assertEqual(["Invalid value."], response.json['error']['user_id'])
+        self.assertNotIn("first_name", response.json['error'])
+        self.assertNotIn("last_name", response.json['error'])
+        self.assertNotIn("joined_at", response.json['error'])
+        self.assertNotIn("status", response.json['error'])
 
     def test_put_user_profile_empty(self):
 

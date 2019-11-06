@@ -7,6 +7,7 @@ from marshmallow import ValidationError
 
 from app import db
 from app.models.UserProfile import UserProfile
+from app.models.User import User
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.UserProfileSchema import UserProfileSchema
@@ -102,15 +103,28 @@ def post_user_profiles():
     :rtype: (str, int)
     """
 
+    # init vars
+    errors = {}
+    user = None
+
+    if request.json.get('user_id', None):
+        user = User.query.get(request.json.get('user_id'))
+        if user is None:
+            errors["user_id"] = ["Invalid value."]
+
     # validate data
     try:
         data, _ = UserProfileSchema(strict=True).load(request.json)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        errors = dict(list(errors.items()) + list(err.messages.items()))
+
+    # return any errors
+    if errors:
+        return jsonify({"error": errors}), 400
 
     # save user_profile
     user_profile = UserProfile(
-        user_id=data['user_id'],
+        user=user,
         first_name=data['first_name'].strip(),
         last_name=data['last_name'].strip(),
         joined_at=data['joined_at'],
@@ -168,14 +182,27 @@ def put_user_profile(user_profile_id):
     if user_profile is None:
         abort(404)
 
+    # init vars
+    errors = {}
+    user = None
+
+    if request.json.get('user_id', None):
+        user = User.query.get(request.json.get('user_id'))
+        if user is None:
+            errors["user_id"] = ["Invalid value."]
+
     # validate data
     try:
         data, _ = UserProfileSchema(strict=True).load(request.json)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        errors = dict(list(errors.items()) + list(err.messages.items()))
+
+    # return any errors
+    if errors:
+        return jsonify({"error": errors}), 400
 
     # save user_profile
-    user_profile.user_id = data['user_id']
+    user_profile.user = user
     user_profile.first_name = data['first_name'].strip()
     user_profile.last_name = data['last_name'].strip()
     user_profile.joined_at = data['joined_at']
