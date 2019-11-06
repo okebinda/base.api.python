@@ -2386,3 +2386,816 @@ Use the following to permanently delete an existing user profile.
 curl -X DELETE https://api.admin.domain.com/v/1.0/user_profile/10?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
     -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
 ```
+
+<br><br>
+
+## Terms of Services
+
+### List Terms of Service
+
+Use the following to read a list of terms of services.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                      |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                        |
+| Paths           | /terms_of_services<br>/terms_of_services/{page}<br>/terms_of_services/{page}/{limit}                                                                                                                                                                       |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                                  |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'publish_date.asc', 'publish_date.desc', 'version.asc', 'version.desc']; Default: 'id.asc' |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no terms of services on this page.       |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                                       | Value                                                       |
+| ----------------------------------------- | ----------------------------------------------------------- | 
+| `limit`                                   | The limit of items to show on a single page.                |
+| `next_uri`                                | The URI of the next page of results, if available.          |
+| `page`                                    | The current list page number.                               |
+| `previous_uri`                            | The URI of the previous page of results, if available.      |
+| `terms_of_services`                       | The top-level terms of service list resource.               | 
+| `terms_of_services`[].`created_at`        | The datetime the terms of service was created.              |
+| `terms_of_services`[].`id`                | The terms of service's system id.                           |
+| `terms_of_services`[].`publish_date`      | The datetime the terms of service was published.            |
+| `terms_of_services`[].`status`            | The status of the terms of service.                         |
+| `terms_of_services`[].`status_changed_at` | The datetime of the last time the status was changed.       |
+| `terms_of_services`[].`text`              | The full text of the terms of service.                      |
+| `terms_of_services`[].`updated_at`        | The datetime of the last time terms of service was updated. |
+| `terms_of_services`[].`version`           | The version number of the terms of service.                 |
+| `total`                                   | The total count of items found.                             |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/terms_of_services/1/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 2, 
+  "next_uri": "https://api.admin.domain.com/v/1.0/terms_of_services/2/2", 
+  "page": 1, 
+  "terms_of_services": [
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 1, 
+      "publish_date": "2018-06-15T00:00:00+0000", 
+      "status": 1, 
+      "status_changed_at": "2018-06-15T00:00:00+0000", 
+      "text": "This is TOS 1", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "version": "1.0"
+    }, 
+    {
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 2, 
+      "publish_date": "2019-01-01T00:00:00+0000", 
+      "status": 1, 
+      "status_changed_at": "2019-01-01T00:00:00+0000", 
+      "text": "This is TOS 2", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "version": "1.1"
+    }
+  ], 
+  "total": 4
+}
+```
+
+### Read a Terms of Service
+
+Use the following to read the information for a specific terms of service.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- |
+| Method          | GET                                             |
+| Path            | /terms_of_service/{id}                          |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                           |
+| ---- | ------------ | --------------------------------------------------------------- |
+| 200  | OK           | Request successful.                                             |
+| 404  | Not Found    | No terms of service matching the supplied ID or name was found. |
+| 500  | Server error | Generic application error. Check application logs.              |
+
+##### Response Payload
+
+| Key                                    | Value                                                       |
+| -------------------------------------- | ----------------------------------------------------------- | 
+| `terms_of_service`                     | The top-level terms of service resource.                    | 
+| `terms_of_service`.`created_at`        | The datetime the terms of service was created.              |
+| `terms_of_service`.`id`                | The terms of service's system id.                           |
+| `terms_of_service`.`publish_date`      | The datetime the terms of service was published.            |
+| `terms_of_service`.`status`            | The status of the terms of service.                         |
+| `terms_of_service`.`status_changed_at` | The datetime of the last time the status was changed.       |
+| `terms_of_service`.`text`              | The full text of the terms of service.                      |
+| `terms_of_service`.`updated_at`        | The datetime of the last time terms of service was updated. |
+| `terms_of_service`.`version`           | The version number of the terms of service.                 |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/terms_of_service/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "terms_of_service": {
+    "created_at": "2019-11-05T02:16:56+0000", 
+    "id": 2, 
+    "publish_date": "2019-01-01T00:00:00+0000", 
+    "status": 1, 
+    "status_changed_at": "2019-01-01T00:00:00+0000", 
+    "text": "This is TOS 2", 
+    "updated_at": "2019-11-05T02:16:56+0000", 
+    "version": "1.1"
+  }
+}
+```
+### Create a Terms of Service
+
+Use the following to create a terms of service.
+
+##### Request
+
+| HTTP       | Value                            |
+| ---------- | -------------------------------- |
+| Method     | POST                             |
+| Path       | /terms_of_services               |
+| Headers    | `Content-Type`: application/json |
+
+##### Request Payload
+
+| Key            | Value                                            | Validation                   |
+| -------------- | ------------------------------------------------ | -----------------------------|
+| `publish_date` | The datetime the terms of service was published. | Required; Datetime           |
+| `status`       | The status of the terms of service.              | Required; Integer            |
+| `text`         | The full text of the terms of service.           | Required; Text               |
+| `version`      | The version number of the terms of service.      | Required; Length: 1-10 chars |
+
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 201  | Created      | Resource successfully created.                                                                                     |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                    | Value                                                       |
+| -------------------------------------- | ----------------------------------------------------------- | 
+| `terms_of_service`                     | The top-level terms of service resource.                    | 
+| `terms_of_service`.`created_at`        | The datetime the terms of service was created.              |
+| `terms_of_service`.`id`                | The terms of service's system id.                           |
+| `terms_of_service`.`publish_date`      | The datetime the terms of service was published.            |
+| `terms_of_service`.`status`            | The status of the terms of service.                         |
+| `terms_of_service`.`status_changed_at` | The datetime of the last time the status was changed.       |
+| `terms_of_service`.`text`              | The full text of the terms of service.                      |
+| `terms_of_service`.`updated_at`        | The datetime of the last time terms of service was updated. |
+| `terms_of_service`.`version`           | The version number of the terms of service.                 |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X POST -H "Content-Type: application/json" \
+    -d '{
+        "publish_date": "2019-10-31T20:30:00+0000",
+        "status": 5,
+        "text": "This is TOS 7",
+        "version": "2.1"
+    }' \
+    https://api.admin.domain.com/v/1.0/terms_of_services?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "terms_of_service": {
+    "created_at": "2019-11-05T15:21:16+0000", 
+    "id": 7, 
+    "publish_date": "2019-10-31T20:30:00+0000", 
+    "status": 5, 
+    "status_changed_at": "2019-11-05T15:21:16+0000", 
+    "text": "This is TOS 7", 
+    "updated_at": "2019-11-05T15:21:16+0000", 
+    "version": "2.1"
+  }
+}
+```
+
+### Update a Terms of Service
+
+Use the following to update an existing terms of service.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | PUT                                             | 
+| Path            | /terms_of_service/{id}                          |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+| Headers         | `Content-Type`: application/json                |
+
+##### Request Payload
+
+| Key            | Value                                            | Validation                   |
+| -------------- | ------------------------------------------------ | -----------------------------|
+| `publish_date` | The datetime the terms of service was published. | Required; Datetime           |
+| `status`       | The status of the terms of service.              | Required; Integer            |
+| `text`         | The full text of the terms of service.           | Required; Text               |
+| `version`      | The version number of the terms of service.      | Required; Length: 1-10 chars |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                                                                              |
+| ---- | ------------ | ------------------------------------------------------------------------------------------------------------------ |
+| 200  | OK           | Update successful.                                                                                                 |
+| 400  | Bad Request  | Could not complete the request due to bad client data. Fix the errors mentioned in the `error` field and resubmit. |
+| 404  | Not Found    | No terms of service matching the supplied ID was found.                                                            |
+| 500  | Server error | Generic application error. Check application logs.                                                                 |
+
+##### Response Payload
+
+| Key                                    | Value                                                       |
+| -------------------------------------- | ----------------------------------------------------------- | 
+| `terms_of_service`                     | The top-level terms of service resource.                    | 
+| `terms_of_service`.`created_at`        | The datetime the terms of service was created.              |
+| `terms_of_service`.`id`                | The terms of service's system id.                           |
+| `terms_of_service`.`publish_date`      | The datetime the terms of service was published.            |
+| `terms_of_service`.`status`            | The status of the terms of service.                         |
+| `terms_of_service`.`status_changed_at` | The datetime of the last time the status was changed.       |
+| `terms_of_service`.`text`              | The full text of the terms of service.                      |
+| `terms_of_service`.`updated_at`        | The datetime of the last time terms of service was updated. |
+| `terms_of_service`.`version`           | The version number of the terms of service.                 |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X PUT -H "Content-Type: application/json" \
+    -d '{
+        "publish_date": "2019-11-01T00:00:00+0000",
+        "status": 2,
+        "text": "This is TOS 7a",
+        "version": "3.0"
+    }' \
+    https://api.admin.domain.com/v/1.0/terms_of_service/7?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "terms_of_service": {
+    "created_at": "2019-11-05T15:21:16+0000", 
+    "id": 7, 
+    "publish_date": "2019-11-01T00:00:00+0000", 
+    "status": 2, 
+    "status_changed_at": "2019-11-05T15:26:09+0000", 
+    "text": "This is TOS 7a", 
+    "updated_at": "2019-11-05T15:26:09+0000", 
+    "version": "3.0"
+  }
+}
+```
+
+### Delete a Terms of Service
+
+Use the following to permanently delete an existing terms of service.
+
+##### Request
+
+| HTTP            | Value                                           |
+| --------------- | ----------------------------------------------- | 
+| Method          | DELETE                                          | 
+| Path            | /terms_of_service/{id}                          |
+| Path Parameters | - `id`: Integer; The system ID for the resource |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                                   |
+| ---- | ------------ | ------------------------------------------------------- |
+| 204  | No Content   | Delete successful.                                      |
+| 404  | Not Found    | No terms of service matching the supplied ID was found. |
+| 500  | Server error | Generic application error. Check application logs.      |
+
+##### Example
+
+###### Request
+
+```ssh
+curl -X DELETE https://api.admin.domain.com/v/1.0/terms_of_service/7?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+<br><br>
+
+## Countries
+
+### List Countries
+
+Use the following to read a list of countries.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                                   |
+| Paths           | /countries<br>/countries/{page}<br>/countries/{page}/{limit}                                                                                                                                                                                                          |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                                             |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'name.asc', 'name.desc', 'code_2.asc', 'code_2.desc', 'code_3.asc', 'code_3.desc']; Default: 'id.asc' |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no countries on this page.               |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                               | Value                                                  |
+| --------------------------------- | ------------------------------------------------------ | 
+| `countries`                       | The top-level country list resource.                   | 
+| `countries`[].`code_2`            | The country's two character country code.              |
+| `countries`[].`code_3`            | The country's three character country code.            |
+| `countries`[].`created_at`        | The datetime the country was created.                  |
+| `countries`[].`id`                | The country's system id.                               |
+| `countries`[].`name`              | The country's full name.                               |
+| `countries`[].`status`            | The status of the country.                             |
+| `countries`[].`status_changed_at` | The datetime of the last time the status was changed.  |
+| `countries`[].`updated_at`        | The datetime of the last time country was updated.     |
+| `limit`                           | The limit of items to show on a single page.           |
+| `next_uri`                        | The URI of the next page of results, if available.     |
+| `page`                            | The current list page number.                          |
+| `previous_uri`                    | The URI of the previous page of results, if available. |
+| `total`                           | The total count of items found.                        |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/countries/1/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "countries": [
+    {
+      "code_2": "US", 
+      "code_3": "USA", 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 1, 
+      "name": "United States", 
+      "status": 1, 
+      "status_changed_at": "2018-01-01T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000"
+    }, 
+    {
+      "code_2": "MX", 
+      "code_3": "MEX", 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 2, 
+      "name": "Mexico", 
+      "status": 1, 
+      "status_changed_at": "2018-01-01T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000"
+    }
+  ], 
+  "limit": 2, 
+  "next_uri": "https://api.admin.domain.com/v/1.0/countries/2/2", 
+  "page": 1, 
+  "total": 5
+}
+```
+
+<br><br>
+
+## Regions
+
+### List Regions
+
+Use the following to read a list of regions.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                                                                                       |
+| Paths           | /regions<br>/regions/{page}<br>/regions/{page}/{limit}                                                                                                                                                                                                                                                                    |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                                                                                                 |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'name.asc', 'name.desc', 'code_2.asc', 'code_2.desc']; Default: 'id.asc'<br>- `country_id`: Integer; Optional; The ID of the country to filter results by |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no regions on this page.                 |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                             | Value                                                  |
+| ------------------------------- | ------------------------------------------------------ | 
+| `regions`                       | The top-level region list resource.                    | 
+| `regions`[].`code_2`            | The region's two character code.                       |
+| `regions`[].`country`           | The region's country object.                           |
+| `regions`[].`country`.`code_2`  | The country's two character country code.              |
+| `regions`[].`country`.`code_3`  | The country's three character country code.            |
+| `regions`[].`country`.`id`      | The country's system id.                               |
+| `regions`[].`country`.`name`    | The country's full name.                               |
+| `regions`[].`created_at`        | The datetime the region was created.                   |
+| `regions`[].`id`                | The region's system id.                                |
+| `regions`[].`name`              | The region's full name.                                |
+| `regions`[].`status`            | The status of the region.                              |
+| `regions`[].`status_changed_at` | The datetime of the last time the status was changed.  |
+| `regions`[].`updated_at`        | The datetime of the last time region was updated.      |
+| `limit`                         | The limit of items to show on a single page.           |
+| `next_uri`                      | The URI of the next page of results, if available.     |
+| `page`                          | The current list page number.                          |
+| `previous_uri`                  | The URI of the previous page of results, if available. |
+| `total`                         | The total count of items found.                        |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/regions/1/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 2, 
+  "next_uri": "https://api.admin.domain.com/v/1.0/regions/2/2", 
+  "page": 1, 
+  "regions": [
+    {
+      "code_2": "CA", 
+      "country": {
+        "code_2": "US", 
+        "code_3": "USA", 
+        "id": 1, 
+        "name": "United States"
+      }, 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 1, 
+      "name": "California", 
+      "status": 1, 
+      "status_changed_at": "2018-01-01T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000"
+    }, 
+    {
+      "code_2": "OR", 
+      "country": {
+        "code_2": "US", 
+        "code_3": "USA", 
+        "id": 1, 
+        "name": "United States"
+      }, 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 2, 
+      "name": "Oregon", 
+      "status": 1, 
+      "status_changed_at": "2018-01-01T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000"
+    }
+  ], 
+  "total": 6
+}
+```
+
+<br><br>
+
+## Logins
+
+### List Logins
+
+Use the following to read a list of logins.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Method          | GET                                                                                                                                                                                                                                                                                                                                                                      |
+| Paths           | /logins<br>/logins/{page}<br>/logins/{page}/{limit}                                                                                                                                                                                                                                                                                                                      |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 25                                                                                                                                                                                                                                                |
+| URL Parameters  | - `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'attempt_date.asc', 'attempt_date.desc']; Default: 'id.asc'<br>- `user_id`: Integer; Optional; The ID of the user to filter results by<br>- `username`: String; Optional; The username to filter results by<br>- `ip_address`: String; Optional; The IP address to filter results by |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no logins on this page.                  |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                       | Value                                                  |
+| ------------------------- | ------------------------------------------------------ | 
+| `limit`                   | The limit of items to show on a single page.           |
+| `logins`                  | The top-level login list resource.                     | 
+| `logins`[].`attempt_date` | The datetime the login attempt was made.               |
+| `logins`[].`created_at`   | The datetime the login was created.                    |
+| `logins`[].`id`           | The login's system id.                                 |
+| `logins`[].`ip_address`   | The IP address for the login attempt.                  |
+| `logins`[].`success`      | 'true' if the login was successful, 'false' otherwise. |
+| `logins`[].`updated_at`   | The datetime of the last time login was updated.       |
+| `logins`[].`user_id`      | The user ID for the attempted username, if available.  |
+| `logins`[].`username`     | The username the login attempt used.                   |
+| `next_uri`                | The URI of the next page of results, if available.     |
+| `page`                    | The current list page number.                          |
+| `previous_uri`            | The URI of the previous page of results, if available. |
+| `total`                   | The total count of items found.                        |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/logins/1/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 2, 
+  "logins": [
+    {
+      "attempt_date": "2018-12-01T08:32:55+0000", 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 1, 
+      "ip_address": "1.1.1.1", 
+      "success": true, 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user_id": 1, 
+      "username": "admin1"
+    }, 
+    {
+      "attempt_date": "2018-12-02T12:02:21+0000", 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 2, 
+      "ip_address": "1.1.1.1", 
+      "success": false, 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user_id": 1, 
+      "username": "admin1"
+    }
+  ], 
+  "next_uri": "https://api.admin.domain.com/v/1.0/logins/2/2", 
+  "page": 1, 
+  "total": 13
+}
+```
+
+<br><br>
+
+## Password Reset Requests
+
+### List Password Reset Requests
+
+Use the following to read a list of password reset requests.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                                                                  |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Method          | GET                                                                                                                                                                                                                                                                                                    |
+| Paths           | /password_resets<br>/password_resets/{page}<br>/password_resets/{page}/{limit}                                                                                                                                                                                                                         |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                                                                              |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'requested_at.asc', 'requested_at.desc']; Default: 'id.asc'<br>- `user_id`: Integer; Optional; The ID of the user to filter results by |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no password reset requests on this page. |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                                   | Value                                                          |
+| ------------------------------------- | -------------------------------------------------------------- | 
+| `limit`                               | The limit of items to show on a single page.                   |
+| `next_uri`                            | The URI of the next page of results, if available.             |
+| `page`                                | The current list page number.                                  |
+| `password_resets`                     | The top-level password reset list resource.                    | 
+| `password_resets`[].`code`            | The one-time code for the password reset.                      |
+| `password_resets`[].`created_at`      | The datetime the password reset was created.                   |
+| `password_resets`[].`id`              | The password reset's system id.                                |
+| `password_resets`[].`ip_address`      | The IP address the password reset was made from.               |
+| `password_resets`[].`is_used`         | 'true' if the password reset has been used, 'false' otherwise. |
+| `password_resets`[].`requested_at`    | The datetime the password reset was requested.                 |
+| `password_resets`[].`updated_at`      | The datetime of the last time login was updated.               |
+| `password_resets`[].`user`            | The user object for the user who made the request.             |
+| `password_resets`[].`user`.`id`       | The user's system ID.                                          |
+| `password_resets`[].`user`.`uri`      | The user's resource URI.                                       |
+| `password_resets`[].`user`.`username` | The user's username.                                           |
+| `previous_uri`                        | The URI of the previous page of results, if available.         |
+| `total`                               | The total count of items found.                                |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/password_resets/1/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 2, 
+  "next_uri": "https://api.admin.domain.com/v/1.0/password_resets/2/2", 
+  "page": 1, 
+  "password_resets": [
+    {
+      "code": "HD7SF2", 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 1, 
+      "ip_address": "1.1.1.1", 
+      "is_used": true, 
+      "requested_at": "2019-01-10T07:13:49+0000", 
+      "status": 1, 
+      "status_changed_at": "2019-01-10T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user": {
+        "id": 1, 
+        "uri": "https://api.admin.domain.com/v/1.0/user/1", 
+        "username": "user1"
+      }
+    }, 
+    {
+      "code": "M5AF8G", 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 2, 
+      "ip_address": "1.1.1.2", 
+      "is_used": true, 
+      "requested_at": "2019-01-12T14:02:51+0000", 
+      "status": 1, 
+      "status_changed_at": "2019-01-12T00:00:00+0000", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user": {
+        "id": 2, 
+        "uri": "https://api.admin.domain.com/v/1.0/user/2", 
+        "username": "user2"
+      }
+    }
+  ], 
+  "total": 7
+}
+```
+
+<br><br>
+
+## Notifications
+
+### List Notifications
+
+Use the following to read a list of notifications.
+
+##### Request
+
+| HTTP            | Value                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Paths           | /notifications<br>/notifications/{page}<br>/notifications/{page}/{limit}                                                                                                                                                                                                                                                                                                                            |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 10                                                                                                                                                                                                                                                                           |
+| URL Parameters  | - `status`: Integer; Resource status code to filter results by; Optional<br>- `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'sent_at.asc', 'sent_at.desc']; Default: 'id.asc'<br>- `user_id`: Integer; Optional; The ID of the user to filter results by<br>- `channel`: Integer; Optional; The communication channel to filter results by; Values: [1 (email)] |
+
+##### Response Codes
+ 
+| Code | Description  | Notes                                              |
+| ---- | ------------ | -------------------------------------------------- |
+| 200  | OK           | Request successful.                                |
+| 204  | No Content   | There are no notifications on this page.           |
+| 500  | Server error | Generic application error. Check application logs. |
+
+##### Response Payload
+
+| Key                                   | Value                                                           |
+| ------------------------------------- | --------------------------------------------------------------- | 
+| `limit`                               | The limit of items to show on a single page.                    |
+| `next_uri`                            | The URI of the next page of results, if available.              |
+| `notifications`                       | The top-level notification list resource.                       | 
+| `notifications`[].`accepted`          | 'true' if the notification was received by the sending service. |
+| `notifications`[].`channel`           | The channel code (1 for email, etc.)                            |
+| `notifications`[].`created_at`        | The datetime the notification was created.                      |
+| `notifications`[].`id`                | The notification's system id.                                   |
+| `notifications`[].`notification_id`   | The ID received from the sending service.                       |
+| `notifications`[].`rejected`          | 'true' if the sending service rejected the notification.        |
+| `notifications`[].`sent_at`           | The datetime the notification was sent.                         |
+| `notifications`[].`status`            | The status of the notification.                                 |
+| `notifications`[].`status_changed_at` | The datetime of the last time the status was changed.           |
+| `notifications`[].`template`          | The template code used on the sending service.                  |
+| `notifications`[].`updated_at`        | The datetime of the last time notification was updated.         |
+| `notifications`[].`user`              | The user object for the user who was notified.                  |
+| `notifications`[].`user`.`id`         | The user's system ID.                                           |
+| `notifications`[].`user`.`uri`        | The user's resource URI.                                        |
+| `notifications`[].`user`.`username`   | The user's username.                                            |
+| `page`                                | The current list page number.                                   |
+| `previous_uri`                        | The URI of the previous page of results, if available.          |
+| `total`                               | The total count of items found.                                 |
+
+##### Example
+
+###### Request
+
+```ssh
+curl https://api.admin.domain.com/v/1.0/notifications/1/2?app_key=y84pSJ7PA4E9Lnj936ptdqj9jmGCmtTx \
+    -u eyJhbGciOiJIUzUxMiIsImlhdCI6MTU3MjQ3NDcyNywiZXhwIjoxNTcyNDg5MTI3fQ.eyJpZCI6MSwidHlwZSI6ImFkbWluaXN0cmF0b3IifQ.5dkEEbWNMxtHxS_nuk-m0zIY37jlmBHBREB9gKHwLWXIN-ic6EdXxhhIvEFZJYnR3rnNsIlZjTBLOMb21dMwtg:
+```
+
+###### Response
+
+```json
+{
+  "limit": 2, 
+  "next_uri": "http://base.api.admin.python.vm/v/dev/notifications/2/2", 
+  "notifications": [
+    {
+      "accepted": 1, 
+      "channel": 1, 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 1, 
+      "notification_id": "123456", 
+      "rejected": 0, 
+      "sent_at": "2019-02-01T10:45:00+0000", 
+      "service": "Service 1", 
+      "status": 1, 
+      "status_changed_at": "2019-02-01T00:00:00+0000", 
+      "template": "template-1", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user": {
+        "id": 1, 
+        "uri": "http://base.api.admin.python.vm/v/dev/user/1", 
+        "username": "user1"
+      }
+    }, 
+    {
+      "accepted": 1, 
+      "channel": 1, 
+      "created_at": "2019-11-05T02:16:56+0000", 
+      "id": 2, 
+      "notification_id": "123457", 
+      "rejected": 0, 
+      "sent_at": "2019-02-03T12:10:07+0000", 
+      "service": "Service 1", 
+      "status": 1, 
+      "status_changed_at": "2019-02-03T00:00:00+0000", 
+      "template": "template-1", 
+      "updated_at": "2019-11-05T02:16:56+0000", 
+      "user": {
+        "id": 2, 
+        "uri": "http://base.api.admin.python.vm/v/dev/user/2", 
+        "username": "user2"
+      }
+    }
+  ], 
+  "page": 1, 
+  "total": 5
+}
+```
