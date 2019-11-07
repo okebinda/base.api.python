@@ -110,6 +110,7 @@ class Authentication:
                         username=username_or_token[0:40],
                         ip_address=request.environ.get('HTTP_X_REAL_IP',
                                                        request.remote_addr),
+                        api=Login.API_ADMIN,
                         success=False,
                         attempt_date=datetime.now())
                     db.session.add(login_record)
@@ -125,6 +126,7 @@ class Authentication:
                     username=username_or_token[0:40],
                     ip_address=request.environ.get('HTTP_X_REAL_IP',
                                                    request.remote_addr),
+                    api=Login.API_ADMIN,
                     success=True,
                     attempt_date=datetime.now())
                 db.session.add(login_record)

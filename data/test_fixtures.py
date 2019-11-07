@@ -10,6 +10,7 @@ from app.models.Region import Region
 from app.models.AppKey import AppKey
 from app.models.PasswordReset import PasswordReset
 from app.models.Notification import Notification
+from app.models.Login import Login
 
 
 class CountryData(DataSet):
@@ -459,47 +460,55 @@ class LoginData(DataSet):
         user_id = 1
         username = AdministratorData.id1_admin1.username
         ip_address = '1.1.1.1'
+        api = Login.API_ADMIN
         success = True
         attempt_date = datetime.datetime(2018, 12, 1, 8, 32, 55)
     class id2_u1_login2:
         user_id = 1
         username = AdministratorData.id1_admin1.username
         ip_address = '1.1.1.1'
+        api = Login.API_ADMIN
         success = False
         attempt_date = datetime.datetime(2018, 12, 2, 12, 2, 21)
     class id3_u1_login3:
         user_id = 1
         username = AdministratorData.id1_admin1.username
         ip_address = '1.1.1.1'
+        api = Login.API_ADMIN
         success = True
         attempt_date = datetime.datetime(2018, 12, 2, 12, 3, 9)
     class id4_u2_login1:
         user_id = 2
         username = UserData.id2_user2.username
         ip_address = '1.1.1.2'
+        api = Login.API_PUBLIC
         success = True
         attempt_date = datetime.datetime(2018, 12, 10, 20, 47, 30)
     class id5_u2_login2:
         user_id = 2
         username = UserData.id2_user2.username
         ip_address = '9.9.9.9'
+        api = Login.API_PUBLIC
         success = False
         attempt_date = datetime.datetime(2018, 12, 22, 23, 11, 53)
     class id6_u2_login3:
         user_id = 2
         username = UserData.id2_user2.username
         ip_address = '9.9.9.9'
+        api = Login.API_PUBLIC
         success = False
         attempt_date = datetime.datetime(2018, 12, 22, 23, 12, 28)
     class id7_u3_login1:
         user_id = 3
         username = UserData.id3_user3.username
         ip_address = '1.1.1.3'
+        api = Login.API_PUBLIC
         success = True
         attempt_date = datetime.datetime(2018, 12, 15, 7, 32, 18)
     class id8_u0_login1:
         username = 'root'
         ip_address = '9.9.9.9'
+        api = Login.API_PUBLIC
         success = False
         attempt_date = datetime.datetime(2019, 1, 8, 2, 40, 21)
 

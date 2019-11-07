@@ -8,6 +8,9 @@ class Login(db.Model):
 
     __tablename__ = 'logins'
 
+    API_ADMIN = 1
+    API_PUBLIC = 2
+
     # columns
     id = db.Column(
         'id',
@@ -27,6 +30,10 @@ class Login(db.Model):
         'ip_address',
         db.String(50),
         index=True)
+    api = db.Column(
+        'api',
+        db.SmallInteger,
+        nullable=False)
     success = db.Column(
         'success',
         db.Boolean,

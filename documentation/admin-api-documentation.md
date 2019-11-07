@@ -2912,12 +2912,12 @@ Use the following to read a list of logins.
 
 ##### Request
 
-| HTTP            | Value                                                                                                                                                                                                                                                                                                                                                                    |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Method          | GET                                                                                                                                                                                                                                                                                                                                                                      |
-| Paths           | /logins<br>/logins/{page}<br>/logins/{page}/{limit}                                                                                                                                                                                                                                                                                                                      |
-| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 25                                                                                                                                                                                                                                                |
-| URL Parameters  | - `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'attempt_date.asc', 'attempt_date.desc']; Default: 'id.asc'<br>- `user_id`: Integer; Optional; The ID of the user to filter results by<br>- `username`: String; Optional; The username to filter results by<br>- `ip_address`: String; Optional; The IP address to filter results by |
+| HTTP            | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method          | GET                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Paths           | /logins<br>/logins/{page}<br>/logins/{page}/{limit}                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Path Parameters | - `page`: Integer; Results page number; Default: 1<br>- `limit`: Integer; Number of results per page to show; Default: 25                                                                                                                                                                                                                                                                                                                                                         |
+| URL Parameters  | - `order_by`: String; How to order results; Optional; Values: ['id.asc', 'id.desc', 'attempt_date.asc', 'attempt_date.desc']; Default: 'id.asc'<br>- `user_id`: Integer; Optional; The ID of the user to filter results by<br>- `username`: String; Optional; The username to filter results by<br>- `ip_address`: String; Optional; The IP address to filter results by<br>- `ip_address`: Integer; Optional; The API code to filter results by; Values: [1 (admin), 2 (public)] |
 
 ##### Response Codes
  
@@ -2937,6 +2937,7 @@ Use the following to read a list of logins.
 | `logins`[].`created_at`   | The datetime the login was created.                    |
 | `logins`[].`id`           | The login's system id.                                 |
 | `logins`[].`ip_address`   | The IP address for the login attempt.                  |
+| `logins`[].`api`          | The API code for which API access was attempted for.   |
 | `logins`[].`success`      | 'true' if the login was successful, 'false' otherwise. |
 | `logins`[].`updated_at`   | The datetime of the last time login was updated.       |
 | `logins`[].`user_id`      | The user ID for the attempted username, if available.  |
@@ -2962,23 +2963,25 @@ curl https://api.admin.domain.com/v/1.0/logins/1/2?app_key=y84pSJ7PA4E9Lnj936ptd
   "limit": 2, 
   "logins": [
     {
-      "attempt_date": "2018-12-01T08:32:55+0000", 
-      "created_at": "2019-11-05T02:16:56+0000", 
-      "id": 1, 
-      "ip_address": "1.1.1.1", 
-      "success": true, 
-      "updated_at": "2019-11-05T02:16:56+0000", 
-      "user_id": 1, 
+      "api": 1,
+      "attempt_date": "2018-12-01T08:32:55+0000",
+      "created_at": "2019-11-07T02:49:26+0000",
+      "id": 1,
+      "ip_address": "1.1.1.1",
+      "success": true,
+      "updated_at": "2019-11-07T02:49:26+0000",
+      "user_id": 1,
       "username": "admin1"
-    }, 
+    },
     {
-      "attempt_date": "2018-12-02T12:02:21+0000", 
-      "created_at": "2019-11-05T02:16:56+0000", 
-      "id": 2, 
-      "ip_address": "1.1.1.1", 
-      "success": false, 
-      "updated_at": "2019-11-05T02:16:56+0000", 
-      "user_id": 1, 
+      "api": 1,
+      "attempt_date": "2018-12-02T12:02:21+0000",
+      "created_at": "2019-11-07T02:49:26+0000",
+      "id": 2,
+      "ip_address": "1.1.1.1",
+      "success": false,
+      "updated_at": "2019-11-07T02:49:26+0000",
+      "user_id": 1,
       "username": "admin1"
     }
   ], 

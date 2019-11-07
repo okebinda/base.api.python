@@ -10,7 +10,8 @@ from flask import g
 from app import db
 from app.api_admin.authentication import auth, admin_permission, require_appkey
 from app.api_admin.schema.AdministratorSchema import AdministratorSchema
-from app.models.AdministratorPasswordHistory import AdministratorPasswordHistory
+from app.models.AdministratorPasswordHistory \
+    import AdministratorPasswordHistory
 
 password = Blueprint('password', __name__)
 
@@ -70,10 +71,10 @@ def put_password():
 
     # check previous passwords
     if user.roles[0].password_policy and user.roles[0].password_reuse_history:
-        prev_passwords = AdministratorPasswordHistory.query.filter(
-            AdministratorPasswordHistory.administrator_id == user.id).order_by(
-            AdministratorPasswordHistory.set_date.desc()).limit(
-            user.roles[0].password_reuse_history)
+        prev_passwords = AdministratorPasswordHistory.query.\
+            filter(AdministratorPasswordHistory.administrator_id == user.id).\
+            order_by(AdministratorPasswordHistory.set_date.desc()).\
+            limit(user.roles[0].password_reuse_history)
         for record in prev_passwords:
             if bcrypt.checkpw(request.json.get('password1').encode('utf-8'),
                               record.password.encode('utf-8')):

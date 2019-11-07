@@ -11,7 +11,8 @@ from app import db
 from app.Config import Config
 from app.lib.sqlalchemy.BaseModel import BaseModel
 from app.lib.sqlalchemy.PGPString import PGPString
-from app.models.AdministratorPasswordHistory import AdministratorPasswordHistory
+from app.models.AdministratorPasswordHistory \
+    import AdministratorPasswordHistory
 
 # relation tables
 roles = db.Table(

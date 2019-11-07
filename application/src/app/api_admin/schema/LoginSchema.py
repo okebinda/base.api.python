@@ -16,7 +16,7 @@ class LoginSchema(ma.Schema):
         model = Login
 
         # fields to expose
-        fields = ('id', 'user_id', 'username', 'ip_address', 'success',
+        fields = ('id', 'user_id', 'username', 'ip_address', 'api', 'success',
                   'attempt_date', 'created_at', 'updated_at')
 
     # field validation
@@ -30,6 +30,7 @@ class LoginSchema(ma.Schema):
         required=True,
         validate=validate.Length(
             6, 50, "Value must be between 6 and 50 characters long."))
+    api = fields.Integer(required=True)
     success = fields.Boolean(required=True)
     attempt_date = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     created_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)

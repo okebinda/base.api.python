@@ -77,10 +77,10 @@ def put_password():
 
     # check previous passwords
     if user.roles[0].password_policy and user.roles[0].password_reuse_history:
-        prev_passwords = UserPasswordHistory.query.filter(
-            UserPasswordHistory.user_id == user.id).order_by(
-            UserPasswordHistory.set_date.desc()).limit(
-            user.roles[0].password_reuse_history)
+        prev_passwords = UserPasswordHistory.query.\
+            filter(UserPasswordHistory.user_id == user.id).\
+            order_by(UserPasswordHistory.set_date.desc()).\
+            limit(user.roles[0].password_reuse_history)
         for record in prev_passwords:
             if bcrypt.checkpw(request.json.get('password1').encode('utf-8'),
                               record.password.encode('utf-8')):

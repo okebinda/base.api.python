@@ -24,6 +24,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(1, response.json['logins'][0]['user_id'])
         self.assertEqual("admin1", response.json['logins'][0]['username'])
         self.assertEqual("1.1.1.1", response.json['logins'][0]['ip_address'])
+        self.assertEqual(1, response.json['logins'][0]['api'])
         self.assertTrue(response.json['logins'][0]['success'])
         self.assertEqual("2018-12-01T08:32:55+0000", response.json['logins'][0]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][0])
@@ -33,6 +34,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(1, response.json['logins'][1]['user_id'])
         self.assertEqual("admin1", response.json['logins'][1]['username'])
         self.assertEqual("1.1.1.1", response.json['logins'][1]['ip_address'])
+        self.assertEqual(1, response.json['logins'][1]['api'])
         self.assertFalse(response.json['logins'][1]['success'])
         self.assertEqual("2018-12-02T12:02:21+0000", response.json['logins'][1]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][1])
@@ -42,6 +44,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(1, response.json['logins'][2]['user_id'])
         self.assertEqual("admin1", response.json['logins'][2]['username'])
         self.assertEqual("1.1.1.1", response.json['logins'][2]['ip_address'])
+        self.assertEqual(1, response.json['logins'][2]['api'])
         self.assertTrue(response.json['logins'][2]['success'])
         self.assertEqual("2018-12-02T12:03:09+0000", response.json['logins'][2]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][2])
@@ -51,6 +54,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(2, response.json['logins'][3]['user_id'])
         self.assertEqual("user2", response.json['logins'][3]['username'])
         self.assertEqual("1.1.1.2", response.json['logins'][3]['ip_address'])
+        self.assertEqual(2, response.json['logins'][3]['api'])
         self.assertTrue(response.json['logins'][3]['success'])
         self.assertEqual("2018-12-10T20:47:30+0000", response.json['logins'][3]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][3])
@@ -60,6 +64,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(2, response.json['logins'][4]['user_id'])
         self.assertEqual("user2", response.json['logins'][4]['username'])
         self.assertEqual("9.9.9.9", response.json['logins'][4]['ip_address'])
+        self.assertEqual(2, response.json['logins'][4]['api'])
         self.assertFalse(response.json['logins'][4]['success'])
         self.assertEqual("2018-12-22T23:11:53+0000", response.json['logins'][4]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][4])
@@ -69,6 +74,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(2, response.json['logins'][5]['user_id'])
         self.assertEqual("user2", response.json['logins'][5]['username'])
         self.assertEqual("9.9.9.9", response.json['logins'][5]['ip_address'])
+        self.assertEqual(2, response.json['logins'][5]['api'])
         self.assertFalse(response.json['logins'][5]['success'])
         self.assertEqual("2018-12-22T23:12:28+0000", response.json['logins'][5]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][5])
@@ -78,6 +84,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(3, response.json['logins'][6]['user_id'])
         self.assertEqual("user3", response.json['logins'][6]['username'])
         self.assertEqual("1.1.1.3", response.json['logins'][6]['ip_address'])
+        self.assertEqual(2, response.json['logins'][6]['api'])
         self.assertTrue(response.json['logins'][6]['success'])
         self.assertEqual("2018-12-15T07:32:18+0000", response.json['logins'][6]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][6])
@@ -87,6 +94,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(None, response.json['logins'][7]['user_id'])
         self.assertEqual("root", response.json['logins'][7]['username'])
         self.assertEqual("9.9.9.9", response.json['logins'][7]['ip_address'])
+        self.assertEqual(2, response.json['logins'][7]['api'])
         self.assertFalse(response.json['logins'][7]['success'])
         self.assertEqual("2019-01-08T02:40:21+0000", response.json['logins'][7]['attempt_date'])
         self.assertIn("created_at", response.json['logins'][7])
@@ -96,6 +104,7 @@ class LoginsTest(BaseTest):
         self.assertEqual(1, response.json['logins'][8]['user_id'])
         self.assertEqual("admin1", response.json['logins'][8]['username'])
         self.assertEqual("127.0.0.1", response.json['logins'][8]['ip_address'])
+        self.assertEqual(1, response.json['logins'][8]['api'])
         self.assertTrue(response.json['logins'][8]['success'])
         self.assertIn("attempt_date", response.json['logins'][8])
         self.assertIn("created_at", response.json['logins'][8])
@@ -283,6 +292,27 @@ class LoginsTest(BaseTest):
         self.assertEqual(5, response.json['logins'][0]['id'])
         self.assertEqual(6, response.json['logins'][1]['id'])
         self.assertEqual(8, response.json['logins'][2]['id'])
+
+    def test_get_logins_api_1(self):
+        response = self.client.get(
+            '/logins?api=1&app_key=' + AppKeyData.id1_appkey1.key,
+            headers={"Authorization": 'Basic '
+                                      + get_http_basic_auth_credentials(
+                AdministratorData.id1_admin1)})
+
+        self.assertEqual(200, response.status_code)
+        self.assertIn("limit", response.json)
+        self.assertEqual(25, response.json['limit'])
+        self.assertIn("page", response.json)
+        self.assertEqual(1, response.json['page'])
+        self.assertIn("total", response.json)
+        self.assertEqual(4, response.json['total'])
+        self.assertIn("logins", response.json)
+
+        self.assertEqual(1, response.json['logins'][0]['id'])
+        self.assertEqual(2, response.json['logins'][1]['id'])
+        self.assertEqual(3, response.json['logins'][2]['id'])
+        self.assertEqual(9, response.json['logins'][3]['id'])
 
     def test_get_logins_no_app_key(self):
 

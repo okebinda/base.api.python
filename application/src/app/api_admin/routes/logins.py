@@ -42,6 +42,9 @@ def get_logins(page=1, limit=25):
     if request.args.get('ip_address', None) is not None:
         login_query = login_query.filter(
             Login.ip_address == request.args.get('ip_address'))
+    if request.args.get('api', None) is not None:
+        login_query = login_query.filter(
+            Login.api == request.args.get('api'))
 
     # initialize order options dict
     order_options = {
