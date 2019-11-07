@@ -1,6 +1,8 @@
 """Password controller"""
 
 import re
+from datetime import datetime
+import bcrypt
 
 from flask import Blueprint, jsonify, request
 from flask import g
@@ -8,6 +10,7 @@ from flask import g
 from app import db
 from app.api_admin.authentication import auth, admin_permission, require_appkey
 from app.api_admin.schema.AdministratorSchema import AdministratorSchema
+from app.models.AdministratorPasswordHistory import AdministratorPasswordHistory
 
 password = Blueprint('password', __name__)
 
@@ -65,8 +68,27 @@ def put_password():
     if errors:
         return jsonify({"error": errors}), 400
 
-    # save user
+    # check previous passwords
+    if user.roles[0].password_policy and user.roles[0].password_reuse_history:
+        prev_passwords = AdministratorPasswordHistory.query.filter(
+            AdministratorPasswordHistory.administrator_id == user.id).order_by(
+            AdministratorPasswordHistory.set_date.desc()).limit(
+            user.roles[0].password_reuse_history)
+        for record in prev_passwords:
+            if bcrypt.checkpw(request.json.get('password1').encode('utf-8'),
+                              record.password.encode('utf-8')):
+                errors['password1'] = ["This password has recently been used."]
+                break
+
+    if errors:
+        return jsonify({"error": errors}), 400
+
+    # save user and password history
     user.password = request.json.get('password1')
+    pass_history = AdministratorPasswordHistory(administrator=user,
+                                                password=user.password,
+                                                set_date=datetime.now())
+    db.session.add(pass_history)
     db.session.commit()
 
     # response

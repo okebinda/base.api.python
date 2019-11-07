@@ -10,3 +10,5 @@ from app.models.Login import Login
 from app.models.AppKey import AppKey
 from app.models.PasswordReset import PasswordReset
 from app.models.Notification import Notification
+from app.models.UserPasswordHistory import UserPasswordHistory
+from app.models.AdministratorPasswordHistory import AdministratorPasswordHistory

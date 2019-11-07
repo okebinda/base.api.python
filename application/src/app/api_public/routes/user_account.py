@@ -11,6 +11,7 @@ from app.models.UserProfile import UserProfile
 from app.models.Role import Role
 from app.models.TermsOfService import TermsOfService
 from app.models.UserTermsOfService import UserTermsOfService
+from app.models.UserPasswordHistory import UserPasswordHistory
 from app.api_public.authentication import auth, user_permission,\
     require_appkey, check_password_expiration
 from app.api_public.schema.UserAccountSchema import UserAccountSchema
@@ -93,6 +94,13 @@ def post_user_account_step1():
         accept_date=datetime.now(),
         ip_address=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
     db.session.add(user_tos)
+
+    # save password history
+    pass_history = UserPasswordHistory(
+        user=user,
+        password=user.password,
+        set_date=datetime.now())
+    db.session.add(pass_history)
 
     db.session.commit()
 

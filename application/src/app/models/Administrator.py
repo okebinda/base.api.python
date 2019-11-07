@@ -11,6 +11,7 @@ from app import db
 from app.Config import Config
 from app.lib.sqlalchemy.BaseModel import BaseModel
 from app.lib.sqlalchemy.PGPString import PGPString
+from app.models.AdministratorPasswordHistory import AdministratorPasswordHistory
 
 # relation tables
 roles = db.Table(
@@ -84,6 +85,11 @@ class Administrator(db.Model, BaseModel):
         lazy='subquery',
         order_by="Role.priority",
         backref=db.backref('administrators', lazy=True))
+    password_history = db.relationship(
+        'AdministratorPasswordHistory',
+        cascade="all,delete-orphan",
+        back_populates='administrator',
+        order_by=AdministratorPasswordHistory.set_date.desc())
 
     @hybrid_property
     def password(self):

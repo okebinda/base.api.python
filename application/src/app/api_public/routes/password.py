@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import time
 import os
 import hashlib
+import bcrypt
 
 from flask import Blueprint, jsonify, request, g, current_app
 
@@ -16,6 +17,7 @@ from app.lib.random.String import String as RandomString
 from app.lib.notify.Notify import Notify
 from app.api_public.authentication import auth, user_permission, require_appkey
 from app.api_public.schema.UserAccountSchema import UserAccountSchema
+from app.models.UserPasswordHistory import UserPasswordHistory
 
 password = Blueprint('password', __name__)
 
@@ -73,8 +75,27 @@ def put_password():
     if errors:
         return jsonify({"error": errors}), 400
 
-    # save user
+    # check previous passwords
+    if user.roles[0].password_policy and user.roles[0].password_reuse_history:
+        prev_passwords = UserPasswordHistory.query.filter(
+            UserPasswordHistory.user_id == user.id).order_by(
+            UserPasswordHistory.set_date.desc()).limit(
+            user.roles[0].password_reuse_history)
+        for record in prev_passwords:
+            if bcrypt.checkpw(request.json.get('password1').encode('utf-8'),
+                              record.password.encode('utf-8')):
+                errors['password1'] = ["This password has recently been used."]
+                break
+
+    if errors:
+        return jsonify({"error": errors}), 400
+
+    # save user and password history
     user.password = request.json.get('password1')
+    pass_history = UserPasswordHistory(user=user,
+                                       password=user.password,
+                                       set_date=datetime.now())
+    db.session.add(pass_history)
     db.session.commit()
 
     # response

@@ -14,6 +14,7 @@ from app.lib.sqlalchemy.PGPString import PGPString
 from app.models.PasswordReset import PasswordReset
 from app.models.UserTermsOfService import UserTermsOfService
 from app.models.Notification import Notification
+from app.models.UserPasswordHistory import UserPasswordHistory
 
 # relation tables
 roles = db.Table(
@@ -98,6 +99,11 @@ class User(db.Model, BaseModel):
         uselist=False,
         cascade="all,delete-orphan",
         back_populates='user')
+    password_history = db.relationship(
+        'UserPasswordHistory',
+        cascade="all,delete-orphan",
+        back_populates='user',
+        order_by=UserPasswordHistory.set_date.desc())
 
     @hybrid_property
     def password(self):
