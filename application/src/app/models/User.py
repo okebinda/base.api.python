@@ -76,6 +76,7 @@ class User(db.Model, BaseModel):
         'Role',
         secondary=roles,
         lazy='subquery',
+        order_by="Role.priority",
         backref=db.backref('users', lazy=True))
     terms_of_services = db.relationship(
         'UserTermsOfService',

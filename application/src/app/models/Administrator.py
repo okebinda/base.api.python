@@ -82,6 +82,7 @@ class Administrator(db.Model, BaseModel):
         'Role',
         secondary=roles,
         lazy='subquery',
+        order_by="Role.priority",
         backref=db.backref('administrators', lazy=True))
 
     @hybrid_property

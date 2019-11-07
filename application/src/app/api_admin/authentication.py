@@ -19,8 +19,6 @@ auth = HTTPBasicAuth()
 user_permission = Permission(RoleNeed('USER'))
 admin_permission = Permission(RoleNeed('SUPER_ADMIN'))
 
-# @todo: upgrade policy checks to use highest priority (lowest number) role
-
 
 def require_appkey(view_function):
     """A Decorator function to check a request endpoint for a valid
