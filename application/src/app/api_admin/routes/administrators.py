@@ -12,6 +12,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.AdministratorSchema import AdministratorSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 administrators = Blueprint('administrators', __name__)
 
@@ -36,41 +37,27 @@ def get_administrators(page=1, limit=10):
     """
 
     # initialize query
-    administrator_query = Administrator.query
+    query = Query.make(
+        Administrator,
+        Administrator.id.asc(),
+        {
+            'id.asc': Administrator.id.asc(),
+            'id.desc': Administrator.id.desc(),
+            'username.asc': Administrator.username.asc(),
+            'username.desc': Administrator.username.desc(),
+            'joined_at.asc': Administrator.joined_at.asc(),
+            'joined_at.desc': Administrator.joined_at.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_ADMIN)
 
-    # filter query based on URL parameters
-    if request.args.get('status', '').isnumeric():
-        administrator_query = administrator_query.filter(
-            Administrator.status == int(request.args.get('status')))
-    else:
-        administrator_query = administrator_query.filter(
-            Administrator.status.in_((Administrator.STATUS_ENABLED,
-                                      Administrator.STATUS_DISABLED,
-                                      Administrator.STATUS_PENDING)))
-
+    # filter by role
     if request.args.get('role', '').isnumeric():
-        administrator_query = administrator_query.filter(
-            Administrator.roles.any(Role.id == int(request.args.get('role'))))
-
-    # initialize order options dict
-    order_options = {
-        'id.asc': Administrator.id.asc(),
-        'id.desc': Administrator.id.desc(),
-        'username.asc': Administrator.username.asc(),
-        'username.desc': Administrator.username.desc(),
-        'joined_at.asc': Administrator.joined_at.asc(),
-        'joined_at.desc': Administrator.joined_at.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = Administrator.id.asc()
+        query = query.filter(Administrator.roles.any(
+            Role.id == int(request.args.get('role'))))
 
     # retrieve and return results
-    results = administrator_query.order_by(order_by).limit(
-        limit).offset((page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -78,7 +65,7 @@ def get_administrators(page=1, limit=10):
             'administrators': AdministratorSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': administrator_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

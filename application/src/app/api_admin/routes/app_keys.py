@@ -11,6 +11,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.AppKeySchema import AppKeySchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 app_keys = Blueprint('app_keys', __name__)
 
@@ -35,34 +36,20 @@ def get_app_keys(page=1, limit=10):
     """
 
     # initialize query
-    app_key_query = AppKey.query
-
-    # filter query based on URL parameters
-    if request.args.get('status', '').isnumeric():
-        app_key_query = app_key_query.filter(
-            AppKey.status == int(request.args.get('status')))
-    else:
-        app_key_query = app_key_query.filter(
-            AppKey.status.in_((AppKey.STATUS_ENABLED, AppKey.STATUS_DISABLED,
-                               AppKey.STATUS_PENDING)))
-
-    # initialize order options dict
-    order_options = {
-        'id.asc': AppKey.id.asc(),
-        'id.desc': AppKey.id.desc(),
-        'application.asc': AppKey.application.asc(),
-        'application.desc': AppKey.application.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = AppKey.id.asc()
+    query = Query.make(
+        AppKey,
+        AppKey.id.asc(),
+        {
+            'id.asc': AppKey.id.asc(),
+            'id.desc': AppKey.id.desc(),
+            'application.asc': AppKey.application.asc(),
+            'application.desc': AppKey.application.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_ADMIN)
 
     # retrieve and return results
-    results = app_key_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -70,7 +57,7 @@ def get_app_keys(page=1, limit=10):
             'app_keys': AppKeySchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': app_key_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

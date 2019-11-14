@@ -11,6 +11,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.TermsOfServiceSchema import TermsOfServiceSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 terms_of_service = Blueprint('terms_of_service', __name__)
 
@@ -36,37 +37,22 @@ def get_terms_of_services(page=1, limit=10):
     """
 
     # initialize query
-    terms_of_service_query = TermsOfService.query
-
-    # filter query based on URL parameters
-    if request.args.get('status', '').isnumeric():
-        terms_of_service_query = terms_of_service_query.filter(
-            TermsOfService.status == int(request.args.get('status')))
-    else:
-        terms_of_service_query = terms_of_service_query.filter(
-            TermsOfService.status.in_((TermsOfService.STATUS_ENABLED,
-                                       TermsOfService.STATUS_DISABLED,
-                                       TermsOfService.STATUS_PENDING)))
-
-    # initialize order options dict
-    order_options = {
-        'id.asc': TermsOfService.id.asc(),
-        'id.desc': TermsOfService.id.desc(),
-        'publish_date.asc': TermsOfService.publish_date.asc(),
-        'publish_date.desc': TermsOfService.publish_date.desc(),
-        'version.asc': TermsOfService.version.asc(),
-        'version.desc': TermsOfService.version.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = TermsOfService.id.asc()
+    query = Query.make(
+        TermsOfService,
+        TermsOfService.id.asc(),
+        {
+            'id.asc': TermsOfService.id.asc(),
+            'id.desc': TermsOfService.id.desc(),
+            'publish_date.asc': TermsOfService.publish_date.asc(),
+            'publish_date.desc': TermsOfService.publish_date.desc(),
+            'version.asc': TermsOfService.version.asc(),
+            'version.desc': TermsOfService.version.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_ADMIN)
 
     # retrieve and return results
-    results = terms_of_service_query.order_by(order_by).limit(
-        limit).offset((page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -74,7 +60,7 @@ def get_terms_of_services(page=1, limit=10):
             'terms_of_services': TermsOfServiceSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': terms_of_service_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

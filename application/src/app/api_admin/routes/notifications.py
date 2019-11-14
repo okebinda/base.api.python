@@ -7,6 +7,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.NotificationSchema import NotificationSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 notifications = Blueprint('notifications', __name__)
 
@@ -31,41 +32,28 @@ def get_notifications(page=1, limit=10):
     """
 
     # initialize query
-    notification_query = Notification.query
+    query = Query.make(
+        Notification,
+        Notification.id.asc(),
+        {
+            'id.asc': Notification.id.asc(),
+            'id.desc': Notification.id.desc(),
+            'sent_at.asc': Notification.sent_at.asc(),
+            'sent_at.desc': Notification.sent_at.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_ADMIN)
 
     # filter query based on URL parameters
     if request.args.get('user_id', None) is not None:
-        notification_query = notification_query.filter(
+        query = query.filter(
             Notification.user_id == request.args.get('user_id'))
     if request.args.get('channel', None) is not None:
-        notification_query = notification_query.filter(
+        query = query.filter(
             Notification.channel == request.args.get('channel'))
-    if request.args.get('status', '').isnumeric():
-        notification_query = notification_query.filter(
-            Notification.status == int(request.args.get('status')))
-    else:
-        notification_query = notification_query.filter(
-            Notification.status.in_((Notification.STATUS_ENABLED,
-                                     Notification.STATUS_DISABLED,
-                                     Notification.STATUS_PENDING)))
-
-    # initialize order options dict
-    order_options = {
-        'id.asc': Notification.id.asc(),
-        'id.desc': Notification.id.desc(),
-        'sent_at.asc': Notification.sent_at.asc(),
-        'sent_at.desc': Notification.sent_at.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = Notification.id.asc()
 
     # retrieve and return results
-    results = notification_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -73,7 +61,7 @@ def get_notifications(page=1, limit=10):
             'notifications': NotificationSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': notification_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

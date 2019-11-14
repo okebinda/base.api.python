@@ -6,6 +6,7 @@ from app.models.Region import Region
 from app.api_public.authentication import require_appkey
 from app.api_public.schema.RegionSchema import RegionSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 regions = Blueprint('regions', __name__)
 
@@ -19,6 +20,8 @@ regions = Blueprint('regions', __name__)
 def get_regions(country_code, page=1, limit=100):
     """Retrieves a list of regions (states)
 
+    :param country_code: The two character country code to filter regions by
+    :type country_code: str
     :param page: Page number
     :type page: int
     :param limit: Maximum number of results to show
@@ -28,29 +31,24 @@ def get_regions(country_code, page=1, limit=100):
     """
 
     # initialize query
-    region_query = Region.query.filter(
-        Region.status == Region.STATUS_ENABLED,
-        Region.country.has(code_2=country_code))
+    query = Query.make(
+        Region,
+        Region.name.asc(),
+        {
+            'id.asc': Region.id.asc(),
+            'id.desc': Region.id.desc(),
+            'name.asc': Region.name.asc(),
+            'name.desc': Region.name.desc(),
+            'code_2.asc': Region.code_2.asc(),
+            'code_2.desc': Region.code_2.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_USER)
 
-    # initialize order options dict
-    order_options = {
-        'id.asc': Region.id.asc(),
-        'id.desc': Region.id.desc(),
-        'name.asc': Region.name.asc(),
-        'name.desc': Region.name.desc(),
-        'code_2.asc': Region.code_2.asc(),
-        'code_2.desc': Region.code_2.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = Region.name.asc()
+    query = query.filter(Region.country.has(code_2=country_code))
 
     # retrieve and return results
-    results = region_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -58,7 +56,7 @@ def get_regions(country_code, page=1, limit=100):
             'regions': RegionSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': region_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

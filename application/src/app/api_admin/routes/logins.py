@@ -7,6 +7,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.LoginSchema import LoginSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 logins = Blueprint('logins', __name__)
 
@@ -31,39 +32,34 @@ def get_logins(page=1, limit=25):
     """
 
     # initialize query
-    login_query = Login.query
+    query = Query.make(
+        Login,
+        Login.id.asc(),
+        {
+            'id.asc': Login.id.asc(),
+            'id.desc': Login.id.desc(),
+            'attempt_date.asc': Login.attempt_date.asc(),
+            'attempt_date.desc': Login.attempt_date.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_NONE)
 
     # filter query based on URL parameters
     if request.args.get('user_id', None) is not None:
-        login_query = login_query.filter(
+        query = query.filter(
             Login.user_id == request.args.get('user_id'))
     if request.args.get('username', None) is not None:
-        login_query = login_query.filter(
+        query = query.filter(
             Login.username == request.args.get('username'))
     if request.args.get('ip_address', None) is not None:
-        login_query = login_query.filter(
+        query = query.filter(
             Login.ip_address == request.args.get('ip_address'))
     if request.args.get('api', None) is not None:
-        login_query = login_query.filter(
+        query = query.filter(
             Login.api == request.args.get('api'))
 
-    # initialize order options dict
-    order_options = {
-        'id.asc': Login.id.asc(),
-        'id.desc': Login.id.desc(),
-        'attempt_date.asc': Login.attempt_date.asc(),
-        'attempt_date.desc': Login.attempt_date.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = Login.id.asc()
-
     # retrieve and return results
-    results = login_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -71,7 +67,7 @@ def get_logins(page=1, limit=25):
             'logins': LoginSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': login_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

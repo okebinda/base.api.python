@@ -6,6 +6,7 @@ from app.models.Country import Country
 from app.api_public.authentication import require_appkey
 from app.api_public.schema.CountrySchema import CountrySchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 countries = Blueprint('countries', __name__)
 
@@ -27,30 +28,24 @@ def get_countries(page=1, limit=250):
     """
 
     # initialize query
-    country_query = Country.query.filter(
-        Country.status == Country.STATUS_ENABLED)
-
-    # initialize order options dict
-    order_options = {
-        'id.asc': Country.id.asc(),
-        'id.desc': Country.id.desc(),
-        'name.asc': Country.name.asc(),
-        'name.desc': Country.name.desc(),
-        'code_2.asc': Country.code_2.asc(),
-        'code_2.desc': Country.code_2.desc(),
-        'code_3.asc': Country.code_3.asc(),
-        'code_3.desc': Country.code_3.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = Country.name.asc()
+    query = Query.make(
+        Country,
+        Country.name.asc(),
+        {
+            'id.asc': Country.id.asc(),
+            'id.desc': Country.id.desc(),
+            'name.asc': Country.name.asc(),
+            'name.desc': Country.name.desc(),
+            'code_2.asc': Country.code_2.asc(),
+            'code_2.desc': Country.code_2.desc(),
+            'code_3.asc': Country.code_3.asc(),
+            'code_3.desc': Country.code_3.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_USER)
 
     # retrieve and return results
-    results = country_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -58,7 +53,7 @@ def get_countries(page=1, limit=250):
             'countries': CountrySchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': country_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

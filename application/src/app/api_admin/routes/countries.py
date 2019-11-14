@@ -7,6 +7,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.CountrySchema import CountrySchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 countries = Blueprint('countries', __name__)
 
@@ -31,39 +32,24 @@ def get_countries(page=1, limit=10):
     """
 
     # initialize query
-    country_query = Country.query
-
-    # filter query based on URL parameters
-    if request.args.get('status', '').isnumeric():
-        country_query = country_query.filter(
-            Country.status == int(request.args.get('status')))
-    else:
-        country_query = country_query.filter(
-            Country.status.in_((Country.STATUS_ENABLED,
-                                Country.STATUS_DISABLED,
-                                Country.STATUS_PENDING)))
-
-    # initialize order options dict
-    order_options = {
-        'id.asc': Country.id.asc(),
-        'id.desc': Country.id.desc(),
-        'name.asc': Country.name.asc(),
-        'name.desc': Country.name.desc(),
-        'code_2.asc': Country.code_2.asc(),
-        'code_2.desc': Country.code_2.desc(),
-        'code_3.asc': Country.code_3.asc(),
-        'code_3.desc': Country.code_3.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = Country.id.asc()
+    query = Query.make(
+        Country,
+        Country.id.asc(),
+        {
+            'id.asc': Country.id.asc(),
+            'id.desc': Country.id.desc(),
+            'name.asc': Country.name.asc(),
+            'name.desc': Country.name.desc(),
+            'code_2.asc': Country.code_2.asc(),
+            'code_2.desc': Country.code_2.desc(),
+            'code_3.asc': Country.code_3.asc(),
+            'code_3.desc': Country.code_3.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_ADMIN)
 
     # retrieve and return results
-    results = country_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -71,7 +57,7 @@ def get_countries(page=1, limit=10):
             'countries': CountrySchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': country_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

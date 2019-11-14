@@ -12,6 +12,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.UserProfileSchema import UserProfileSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 user_profiles = Blueprint('user_profiles', __name__)
 
@@ -36,37 +37,22 @@ def get_user_profiles(page=1, limit=10):
     """
 
     # initialize query
-    user_profile_query = UserProfile.query
-
-    # filter query based on URL parameters
-    if request.args.get('status', '').isnumeric():
-        user_profile_query = user_profile_query.filter(
-            UserProfile.status == int(request.args.get('status')))
-    else:
-        user_profile_query = user_profile_query.filter(
-            UserProfile.status.in_((UserProfile.STATUS_ENABLED,
-                                    UserProfile.STATUS_DISABLED,
-                                    UserProfile.STATUS_PENDING)))
-
-    # initialize order options dict
-    order_options = {
-        'id.asc': UserProfile.id.asc(),
-        'id.desc': UserProfile.id.desc(),
-        'user_id.asc': UserProfile.user_id.asc(),
-        'user_id.desc': UserProfile.user_id.desc(),
-        'joined_at.asc': UserProfile.joined_at.asc(),
-        'joined_at.desc': UserProfile.joined_at.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = UserProfile.id.asc()
+    query = Query.make(
+        UserProfile,
+        UserProfile.id.asc(),
+        {
+            'id.asc': UserProfile.id.asc(),
+            'id.desc': UserProfile.id.desc(),
+            'user_id.asc': UserProfile.user_id.asc(),
+            'user_id.desc': UserProfile.user_id.desc(),
+            'joined_at.asc': UserProfile.joined_at.asc(),
+            'joined_at.desc': UserProfile.joined_at.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_ADMIN)
 
     # retrieve and return results
-    results = user_profile_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -74,7 +60,7 @@ def get_user_profiles(page=1, limit=10):
             'user_profiles': UserProfileSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': user_profile_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

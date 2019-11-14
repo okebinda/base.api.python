@@ -14,6 +14,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.UserSchema import UserSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 users = Blueprint('users', __name__)
 
@@ -37,38 +38,25 @@ def get_users(page=1, limit=10):
     """
 
     # initialize query
-    user_query = User.query
+    query = Query.make(
+        User,
+        User.id.asc(),
+        {
+            'id.asc': User.id.asc(),
+            'id.desc': User.id.desc(),
+            'username.asc': User.username.asc(),
+            'username.desc': User.username.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_ADMIN)
 
-    # filter query based on URL parameters
-    if request.args.get('status', '').isnumeric():
-        user_query = user_query.filter(
-            User.status == int(request.args.get('status')))
-    else:
-        user_query = user_query.filter(
-            User.status.in_((User.STATUS_ENABLED, User.STATUS_DISABLED,
-                             User.STATUS_PENDING)))
-
+    # filter by role
     if request.args.get('role', '').isnumeric():
-        user_query = user_query.filter(
+        query = query.filter(
             User.roles.any(Role.id == int(request.args.get('role'))))
 
-    # initialize order options dict
-    order_options = {
-        'id.asc': User.id.asc(),
-        'id.desc': User.id.desc(),
-        'username.asc': User.username.asc(),
-        'username.desc': User.username.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = User.id.asc()
-
     # retrieve and return results
-    results = user_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -76,7 +64,7 @@ def get_users(page=1, limit=10):
             'users': UserSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': user_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return

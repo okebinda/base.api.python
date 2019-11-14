@@ -10,6 +10,7 @@ from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.RoleSchema import RoleSchema
 from app.lib.routes.Pager import Pager
+from app.lib.routes.Query import Query
 
 roles = Blueprint('roles', __name__)
 
@@ -40,30 +41,25 @@ def get_roles(page=1, limit=10, role_type=None):
     """
 
     # initialize query
-    role_query = Role.query
+    query = Query.make(
+        Role,
+        Role.id.asc(),
+        {
+            'id.asc': Role.id.asc(),
+            'id.desc': Role.id.desc(),
+            'name.asc': Role.name.asc(),
+            'name.desc': Role.name.desc(),
+        },
+        request.args,
+        Query.STATUS_FILTER_NONE)
 
     # filter query based on URL parameters
     if role_type in ['admin', 'user']:
-        role_query = role_query.filter(
+        query = query.filter(
             Role.is_admin_role == bool(role_type == 'admin'))
 
-    # initialize order options dict
-    order_options = {
-        'id.asc': Role.id.asc(),
-        'id.desc': Role.id.desc(),
-        'name.asc': Role.name.asc(),
-        'name.desc': Role.name.desc(),
-    }
-
-    # determine order
-    if request.args.get('order_by') in order_options:
-        order_by = order_options[request.args.get('order_by')]
-    else:
-        order_by = Role.id.asc()
-
     # retrieve and return results
-    results = role_query.order_by(order_by).limit(limit).offset(
-        (page - 1) * limit)
+    results = query.limit(limit).offset((page - 1) * limit)
     if results.count():
 
         # prep initial output
@@ -71,7 +67,7 @@ def get_roles(page=1, limit=10, role_type=None):
             'roles': RoleSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
-            'total': role_query.count()
+            'total': query.count()
         }
 
         # add pagination URIs and return
