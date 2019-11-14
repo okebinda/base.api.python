@@ -75,7 +75,8 @@ def get_logins(page=1, limit=25):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'logins.get_logins', page, limit, request.args)
+        output.update(Pager.get_uris('logins.get_logins', page, limit,
+                                     output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

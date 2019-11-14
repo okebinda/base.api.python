@@ -77,8 +77,9 @@ def get_notifications(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'notifications.get_notifications', page, limit,
-                     request.args)
+        output.update(
+            Pager.get_uris('notifications.get_notifications', page, limit,
+                           output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

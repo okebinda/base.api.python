@@ -74,8 +74,9 @@ def get_password_resets(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'password_resets.get_password_resets', page,
-                     limit, request.args)
+        output.update(
+            Pager.get_uris('password_resets.get_password_resets', page, limit,
+                           output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

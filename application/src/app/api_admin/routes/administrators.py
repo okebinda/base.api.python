@@ -82,8 +82,9 @@ def get_administrators(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'administrators.get_administrators', page, limit,
-                     request.args)
+        output.update(
+            Pager.get_uris('administrators.get_administrators', page, limit,
+                           output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

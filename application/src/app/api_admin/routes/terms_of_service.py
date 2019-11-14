@@ -78,8 +78,9 @@ def get_terms_of_services(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'terms_of_service.get_terms_of_services', page,
-                     limit, request.args)
+        output.update(
+            Pager.get_uris('terms_of_service.get_terms_of_services', page,
+                           limit, output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

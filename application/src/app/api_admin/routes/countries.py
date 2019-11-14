@@ -75,8 +75,8 @@ def get_countries(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'countries.get_countries', page, limit,
-                     request.args)
+        output.update(Pager.get_uris('countries.get_countries', page, limit,
+                                     output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

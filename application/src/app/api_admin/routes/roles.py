@@ -75,7 +75,8 @@ def get_roles(page=1, limit=10, role_type=None):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'roles.get_roles', page, limit, request.args)
+        output.update(Pager.get_uris('roles.get_roles', page, limit,
+                                     output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

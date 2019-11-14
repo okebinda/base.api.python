@@ -75,7 +75,8 @@ def get_regions(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'regions.get_regions', page, limit, request.args)
+        output.update(Pager.get_uris('regions.get_regions', page, limit,
+                                     output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

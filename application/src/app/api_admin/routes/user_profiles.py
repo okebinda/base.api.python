@@ -78,8 +78,9 @@ def get_user_profiles(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'user_profiles.get_user_profiles', page, limit,
-                     request.args)
+        output.update(
+            Pager.get_uris('user_profiles.get_user_profiles', page, limit,
+                           output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

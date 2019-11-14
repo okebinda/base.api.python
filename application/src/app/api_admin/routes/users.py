@@ -80,7 +80,8 @@ def get_users(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'users.get_users', page, limit, request.args)
+        output.update(Pager.get_uris('users.get_users', page, limit,
+                                     output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204

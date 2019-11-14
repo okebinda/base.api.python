@@ -74,8 +74,8 @@ def get_app_keys(page=1, limit=10):
         }
 
         # add pagination URIs and return
-        Pager.update(output, 'app_keys.get_app_keys', page, limit,
-                     request.args)
+        output.update(Pager.get_uris('app_keys.get_app_keys', page, limit,
+                                     output['total'], request.args))
         return jsonify(output), 200
     else:
         return '', 204
