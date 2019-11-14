@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from flask import Blueprint, jsonify, abort, request, url_for
+from flask import Blueprint, jsonify, abort, request
 from marshmallow import ValidationError
 
 from app import db
@@ -10,6 +10,7 @@ from app.models.TermsOfService import TermsOfService
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.TermsOfServiceSchema import TermsOfServiceSchema
+from app.lib.routes.Pager import Pager
 
 terms_of_service = Blueprint('terms_of_service', __name__)
 
@@ -76,21 +77,9 @@ def get_terms_of_services(page=1, limit=10):
             'total': terms_of_service_query.count()
         }
 
-        # prep pagination URIs
-        if page != 1:
-            output['previous_uri'] = url_for(
-                'terms_of_service.get_terms_of_services',
-                page=page - 1,
-                limit=limit,
-                _external=True,
-                order_by=request.args.get('order_by', None))
-        if page < output['total'] / limit:
-            output['next_uri'] = url_for(
-                'terms_of_service.get_terms_of_services',
-                page=page + 1,
-                limit=limit,
-                _external=True,
-                order_by=request.args.get('order_by', None))
+        # add pagination URIs and return
+        Pager.update(output, 'terms_of_service.get_terms_of_services', page,
+                     limit, request.args)
         return jsonify(output), 200
     else:
         return '', 204

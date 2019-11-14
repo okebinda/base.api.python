@@ -1,11 +1,12 @@
 """Password Resets controller"""
 
-from flask import Blueprint, jsonify, request, url_for
+from flask import Blueprint, jsonify, request
 
 from app.models.PasswordReset import PasswordReset
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.PasswordResetSchema import PasswordResetSchema
+from app.lib.routes.Pager import Pager
 
 password_resets = Blueprint('password_resets', __name__)
 
@@ -72,21 +73,9 @@ def get_password_resets(page=1, limit=10):
             'total': password_reset_query.count()
         }
 
-        # prep pagination URIs
-        if page != 1:
-            output['previous_uri'] = url_for(
-                'password_resets.get_password_resets',
-                page=page - 1,
-                limit=limit,
-                _external=True,
-                order_by=request.args.get('order_by', None))
-        if page < output['total'] / limit:
-            output['next_uri'] = url_for(
-                'password_resets.get_password_resets',
-                page=page + 1,
-                limit=limit,
-                _external=True,
-                order_by=request.args.get('order_by', None))
+        # add pagination URIs and return
+        Pager.update(output, 'password_resets.get_password_resets', page,
+                     limit, request.args)
         return jsonify(output), 200
     else:
         return '', 204

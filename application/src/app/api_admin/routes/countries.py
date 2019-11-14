@@ -1,11 +1,12 @@
 """Countries controller"""
 
-from flask import Blueprint, jsonify, request, url_for
+from flask import Blueprint, jsonify, request
 
 from app.models.Country import Country
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.CountrySchema import CountrySchema
+from app.lib.routes.Pager import Pager
 
 countries = Blueprint('countries', __name__)
 
@@ -73,15 +74,9 @@ def get_countries(page=1, limit=10):
             'total': country_query.count()
         }
 
-        # prep pagination URIs
-        if page != 1:
-            output['previous_uri'] = url_for(
-                'countries.get_countries', page=page - 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
-        if page < output['total'] / limit:
-            output['next_uri'] = url_for(
-                'countries.get_countries', page=page + 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+        # add pagination URIs and return
+        Pager.update(output, 'countries.get_countries', page, limit,
+                     request.args)
         return jsonify(output), 200
     else:
         return '', 204

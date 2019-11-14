@@ -1,11 +1,12 @@
 """Logins controller"""
 
-from flask import Blueprint, jsonify, request, url_for
+from flask import Blueprint, jsonify, request
 
 from app.models.Login import Login
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.LoginSchema import LoginSchema
+from app.lib.routes.Pager import Pager
 
 logins = Blueprint('logins', __name__)
 
@@ -73,15 +74,8 @@ def get_logins(page=1, limit=25):
             'total': login_query.count()
         }
 
-        # prep pagination URIs
-        if page != 1:
-            output['previous_uri'] = url_for(
-                'logins.get_logins', page=page - 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
-        if page < output['total'] / limit:
-            output['next_uri'] = url_for(
-                'logins.get_logins', page=page + 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+        # add pagination URIs and return
+        Pager.update(output, 'logins.get_logins', page, limit, request.args)
         return jsonify(output), 200
     else:
         return '', 204

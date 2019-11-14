@@ -1,11 +1,12 @@
 """Notifications controller"""
 
-from flask import Blueprint, jsonify, request, url_for
+from flask import Blueprint, jsonify, request
 
 from app.models.Notification import Notification
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.NotificationSchema import NotificationSchema
+from app.lib.routes.Pager import Pager
 
 notifications = Blueprint('notifications', __name__)
 
@@ -75,15 +76,9 @@ def get_notifications(page=1, limit=10):
             'total': notification_query.count()
         }
 
-        # prep pagination URIs
-        if page != 1:
-            output['previous_uri'] = url_for(
-                'notifications.get_notifications', page=page - 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
-        if page < output['total'] / limit:
-            output['next_uri'] = url_for(
-                'notifications.get_notifications', page=page + 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+        # add pagination URIs and return
+        Pager.update(output, 'notifications.get_notifications', page, limit,
+                     request.args)
         return jsonify(output), 200
     else:
         return '', 204

@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from flask import Blueprint, jsonify, abort, request, url_for
+from flask import Blueprint, jsonify, abort, request
 from marshmallow import ValidationError
 
 from app import db
@@ -10,6 +10,7 @@ from app.models.AppKey import AppKey
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.AppKeySchema import AppKeySchema
+from app.lib.routes.Pager import Pager
 
 app_keys = Blueprint('app_keys', __name__)
 
@@ -72,15 +73,9 @@ def get_app_keys(page=1, limit=10):
             'total': app_key_query.count()
         }
 
-        # prep pagination URIs
-        if page != 1:
-            output['previous_uri'] = url_for(
-                'app_keys.get_app_keys', page=page - 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
-        if page < output['total'] / limit:
-            output['next_uri'] = url_for(
-                'app_keys.get_app_keys', page=page + 1, limit=limit,
-                _external=True, order_by=request.args.get('order_by', None))
+        # add pagination URIs and return
+        Pager.update(output, 'app_keys.get_app_keys', page, limit,
+                     request.args)
         return jsonify(output), 200
     else:
         return '', 204

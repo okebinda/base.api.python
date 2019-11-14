@@ -1,10 +1,11 @@
 """Regions controller"""
 
-from flask import Blueprint, jsonify, request, url_for
+from flask import Blueprint, jsonify, request
 
 from app.models.Region import Region
 from app.api_public.authentication import require_appkey
 from app.api_public.schema.RegionSchema import RegionSchema
+from app.lib.routes.Pager import Pager
 
 regions = Blueprint('regions', __name__)
 
@@ -60,23 +61,9 @@ def get_regions(country_code, page=1, limit=100):
             'total': region_query.count()
         }
 
-        # prep pagination URIs
-        if page != 1:
-            output['previous_uri'] = url_for(
-                'regions.get_regions',
-                country_code=country_code,
-                page=page - 1,
-                limit=limit,
-                _external=True,
-                order_by=request.args.get('order_by', None))
-        if page < output['total'] / limit:
-            output['next_uri'] = url_for(
-                'regions.get_regions',
-                country_code=country_code,
-                page=page + 1,
-                limit=limit,
-                _external=True,
-                order_by=request.args.get('order_by', None))
+        # add pagination URIs and return
+        Pager.update(output, 'regions.get_regions', page, limit, request.args,
+                     country_code=country_code)
         return jsonify(output), 200
     else:
         return '', 204
