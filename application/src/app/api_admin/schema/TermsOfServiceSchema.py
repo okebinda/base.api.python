@@ -25,7 +25,8 @@ class TermsOfServiceSchema(ma.Schema):
     version = fields.String(
         required=True,
         validate=validate.Length(
-            1, 10, "Value must be between 1 and 10 characters long."))
+            1, 10,
+            error="Value must be between 1 and 10 characters long."))
     publish_date = fields.DateTime(
         required=True, format=Formats.ISO_8601_DATETIME)
     status = fields.Integer(required=True)

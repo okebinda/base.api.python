@@ -74,8 +74,7 @@ def get_administrators(page=1, limit=10):
 
         # prep initial output
         output = {
-            'administrators': AdministratorSchema(many=True).dump(
-                results).data,
+            'administrators': AdministratorSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': administrator_query.count()
@@ -143,7 +142,7 @@ def post_administrator():
 
     # validate data
     try:
-        data, _ = AdministratorSchema(strict=True).load(request.json)
+        data = AdministratorSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -170,7 +169,7 @@ def post_administrator():
 
     # response
     return jsonify(
-        {'administrator': AdministratorSchema().dump(admin).data}), 201
+        {'administrator': AdministratorSchema().dump(admin)}), 201
 
 
 @administrators.route('/administrator/<int:administrator_id>', methods=['GET'])
@@ -195,7 +194,7 @@ def get_administrator(administrator_id=None):
 
     # response
     return jsonify(
-        {'administrator': AdministratorSchema().dump(administrator).data}), 200
+        {'administrator': AdministratorSchema().dump(administrator)}), 200
 
 
 @administrators.route('/administrator/<int:administrator_id>', methods=['PUT'])
@@ -250,10 +249,10 @@ def put_administrator(administrator_id):
     # validate data
     try:
         if request.json.get('password', None):
-            data, _ = AdministratorSchema(strict=True).load(request.json)
+            data = AdministratorSchema().load(request.json)
         else:
-            data, _ = AdministratorSchema(
-                strict=True, exclude=('password',)).load(request.json)
+            data = AdministratorSchema(
+                exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -284,7 +283,7 @@ def put_administrator(administrator_id):
 
     # response
     return jsonify(
-        {'administrator': AdministratorSchema().dump(administrator).data}), 200
+        {'administrator': AdministratorSchema().dump(administrator)}), 200
 
 
 @administrators.route('/administrator/<int:administrator_id>',

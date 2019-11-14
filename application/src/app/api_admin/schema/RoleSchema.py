@@ -27,7 +27,8 @@ class RoleSchema(ma.Schema):
     name = fields.String(
         required=True,
         validate=validate.Length(
-            2, 32, "Value must be between 2 and 32 characters long."))
+            2, 32,
+            error="Value must be between 2 and 32 characters long."))
     is_admin_role = fields.Boolean(required=True)
     priority = fields.Integer(required=True)
     login_lockout_policy = fields.Boolean(required=True)

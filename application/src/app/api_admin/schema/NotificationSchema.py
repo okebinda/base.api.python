@@ -32,15 +32,18 @@ class NotificationSchema(ma.Schema):
     template = fields.String(
         required=False,
         validate=validate.Length(
-            0, 60, "Value must be between 0 and 60 characters long."))
+            0, 60,
+            error="Value must be between 0 and 60 characters long."))
     service = fields.String(
         required=False,
         validate=validate.Length(
-            0, 60, "Value must be between 0 and 60 characters long."))
+            0, 60,
+            error="Value must be between 0 and 60 characters long."))
     notification_id = fields.String(
         required=False,
         validate=validate.Length(
-            0, 60, "Value must be between 0 and 60 characters long."))
+            0, 60,
+            error="Value must be between 0 and 60 characters long."))
     accepted = fields.Integer(required=True)
     rejected = fields.Integer(required=True)
     sent_at = fields.DateTime(required=True, format=Formats.ISO_8601_DATETIME)

@@ -30,6 +30,6 @@ def get_terms_of_service():
     if terms_of_services.count():
         return jsonify(
             {'terms_of_service': TermsOfServiceSchema().dump(
-                terms_of_services[0]).data}), 200
+                terms_of_services[0])}), 200
     else:
         return '', 204

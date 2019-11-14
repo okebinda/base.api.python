@@ -70,8 +70,7 @@ def get_user_profiles(page=1, limit=10):
 
         # prep initial output
         output = {
-            'user_profiles': UserProfileSchema(many=True).dump(
-                results).data,
+            'user_profiles': UserProfileSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': user_profile_query.count()
@@ -114,7 +113,7 @@ def post_user_profiles():
 
     # validate data
     try:
-        data, _ = UserProfileSchema(strict=True).load(request.json)
+        data = UserProfileSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -135,7 +134,7 @@ def post_user_profiles():
 
     # response
     return jsonify(
-        {'user_profile': UserProfileSchema().dump(user_profile).data}), 201
+        {'user_profile': UserProfileSchema().dump(user_profile)}), 201
 
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['GET'])
@@ -160,7 +159,7 @@ def get_user_profile(user_profile_id=None):
 
     # response
     return jsonify(
-        {'user_profile': UserProfileSchema().dump(user_profile).data}), 200
+        {'user_profile': UserProfileSchema().dump(user_profile)}), 200
 
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['PUT'])
@@ -193,7 +192,7 @@ def put_user_profile(user_profile_id):
 
     # validate data
     try:
-        data, _ = UserProfileSchema(strict=True).load(request.json)
+        data = UserProfileSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -213,7 +212,7 @@ def put_user_profile(user_profile_id):
 
     # response
     return jsonify(
-        {'user_profile': UserProfileSchema().dump(user_profile).data}), 200
+        {'user_profile': UserProfileSchema().dump(user_profile)}), 200
 
 
 @user_profiles.route('/user_profile/<int:user_profile_id>', methods=['DELETE'])

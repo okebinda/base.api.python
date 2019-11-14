@@ -69,8 +69,7 @@ def get_notifications(page=1, limit=10):
 
         # prep initial output
         output = {
-            'notifications': NotificationSchema(many=True).dump(
-                results).data,
+            'notifications': NotificationSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': notification_query.count()

@@ -26,11 +26,13 @@ class UserProfileSchema(ma.Schema):
     first_name = fields.String(
         required=True,
         validate=validate.Length(
-            1, 40, "Value must be between 1 and 40 characters long."))
+            1, 40,
+            error="Value must be between 1 and 40 characters long."))
     last_name = fields.String(
         required=True,
         validate=validate.Length(
-            2, 40, "Value must be between 2 and 40 characters long."))
+            2, 40,
+            error="Value must be between 2 and 40 characters long."))
     joined_at = fields.DateTime(
         required=True, format=Formats.ISO_8601_DATETIME)
     status = fields.Integer(required=True)

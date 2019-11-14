@@ -66,8 +66,7 @@ def get_password_resets(page=1, limit=10):
 
         # prep initial output
         output = {
-            'password_resets': PasswordResetSchema(many=True).dump(
-                results).data,
+            'password_resets': PasswordResetSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': password_reset_query.count()

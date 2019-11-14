@@ -67,7 +67,7 @@ def get_logins(page=1, limit=25):
 
         # prep initial output
         output = {
-            'logins': LoginSchema(many=True).dump(results).data,
+            'logins': LoginSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': login_query.count()

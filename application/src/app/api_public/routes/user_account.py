@@ -63,8 +63,7 @@ def post_user_account_step1():
 
     # validate data
     try:
-        data, _ = UserAccountSchema(
-            strict=True,
+        data = UserAccountSchema(
             exclude=('first_name', 'last_name',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
@@ -118,7 +117,7 @@ def post_user_account_step1():
 
     # response
     return jsonify(
-        {'user_account': UserAccountSchema().dump(output).data}), 201
+        {'user_account': UserAccountSchema().dump(output)}), 201
 
 
 @user_account.route('/user_account/step2', methods=['POST'])
@@ -138,8 +137,7 @@ def post_user_account_step2():
 
     # validate data
     try:
-        data, _ = UserAccountSchema(
-            strict=True,
+        data = UserAccountSchema(
             exclude=('username', 'email', 'password', 'password2', 'tos_id',)
         ).load(request.json)
     except ValidationError as err:
@@ -178,7 +176,7 @@ def post_user_account_step2():
 
     # response
     return jsonify(
-        {'user_account': UserAccountSchema().dump(output).data}), 201
+        {'user_account': UserAccountSchema().dump(output)}), 201
 
 
 @user_account.route('/user_account', methods=['GET'])
@@ -210,7 +208,7 @@ def get_user_account():
 
     # response
     return jsonify(
-        {'user_account': UserAccountSchema().dump(output).data}), 200
+        {'user_account': UserAccountSchema().dump(output)}), 200
 
 
 @user_account.route('/user_account', methods=['PUT'])
@@ -248,8 +246,7 @@ def put_user_account():
 
     # validate data
     try:
-        data, _ = UserAccountSchema(
-            strict=True,
+        data = UserAccountSchema(
             exclude=('password', 'password2', 'tos_id',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
@@ -294,7 +291,7 @@ def put_user_account():
 
     # response
     return jsonify(
-        {'user_account': UserAccountSchema().dump(output).data}), 200
+        {'user_account': UserAccountSchema().dump(output)}), 200
 
 
 @user_account.route('/user_account', methods=['DELETE'])

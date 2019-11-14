@@ -1096,10 +1096,6 @@ class AdministratorsTest(BaseTest):
         self.assertNotIn("joined_at", response.json['error'])
         self.assertNotIn("status", response.json['error'])
 
-
-
-
-
     def test_put_administrator_admin_2(self):
 
         response = self.client.put(

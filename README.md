@@ -129,7 +129,7 @@ Bandit is a security linter to find common security issues in Python code.
 
 ```ssh
 $ cd /vagrant/application
-$ bandit -r src/
+$ bandit -r src/app/
 ```
 
 Ref: https://bandit.readthedocs.io/en/latest/
@@ -140,7 +140,7 @@ Pyflakes is a simple linter that checks for errors.
 
 ```ssh
 $ cd /vagrant/application
-$ pyflakes src/
+$ pyflakes src/app/
 ```
 
 Ref: https://github.com/PyCQA/pyflakes
@@ -151,7 +151,7 @@ Pycodestyle is a tool to check Python code against the style conventions of PEP 
 
 ```ssh
 $ cd /vagrant/application
-$ pycodestyle src/
+$ pycodestyle src/app/
 ```
 
 Ref: https://pycodestyle.readthedocs.io/en/latest/
@@ -162,7 +162,7 @@ Pylint is a robust linter that checks for errors, coding standards, and code sme
 
 ```ssh
 $ cd /vagrant/application
-$ pylint src/
+$ pylint src/app/
 ```
 
 Ref: https://pylint.readthedocs.io/en/latest/

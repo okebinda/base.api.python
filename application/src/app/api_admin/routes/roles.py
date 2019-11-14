@@ -67,7 +67,7 @@ def get_roles(page=1, limit=10, role_type=None):
 
         # prep initial output
         output = {
-            'roles': RoleSchema(many=True).dump(results).data,
+            'roles': RoleSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': role_query.count()
@@ -111,7 +111,7 @@ def post_roles():
 
     # validate data
     try:
-        data, _ = RoleSchema(strict=True).load(request.json)
+        data = RoleSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -136,7 +136,7 @@ def post_roles():
     db.session.commit()
 
     # response
-    return jsonify({'role': RoleSchema().dump(role).data}), 201
+    return jsonify({'role': RoleSchema().dump(role)}), 201
 
 
 @roles.route('/role/<int:role_id>', methods=['GET'])
@@ -168,7 +168,7 @@ def get_role(role_id=None, name=None):
         abort(404)
 
     # response
-    return jsonify({'role': RoleSchema().dump(role).data}), 200
+    return jsonify({'role': RoleSchema().dump(role)}), 200
 
 
 @roles.route('/role/<int:role_id>', methods=['PUT'])
@@ -203,7 +203,7 @@ def put_role(role_id):
 
     # validate data
     try:
-        data, _ = RoleSchema(strict=True).load(request.json)
+        data = RoleSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -226,7 +226,7 @@ def put_role(role_id):
     db.session.commit()
 
     # response
-    return jsonify({'role': RoleSchema().dump(role).data}), 200
+    return jsonify({'role': RoleSchema().dump(role)}), 200
 
 
 @roles.route('/role/<int:role_id>', methods=['DELETE'])

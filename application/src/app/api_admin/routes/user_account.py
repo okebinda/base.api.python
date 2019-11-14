@@ -28,7 +28,7 @@ def get_account():
     user = g.user
 
     # response
-    return jsonify({'user_account': UserAccountSchema().dump(user).data}), 200
+    return jsonify({'user_account': UserAccountSchema().dump(user)}), 200
 
 
 @user_account.route('/user_account', methods=['PUT'])
@@ -64,8 +64,7 @@ def put_account():
 
     # validate data
     try:
-        data, _ = UserAccountSchema(
-            strict=True, exclude=('password',)).load(request.json)
+        data = UserAccountSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -82,4 +81,4 @@ def put_account():
     db.session.commit()
 
     # response
-    return jsonify({'user_account': UserAccountSchema().dump(user).data}), 200
+    return jsonify({'user_account': UserAccountSchema().dump(user)}), 200

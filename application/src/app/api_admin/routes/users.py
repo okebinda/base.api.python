@@ -72,7 +72,7 @@ def get_users(page=1, limit=10):
 
         # prep initial output
         output = {
-            'users': UserSchema(many=True).dump(results).data,
+            'users': UserSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': user_query.count()
@@ -134,7 +134,7 @@ def post_user():
 
     # validate data
     try:
-        data, _ = UserSchema(strict=True).load(request.json)
+        data = UserSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -169,7 +169,7 @@ def post_user():
     db.session.commit()
 
     # response
-    return jsonify({'user': UserSchema().dump(user).data}), 201
+    return jsonify({'user': UserSchema().dump(user)}), 201
 
 
 @users.route('/user/<int:user_id>', methods=['GET'])
@@ -201,7 +201,7 @@ def get_user(user_id=None, username=None):
         abort(404)
 
     # response
-    return jsonify({'user': UserSchema().dump(user).data}), 200
+    return jsonify({'user': UserSchema().dump(user)}), 200
 
 
 @users.route('/user/<int:user_id>', methods=['PUT'])
@@ -217,6 +217,7 @@ def put_user(user_id):
     :returns: JSON string of the user's data; status code
     :rtype: (str, int)
     """
+    # pylint: disable=too-many-statements
 
     # get user
     user = User.query.get(user_id)
@@ -256,10 +257,9 @@ def put_user(user_id):
     # validate data
     try:
         if request.json.get('password', None):
-            data, _ = UserSchema(strict=True).load(request.json)
+            data = UserSchema().load(request.json)
         else:
-            data, _ = UserSchema(
-                strict=True, exclude=('password',)).load(request.json)
+            data = UserSchema(exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -307,7 +307,7 @@ def put_user(user_id):
     db.session.commit()
 
     # response
-    return jsonify({'user': UserSchema().dump(user).data}), 200
+    return jsonify({'user': UserSchema().dump(user)}), 200
 
 
 @users.route('/user/<int:user_id>', methods=['DELETE'])

@@ -30,21 +30,26 @@ class UserAccountSchema(ma.Schema):
         required=True,
         validate=[
             validate.Length(
-                2, 40, "Value must be between 2 and 40 characters long."),
+                2, 40,
+                error="Value must be between 2 and 40 characters long."),
             validate.Regexp(
-                r'(?!^\d+$)^.+$', 0, 'Value must not be a number.'),
+                r'(?!^\d+$)^.+$', 0,
+                error='Value must not be a number.'),
             validate.Regexp(
-                r'^\w+$', 0, ''.join(["Value must contain only alphanumeric ",
-                                      "characters and the underscore."])),
+                r'^\w+$', 0,
+                error=''.join(["Value must contain only alphanumeric ",
+                               "characters and the underscore."])),
         ])
     email = fields.Email(required=True)
     first_name = fields.String(
         required=True,
         validate=validate.Length(
-            1, 40, "Value must be between 1 and 40 characters long."))
+            1, 40,
+            error="Value must be between 1 and 40 characters long."))
     last_name = fields.String(
         required=True,
         validate=validate.Length(
-            2, 40, "Value must be between 2 and 40 characters long."))
+            2, 40,
+            error="Value must be between 2 and 40 characters long."))
     password_changed_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     joined_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)

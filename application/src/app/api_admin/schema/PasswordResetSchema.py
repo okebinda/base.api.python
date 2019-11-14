@@ -30,13 +30,15 @@ class PasswordResetSchema(ma.Schema):
     code = fields.String(
         required=True,
         validate=validate.Length(
-            1, 40, "Value must be between 6 and 40 characters long."))
+            1, 40,
+            error="Value must be between 6 and 40 characters long."))
     is_used = fields.Boolean(required=True)
     requested_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     ip_address = fields.String(
         required=True,
         validate=validate.Length(
-            6, 50, "Value must be between 6 and 50 characters long."))
+            6, 50,
+            error="Value must be between 6 and 50 characters long."))
     status = fields.Integer(required=True)
     status_changed_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     created_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)

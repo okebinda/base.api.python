@@ -617,7 +617,7 @@ class UsersTest(BaseTest):
         self.assertIn("roles", response.json['error'])
         self.assertNotIn("password_changed_at", response.json['error'])
     
-    def test_post_user_password_comlexity(self):
+    def test_post_user_password_complexity(self):
 
         response = self.client.post(
             '/users?app_key=' + AppKeyData.id1_appkey1.key,

@@ -54,7 +54,7 @@ def get_regions(country_code, page=1, limit=100):
 
         # prep initial output
         output = {
-            'regions': RegionSchema(many=True).dump(results).data,
+            'regions': RegionSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': region_query.count()

@@ -25,11 +25,13 @@ class LoginSchema(ma.Schema):
     username = fields.String(
         required=True,
         validate=validate.Length(
-            1, 40, "Value must be between 1 and 40 characters long."))
+            1, 40,
+            error="Value must be between 1 and 40 characters long."))
     ip_address = fields.String(
         required=True,
         validate=validate.Length(
-            6, 50, "Value must be between 6 and 50 characters long."))
+            6, 50,
+            error="Value must be between 6 and 50 characters long."))
     api = fields.Integer(required=True)
     success = fields.Boolean(required=True)
     attempt_date = fields.DateTime(format=Formats.ISO_8601_DATETIME)

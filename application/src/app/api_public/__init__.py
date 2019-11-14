@@ -16,7 +16,7 @@ def create_app(config):
     :type config: Config
     :returns: Flask app object
     """
-    # pylint: disable=unused-variable,unused-argument,too-many-locals
+    # pylint: disable=unused-variable,unused-argument,too-many-locals,import-outside-toplevel
 
     # init app
     app = Flask(__name__)

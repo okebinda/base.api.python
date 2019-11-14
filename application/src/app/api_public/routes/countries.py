@@ -54,7 +54,7 @@ def get_countries(page=1, limit=250):
 
         # prep initial output
         output = {
-            'countries': CountrySchema(many=True).dump(results).data,
+            'countries': CountrySchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': country_query.count()

@@ -70,8 +70,7 @@ def get_terms_of_services(page=1, limit=10):
 
         # prep initial output
         output = {
-            'terms_of_services': TermsOfServiceSchema(many=True).dump(
-                results).data,
+            'terms_of_services': TermsOfServiceSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': terms_of_service_query.count()
@@ -111,7 +110,7 @@ def post_terms_of_services():
 
     # validate data
     try:
-        data, _ = TermsOfServiceSchema(strict=True).load(request.json)
+        data = TermsOfServiceSchema().load(request.json)
     except ValidationError as err:
         return jsonify({"error": err.messages}), 400
 
@@ -126,8 +125,7 @@ def post_terms_of_services():
     db.session.commit()
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
-        tos).data}), 201
+    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(tos)}), 201
 
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
@@ -152,8 +150,7 @@ def get_terms_of_service(terms_of_service_id=None):
         abort(404)
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
-        tos).data}), 200
+    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(tos)}), 200
 
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',
@@ -178,7 +175,7 @@ def put_terms_of_service(terms_of_service_id):
 
     # validate data
     try:
-        data, _ = TermsOfServiceSchema(strict=True).load(request.json)
+        data = TermsOfServiceSchema().load(request.json)
     except ValidationError as err:
         return jsonify({"error": err.messages}), 400
 
@@ -192,8 +189,7 @@ def put_terms_of_service(terms_of_service_id):
     db.session.commit()
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(
-        tos).data}), 200
+    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(tos)}), 200
 
 
 @terms_of_service.route('/terms_of_service/<int:terms_of_service_id>',

@@ -66,7 +66,7 @@ def get_app_keys(page=1, limit=10):
 
         # prep initial output
         output = {
-            'app_keys': AppKeySchema(many=True).dump(results).data,
+            'app_keys': AppKeySchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': app_key_query.count()
@@ -110,7 +110,7 @@ def post_app_keys():
 
     # validate data
     try:
-        data, _ = AppKeySchema(strict=True).load(request.json)
+        data = AppKeySchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -127,7 +127,7 @@ def post_app_keys():
     db.session.commit()
 
     # response
-    return jsonify({'app_key': AppKeySchema().dump(app_key).data}), 201
+    return jsonify({'app_key': AppKeySchema().dump(app_key)}), 201
 
 
 @app_keys.route('/app_key/<int:app_key_id>', methods=['GET'])
@@ -151,7 +151,7 @@ def get_app_key(app_key_id=None):
         abort(404)
 
     # response
-    return jsonify({'app_key': AppKeySchema().dump(app_key).data}), 200
+    return jsonify({'app_key': AppKeySchema().dump(app_key)}), 200
 
 
 @app_keys.route('/app_key/<int:app_key_id>', methods=['PUT'])
@@ -186,7 +186,7 @@ def put_app_key(app_key_id):
 
     # validate data
     try:
-        data, _ = AppKeySchema(strict=True).load(request.json)
+        data = AppKeySchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -203,7 +203,7 @@ def put_app_key(app_key_id):
     db.session.commit()
 
     # response
-    return jsonify({'app_key': AppKeySchema().dump(app_key).data}), 200
+    return jsonify({'app_key': AppKeySchema().dump(app_key)}), 200
 
 
 @app_keys.route('/app_key/<int:app_key_id>', methods=['DELETE'])
@@ -226,7 +226,14 @@ def delete_app_key(app_key_id):
         abort(404)
 
     # delete terms of service
-    db.session.delete(app_key)
+    if request.args.get('permanent', None):
+        db.session.delete(app_key)
+
+    # set delete status
+    else:
+        app_key.status = AppKey.STATUS_DELETED
+        app_key.status_changed_at = datetime.now()
+
     db.session.commit()
 
     # response

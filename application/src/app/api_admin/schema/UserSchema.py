@@ -1,6 +1,6 @@
 """Schema to serialize/deserialize/validate User model"""
 
-from marshmallow import fields, validate
+from marshmallow import fields, validate, EXCLUDE
 
 from app import ma
 from app.models.User import User
@@ -37,6 +37,7 @@ class UserSchema(ma.Schema):
                   'password', 'terms_of_services', 'password_changed_at',
                   'profile', 'is_verified')
         load_only = ['password']
+        unknown = EXCLUDE  # fix for `role` property after marshmallow 3
 
     # hyperlinks
     uri = ma.AbsoluteUrlFor('users.get_user', user_id='<id>')
@@ -66,12 +67,15 @@ class UserSchema(ma.Schema):
         required=True,
         validate=[
             validate.Length(
-                2, 40, "Value must be between 2 and 40 characters long."),
+                2, 40,
+                error="Value must be between 2 and 40 characters long."),
             validate.Regexp(
-                r'(?!^\d+$)^.+$', 0, 'Value must not be a number.'),
+                r'(?!^\d+$)^.+$', 0,
+                error='Value must not be a number.'),
             validate.Regexp(
-                r'^\w+$', 0, ''.join(["Value must contain only alphanumeric ",
-                                      "characters and the underscore."]))
+                r'^\w+$', 0,
+                error=''.join(["Value must contain only alphanumeric ",
+                               "characters and the underscore."]))
         ])
     email = fields.Email(required=True)
     status = fields.Integer(required=True)
@@ -82,4 +86,5 @@ class UserSchema(ma.Schema):
     updated_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
     password = fields.String(
         required=True, validate=validate.Regexp(
-            re_password, 0, 'Please choose a more complex password.'))
+            re_password, 0,
+            error='Please choose a more complex password.'))
