@@ -13,6 +13,9 @@ from app.api_admin.authentication import auth, admin_permission,\
 from app.api_admin.schema.AdministratorSchema import AdministratorSchema
 from app.lib.routes.Pager import Pager
 from app.lib.routes.Query import Query
+from app.lib.schema.validate.unique import unique
+from app.lib.schema.validate.unique_email import unique_email
+from app.lib.schema.validate.exists import exists
 
 administrators = Blueprint('administrators', __name__)
 
@@ -89,33 +92,15 @@ def post_administrator():
     :rtype: (str, int)
     """
 
-    # init vars
-    errors = {}
-    roles = []
-
     # pre-validate data
-    if request.json.get('username', None):
-        administrator_query = Administrator.query.filter(
-            Administrator.username == request.json.get('username')).first()
-        if administrator_query:
-            errors["username"] = ["Value must be unique."]
+    errors = unique({}, Administrator, Administrator.username,
+                    request.json.get('username', None))
 
-    if request.json.get('email', None):
-        temp_admin = Administrator(email=request.json.get('email'))
-        administrator_query = Administrator.query.filter(
-            Administrator.email_digest == temp_admin.email_digest).first()
-        if administrator_query:
-            errors["email"] = ["Value must be unique."]
+    errors = unique_email(errors, Administrator, Administrator.email,
+                          request.json.get('email', None))
 
-    if not request.json.get('roles', None):
-        errors["roles"] = ["Missing data for required field."]
-    else:
-        for role_id in request.json.get('roles'):
-            role = Role.query.get(role_id)
-            if role is None:
-                errors["roles"] = ["Invalid value."]
-            else:
-                roles.append(role.id)
+    errors, roles = exists(errors, Role, 'roles',
+                           request.json.get('roles', []))
 
     # validate data
     try:
@@ -193,35 +178,16 @@ def put_administrator(administrator_id):
     if administrator is None:
         abort(404)
 
-    # init vars
-    errors = {}
-    roles = []
-
     # pre-validate data
-    if (request.json.get('username', None) and
-            request.json.get('username') != administrator.username):
-        administrator_query = Administrator.query.filter(
-            Administrator.username == request.json.get('username')).first()
-        if administrator_query:
-            errors["username"] = ["Value must be unique."]
+    errors = unique({}, Administrator, Administrator.username,
+                    request.json.get('username', None), update=administrator)
 
-    if (request.json.get('email', None) and
-            request.json.get('email') != administrator.email):
-        temp_admin = Administrator(email=request.json.get('email'))
-        administrator_query = Administrator.query.filter(
-            Administrator.email_digest == temp_admin.email_digest).first()
-        if administrator_query:
-            errors["email"] = ["Value must be unique."]
+    errors = unique_email(errors, Administrator, Administrator.email,
+                          request.json.get('email', None),
+                          update=administrator)
 
-    if not request.json.get('roles', None):
-        errors["roles"] = ["Missing data for required field."]
-    else:
-        for role_id in request.json.get('roles'):
-            role = Role.query.get(role_id)
-            if role is None:
-                errors["roles"] = ["Invalid value."]
-            else:
-                roles.append(role.id)
+    errors, roles = exists(errors, Role, 'roles',
+                           request.json.get('roles', []))
 
     # validate data
     try:

@@ -11,6 +11,7 @@ from app.api_admin.authentication import auth, admin_permission,\
 from app.api_admin.schema.RoleSchema import RoleSchema
 from app.lib.routes.Pager import Pager
 from app.lib.routes.Query import Query
+from app.lib.schema.validate.unique import unique
 
 roles = Blueprint('roles', __name__)
 
@@ -90,15 +91,8 @@ def post_roles():
     :rtype: (str, int)
     """
 
-    # init vars
-    errors = {}
-
     # pre-validate data
-    if request.json.get('name', None):
-        role_query = Role.query.filter(
-            Role.name == request.json.get('name')).first()
-        if role_query:
-            errors["name"] = ["Value must be unique."]
+    errors = unique({}, Role, Role.name, request.json.get('name', None))
 
     # validate data
     try:
@@ -181,16 +175,9 @@ def put_role(role_id):
     if role is None:
         abort(404)
 
-    # init vars
-    errors = {}
-
     # pre-validate data
-    if (request.json.get('name', None) and
-            request.json.get('name') != role.name):
-        role_query = Role.query.filter(
-            Role.name == request.json.get('name')).first()
-        if role_query:
-            errors["name"] = ["Value must be unique."]
+    errors = unique({}, Role, Role.name, request.json.get('name', None),
+                    update=role)
 
     # validate data
     try:

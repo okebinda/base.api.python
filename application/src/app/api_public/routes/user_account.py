@@ -15,6 +15,9 @@ from app.models.UserPasswordHistory import UserPasswordHistory
 from app.api_public.authentication import auth, user_permission,\
     require_appkey, check_password_expiration
 from app.api_public.schema.UserAccountSchema import UserAccountSchema
+from app.lib.schema.validate.unique import unique
+from app.lib.schema.validate.unique_email import unique_email
+from app.lib.schema.validate.exists import exists
 
 user_account = Blueprint('user_account', __name__)
 
@@ -28,38 +31,21 @@ def post_user_account_step1():
     :rtype: (str, int)
     """
 
-    # init vars
-    errors = {}
-
     # pre-validate data
-    if request.json.get('username', None):
-        user_query = User.query.filter(
-            User.username == request.json.get('username')).first()
-        if user_query:
-            errors["username"] = ["Value must be unique."]
+    errors = unique({}, User, User.username,
+                    request.json.get('username', None))
 
-    if request.json.get('email', None):
-        temp_user = User(email=request.json.get('email'))
-        user_query = User.query.filter(
-            User.email_digest == temp_user.email_digest).first()
-        if user_query:
-            errors["email"] = ["Value must be unique."]
+    errors = unique_email(errors, User, User.email,
+                          request.json.get('email', None))
+
+    errors, tos = exists(errors, TermsOfService, 'tos_id',
+                         request.json.get('tos_id', None),
+                         missing_error="Please agree to the terms of service.")
 
     if (request.json.get('password', None) and
             request.json.get('password2', None)):
         if request.json.get('password') != request.json.get('password2'):
             errors['password2'] = ["Passwords must match."]
-
-    if not request.json.get('tos_id', None):
-        if 'tos_id' not in errors:
-            errors['tos_id'] = []
-        errors['tos_id'].append("Please agree to the terms of service.")
-    if request.json.get('tos_id', None):
-        tos = TermsOfService.query.get(request.json.get('tos_id'))
-        if tos is None:
-            if 'tos_id' not in errors:
-                errors['tos_id'] = []
-            errors['tos_id'].append("Invalid value.")
 
     # validate data
     try:
@@ -89,7 +75,7 @@ def post_user_account_step1():
     # save user terms of service
     user_tos = UserTermsOfService(
         user=user,
-        terms_of_service_id=request.json.get('tos_id'),
+        terms_of_service=tos,
         accept_date=datetime.now(),
         ip_address=request.environ.get('HTTP_X_REAL_IP', request.remote_addr))
     db.session.add(user_tos)
@@ -226,23 +212,13 @@ def put_user_account():
     # init vars
     user = g.user
     user_profile = user.profile if user.profile else None
-    errors = {}
 
     # pre-validate data
-    if (request.json.get('username', None) and
-            request.json.get('username') != user.username):
-        user_query = User.query.filter(
-            User.username == request.json.get('username')).first()
-        if user_query:
-            errors["username"] = ["Value must be unique."]
+    errors = unique({}, User, User.username,
+                    request.json.get('username', None), update=user)
 
-    if (request.json.get('email', None) and
-            request.json.get('email') != user.email):
-        temp_user = User(email=request.json.get('email'))
-        user_query = User.query.filter(
-            User.email_digest == temp_user.email_digest).first()
-        if user_query:
-            errors["email"] = ["Value must be unique."]
+    errors = unique_email(errors, User, User.email,
+                          request.json.get('email', None), update=user)
 
     # validate data
     try:

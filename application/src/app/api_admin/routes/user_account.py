@@ -8,6 +8,8 @@ from app.models.Administrator import Administrator
 from app.api_admin.authentication import auth, admin_permission,\
     require_appkey, check_password_expiration
 from app.api_admin.schema.UserAccountSchema import UserAccountSchema
+from app.lib.schema.validate.unique import unique
+from app.lib.schema.validate.unique_email import unique_email
 
 user_account = Blueprint('user_account', __name__)
 
@@ -45,22 +47,13 @@ def put_account():
 
     # init vars
     user = g.user
-    errors = {}
 
     # pre-validate data
-    if (request.json.get('username', None) and
-            request.json.get('username') != user.username):
-        administrator_query = Administrator.query.filter(
-            Administrator.username == request.json.get('username')).first()
-        if administrator_query:
-            errors["username"] = ["Value must be unique."]
-    if (request.json.get('email', None) and
-            request.json.get('email') != user.email):
-        temp_admin = Administrator(email=request.json.get('email'))
-        administrator_query = Administrator.query.filter(
-            Administrator.email_digest == temp_admin.email_digest).first()
-        if administrator_query:
-            errors["email"] = ["Value must be unique."]
+    errors = unique({}, Administrator, Administrator.username,
+                    request.json.get('username', None), update=user)
+
+    errors = unique_email(errors, Administrator, Administrator.email,
+                          request.json.get('email', None), update=user)
 
     # validate data
     try:

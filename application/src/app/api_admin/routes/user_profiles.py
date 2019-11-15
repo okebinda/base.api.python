@@ -13,6 +13,7 @@ from app.api_admin.authentication import auth, admin_permission,\
 from app.api_admin.schema.UserProfileSchema import UserProfileSchema
 from app.lib.routes.Pager import Pager
 from app.lib.routes.Query import Query
+from app.lib.schema.validate.exists import exists
 
 user_profiles = Blueprint('user_profiles', __name__)
 
@@ -84,14 +85,9 @@ def post_user_profiles():
     :rtype: (str, int)
     """
 
-    # init vars
-    errors = {}
-    user = None
-
-    if request.json.get('user_id', None):
-        user = User.query.get(request.json.get('user_id'))
-        if user is None:
-            errors["user_id"] = ["Invalid value."]
+    # pre-validate data
+    errors, user = exists({}, User, 'user_id',
+                          request.json.get('user_id', None))
 
     # validate data
     try:
@@ -163,14 +159,9 @@ def put_user_profile(user_profile_id):
     if user_profile is None:
         abort(404)
 
-    # init vars
-    errors = {}
-    user = None
-
-    if request.json.get('user_id', None):
-        user = User.query.get(request.json.get('user_id'))
-        if user is None:
-            errors["user_id"] = ["Invalid value."]
+    # pre-validate data
+    errors, user = exists({}, User, 'user_id',
+                          request.json.get('user_id', None))
 
     # validate data
     try:

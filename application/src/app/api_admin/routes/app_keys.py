@@ -12,6 +12,7 @@ from app.api_admin.authentication import auth, admin_permission,\
 from app.api_admin.schema.AppKeySchema import AppKeySchema
 from app.lib.routes.Pager import Pager
 from app.lib.routes.Query import Query
+from app.lib.schema.validate.unique import unique
 
 app_keys = Blueprint('app_keys', __name__)
 
@@ -80,15 +81,8 @@ def post_app_keys():
     :rtype: (str, int)
     """
 
-    # init vars
-    errors = {}
-
     # pre-validate data
-    if request.json.get('key', None):
-        app_key_query = AppKey.query.filter(
-            AppKey.key == request.json.get('key')).first()
-        if app_key_query:
-            errors["key"] = ["Value must be unique."]
+    errors = unique({}, AppKey, AppKey.key, request.json.get('key', None))
 
     # validate data
     try:
@@ -155,16 +149,9 @@ def put_app_key(app_key_id):
     if app_key is None:
         abort(404)
 
-    # init vars
-    errors = {}
-
     # pre-validate data
-    if (request.json.get('key', None) and
-            request.json.get('key') != app_key.key):
-        app_key_query = AppKey.query.filter(
-            AppKey.key == request.json.get('key')).first()
-        if app_key_query:
-            errors["key"] = ["Value must be unique."]
+    errors = unique({}, AppKey, AppKey.key, request.json.get('key', None),
+                    update=app_key)
 
     # validate data
     try:

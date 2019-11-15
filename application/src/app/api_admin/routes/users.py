@@ -15,6 +15,9 @@ from app.api_admin.authentication import auth, admin_permission,\
 from app.api_admin.schema.UserSchema import UserSchema
 from app.lib.routes.Pager import Pager
 from app.lib.routes.Query import Query
+from app.lib.schema.validate.unique import unique
+from app.lib.schema.validate.unique_email import unique_email
+from app.lib.schema.validate.exists import exists
 
 users = Blueprint('users', __name__)
 
@@ -87,33 +90,15 @@ def post_user():
     :rtype: (str, int)
     """
 
-    # init vars
-    errors = {}
-    roles = []
-
     # pre-validate data
-    if request.json.get('username', None):
-        user_query = User.query.filter(
-            User.username == request.json.get('username')).first()
-        if user_query:
-            errors["username"] = ["Value must be unique."]
+    errors = unique({}, User, User.username,
+                    request.json.get('username', None))
 
-    if request.json.get('email', None):
-        temp_user = User(email=request.json.get('email'))
-        user_query = User.query.filter(
-            User.email_digest == temp_user.email_digest).first()
-        if user_query:
-            errors["email"] = ["Value must be unique."]
+    errors = unique_email(errors, User, User.email,
+                          request.json.get('email', None))
 
-    if not request.json.get('roles', None):
-        errors["roles"] = ["Missing data for required field."]
-    else:
-        for role_id in request.json.get('roles'):
-            role = Role.query.get(role_id)
-            if role is None:
-                errors["roles"] = ["Invalid value."]
-            else:
-                roles.append(role.id)
+    errors, roles = exists(errors, User, 'roles',
+                           request.json.get('roles', []))
 
     # validate data
     try:
@@ -200,42 +185,21 @@ def put_user(user_id):
     :returns: JSON string of the user's data; status code
     :rtype: (str, int)
     """
-    # pylint: disable=too-many-statements
 
     # get user
     user = User.query.get(user_id)
     if user is None:
         abort(404)
 
-    # init vars
-    errors = {}
-    roles = []
-
     # pre-validate data
-    if (request.json.get('username', None) and
-            request.json.get('username') != user.username):
-        user_query = User.query.filter(
-            User.username == request.json.get('username')).first()
-        if user_query:
-            errors["username"] = ["Value must be unique."]
+    errors = unique({}, User, User.username,
+                    request.json.get('username', None), update=user)
 
-    if (request.json.get('email', None) and
-            request.json.get('email') != user.email):
-        temp_user = User(email=request.json.get('email'))
-        user_query = User.query.filter(
-            User.email_digest == temp_user.email_digest).first()
-        if user_query:
-            errors["email"] = ["Value must be unique."]
+    errors = unique_email(errors, User, User.email,
+                          request.json.get('email', None), update=user)
 
-    if not request.json.get('roles', None):
-        errors["roles"] = ["Missing data for required field."]
-    else:
-        for role_id in request.json.get('roles'):
-            role = Role.query.get(role_id)
-            if role is None:
-                errors["roles"] = ["Invalid value."]
-            else:
-                roles.append(role.id)
+    errors, roles = exists(errors, User, 'roles',
+                           request.json.get('roles', []))
 
     # validate data
     try:
