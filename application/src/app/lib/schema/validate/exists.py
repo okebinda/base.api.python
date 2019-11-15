@@ -56,6 +56,6 @@ def exists(errors, model, field, pkey, *, missing_error=None,
                     errors[field].append(invalid_error)
                     break
                 else:
-                    record.append(record_item.id)
+                    record.append(record_item)
 
     return errors, record

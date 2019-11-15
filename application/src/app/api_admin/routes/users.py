@@ -97,7 +97,7 @@ def post_user():
     errors = unique_email(errors, User, User.email,
                           request.json.get('email', None))
 
-    errors, roles = exists(errors, User, 'roles',
+    errors, roles = exists(errors, Role, 'roles',
                            request.json.get('roles', []))
 
     # validate data
@@ -118,8 +118,7 @@ def post_user():
                 status=data['status'],
                 status_changed_at=datetime.now())
 
-    for role_id in roles:
-        role = Role.query.get(role_id)
+    for role in roles:
         user.roles.append(role)
 
     # save user profile
@@ -198,7 +197,7 @@ def put_user(user_id):
     errors = unique_email(errors, User, User.email,
                           request.json.get('email', None), update=user)
 
-    errors, roles = exists(errors, User, 'roles',
+    errors, roles = exists(errors, Role, 'roles',
                            request.json.get('roles', []))
 
     # validate data
@@ -223,8 +222,7 @@ def put_user(user_id):
         user.password = data['password']
 
     user.roles[:] = []
-    for role_id in roles:
-        role = Role.query.get(role_id)
+    for role in roles:
         user.roles.append(role)
 
     if user.status != data['status']:

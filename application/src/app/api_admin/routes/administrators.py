@@ -122,8 +122,7 @@ def post_administrator():
                           status=data['status'],
                           status_changed_at=datetime.now())
 
-    for role_id in roles:
-        role = Role.query.get(role_id)
+    for role in roles:
         admin.roles.append(role)
 
     db.session.add(admin)
@@ -214,8 +213,7 @@ def put_administrator(administrator_id):
         administrator.password = data['password']
 
     administrator.roles[:] = []
-    for role_id in roles:
-        role = Role.query.get(role_id)
+    for role in roles:
         administrator.roles.append(role)
 
     if administrator.status != data['status']:
