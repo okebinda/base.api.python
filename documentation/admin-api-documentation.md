@@ -4,6 +4,13 @@ The admin API uses a REST interface using JSON responses. It uses standard HTTP 
 
 <br><br>
 
+## Table of Contents
+
+* [Definitions](#definitions)
+* [Authentication](#authentication)
+
+<br><br>
+
 ## Definitions
 
 ### HTTP Status Codes
