@@ -8,6 +8,19 @@ The admin API uses a REST interface using JSON responses. It uses standard HTTP 
 
 * [Definitions](#definitions)
 * [Authentication](#authentication)
+* [User Account](#user-account)
+* [User Password](#user-password)
+* [Application Keys](#application-keys-1)
+* [User Roles](#user-roles)
+* [Administrators](#administrators)
+* [Users](#users)
+* [User Profiles](#ser-profiles)
+* [Terms of Services](#terms-of-services)
+* [Countries](#countries)
+* [Regions](#regions)
+* [Logins](#logins)
+* [Password Reset Requests](#password-reset-requests)
+* [Notifications](#notifications)
 
 <br><br>
 
