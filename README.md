@@ -58,7 +58,7 @@ Sometimes it is useful to completely remove all residual Vagrant files after des
 > rm -rf ./vagrant
 ```
 
-## Rebuild the Development Database
+### Rebuild the Development Database
 
 The development database is built and data fixtures are loaded as part of the initial build procedure. However, you can rebuild the database and reload the data to its original state using the following command:
 
@@ -84,9 +84,11 @@ URL: http://base.api.python.vm/v/dev/
 
 All tests must pass before committing any code into the repository.
 
+The optional [MODULE] argument can be used to limit the scope of testing to a single set of tests.
+
 ```ssh
 $ cd /vagrant
-$ python -W ignore tests/api_public/functional/run.py
+$ ./scripts/test.sh public [MODULE]
 ```
 
 ## Admin API: base.api.admin.python.vm
@@ -106,9 +108,11 @@ URL: http://base.api.admin.python.vm/v/dev/
 
 All tests must pass before committing any code into the repository.
 
+The optional [MODULE] argument can be used to limit the scope of testing to a single set of tests.
+
 ```ssh
 $ cd /vagrant
-$ python -W ignore tests/api_admin/functional/run.py
+$ ./scripts/test.sh admin [MODULE]
 ```
 
 ## Linters
