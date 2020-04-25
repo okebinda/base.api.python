@@ -58,6 +58,15 @@ Sometimes it is useful to completely remove all residual Vagrant files after des
 > rm -rf ./vagrant
 ```
 
+### Rebuild the Project
+
+To reinstall any dependencies (if there are updates in the Pipfile, for example) and rebuild the development database use the following command:
+
+```ssh
+$ cd /vagrant
+$ ./scripts/rebuild.sh
+```
+
 ### Rebuild the Development Database
 
 The development database is built and data fixtures are loaded as part of the initial build procedure. However, you can rebuild the database and reload the data to its original state using the following command:

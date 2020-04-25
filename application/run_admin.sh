@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# activate virtual environment
+cd /vagrant/application
+. ./env/bin/activate
+
 # server variables
 export FLASK_APP=main_admin
 export FLASK_ENV=development
