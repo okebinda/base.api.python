@@ -19,7 +19,7 @@ $ cd /vagrant
 $ ./scripts/build.sh
 ```
 
-Additionaly you will need to manually log in to the local PostgreSQL server to enable some extensions for the development and test databases. Once the extensions are setup you can load the development data fixtures. (This is a temporary step until I get around to incorporating the extensions into the build script above.)
+Additionally you will need to manually log in to the local PostgreSQL server to enable some extensions for the development and test databases. Once the extensions are setup you can load the development data fixtures. (This is a temporary step until I get around to incorporating the extensions into the build script above.)
 
 ```ssh
 $ sudo bash
@@ -175,7 +175,7 @@ Deployment is broken up into two steps: `make` and `deploy`.
 
 `deploy` logs into the production server, downloads the package from the storage bucket, installs it in a new directory and promotes the new packages using a blue-green deployment.
 
-Details can be found at the top of each script in the `/deploy` diretory.
+Details can be found at the top of each script in the `/deploy` directory.
 
 Options for [API NAME] are: `public` or `admin`.
 
@@ -212,5 +212,5 @@ $ ./deploy/deploy.sh -p public 1.1 base.api.python.vm-1.1.3.165.zip
 | /scripts           | Contains various scripts, such as the script to build the application for the first time (installs dependencies) |
 | /tests             | Unit and functional tests |
 | README.md          | This file |
-| Vagranfile         | Configuration file for Vagrant when provisioning local development virtual machine |
+| Vagrantfile        | Configuration file for Vagrant when provisioning local development virtual machine |
 

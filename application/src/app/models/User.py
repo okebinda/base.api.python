@@ -85,12 +85,12 @@ class User(db.Model, BaseModel):
         cascade="all,delete-orphan",
         order_by=UserTermsOfService.accept_date.desc())
     password_resets = db.relationship(
-        'PasswordReset ',
+        'PasswordReset',
         cascade="all,delete-orphan",
         back_populates='user',
         order_by=PasswordReset.requested_at.desc())
     notifications = db.relationship(
-        'Notification ',
+        'Notification',
         cascade="all,delete-orphan",
         back_populates='user',
         order_by=Notification.sent_at.desc())

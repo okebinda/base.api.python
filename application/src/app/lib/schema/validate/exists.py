@@ -40,7 +40,8 @@ def exists(errors, model, field, pkey, *, missing_error=None,
     else:
 
         # ID is a single int
-        if isinstance(pkey, int):
+        if isinstance(pkey, int) or (isinstance(pkey, str)
+                                     and pkey.isnumeric()):
             record = model.query.get(int(pkey))
             if record is None:
                 errors.setdefault(field, [])
