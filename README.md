@@ -19,25 +19,6 @@ $ cd /vagrant
 $ ./scripts/build.sh
 ```
 
-Additionally you will need to manually log in to the local PostgreSQL server to enable some extensions for the development and test databases. Once the extensions are setup you can load the development data fixtures. (This is a temporary step until I get around to incorporating the extensions into the build script above.)
-
-```ssh
-$ sudo bash
-# su postgres
-$ psql
-=# \connect api_db_dev;
-=# create extension pgcrypto;
-=# \connect api_db_test;
-=# create extension pgcrypto;
-=# \q
-$ exit
-# exit
-
-$ cd /vagrant
-$ source application/env/bin/activate
-$ python ./scripts/load_fixtures.py
-```
-
 Also, to access the API from your host machine you should update your local DNS to point the two development API domains to the virtual machine's IP address. For example, on a Mac/Linux box you can update your `/etc/hosts` file with the following line:
 
 ```
@@ -75,6 +56,15 @@ Sometimes it is useful to completely remove all residual Vagrant files after des
 
 ```ssh
 > rm -rf ./vagrant
+```
+
+## Rebuild the Development Database
+
+The development database is built and data fixtures are loaded as part of the initial build procedure. However, you can rebuild the database and reload the data to its original state using the following command:
+
+```ssh
+$ cd /vagrant
+$ ./scripts/load_fixtures.sh
 ```
 
 ## Public API: base.api.python.vm

@@ -23,12 +23,14 @@ pip install pipenv
 # install dependencies
 pipenv install --dev
 
-### TEMP REMOVED - until Postgres extensions are integrated into this script ###
-#echo "\n${HIGHLIGHT_COLOR}Loading data fixtures...${DEFAULT_COLOR}\n"
-#
-#cd /vagrant
-#
-## load data fixtures by hijacking flask_testing module
-#python ./scripts/load_fixtures.py
+echo "\n${HIGHLIGHT_COLOR}Loading data fixtures...${DEFAULT_COLOR}\n"
+
+# add crypto extension to dev and test databases
+sudo -u postgres psql api_db_dev -c "CREATE EXTENSION pgcrypto"
+sudo -u postgres psql api_db_test -c "CREATE EXTENSION pgcrypto"
+
+# load data fixtures by hijacking flask_testing module
+cd /vagrant
+python ./scripts/load_fixtures.py
 
 echo "\n${HIGHLIGHT_COLOR}Build complete.${DEFAULT_COLOR}\n"
