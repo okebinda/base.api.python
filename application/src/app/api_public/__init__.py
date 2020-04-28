@@ -4,7 +4,7 @@ from flask import Flask, jsonify, make_response
 from flask_principal import Principal, identity_loaded
 from flask_cors import CORS
 
-from app import db, ma
+from app import db, ma, logger
 from app.lib.wsgi.ReverseProxied import ReverseProxied
 from app.api_public.authentication import auth, Authentication
 
@@ -23,12 +23,16 @@ def create_app(config):
     app = Flask(__name__)
     app.config.from_object(config)
 
+    # init logging
+    logger.init_app(app, config.LOGGING_LEVEL)
+
     # init authorization
     Principal(app)
 
     # init CORS
     if 'CORS_ORIGIN' in app.config:
-        CORS(app, supports_credentials=True, origin=app.config['CORS_ORIGIN'])
+        CORS(app, supports_credentials=True,
+             resources={r"/*": {"origins": app.config['CORS_ORIGIN']}})
 
     # init database
     db.init_app(app)

@@ -14,8 +14,8 @@ from app.Config import Config
 class BaseTest(TestCase):
 
     def create_app(self):
+        Config.TESTING = True
         app = create_app(Config)
-        app.config['TESTING'] = True
         return app
         
     def setUp(self):

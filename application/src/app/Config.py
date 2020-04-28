@@ -23,4 +23,7 @@ class Config:
     CRYPT_DIGEST_SALT = os.environ.get('CRYPT_DIGEST_SALT')
 
     # CORS properties
-    CORS_ORIGIN = os.environ.get('CORS_ORIGIN')
+    CORS_ORIGIN = os.environ.get('CORS_ORIGIN', '')
+
+    # logging properties
+    LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'ERROR')
