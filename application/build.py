@@ -9,7 +9,7 @@ use_plugin("pypi:pybuilder_pytest")
 use_plugin('pypi:pybuilder_pytest_coverage')
 
 
-name = "application"
+name = "base.api.python.vm"
 default_task = ['install_dependencies', 'publish']
 
 

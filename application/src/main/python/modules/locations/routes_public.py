@@ -43,7 +43,7 @@ def get_countries(page=1, limit=250):
 
     # retrieve and return results
     results = list(query.limit(limit).offset((page - 1) * limit))
-    if len(results):
+    if len(results) > 0:
 
         # prep initial output
         output = {
@@ -93,7 +93,7 @@ def get_regions(country_code, page=1, limit=100):
 
     # retrieve and return results
     results = list(query.limit(limit).offset((page - 1) * limit))
-    if len(results):
+    if len(results) > 0:
 
         # prep initial output
         output = {
