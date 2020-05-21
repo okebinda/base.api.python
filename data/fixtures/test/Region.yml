@@ -1,0 +1,57 @@
+# Region.yml
+
+01_california:
+  name: California
+  code_2: CA
+  country: 'Country(01_usa)'
+  status: 1
+  status_changed_at: 2018-01-01 00:00:00
+
+02_oregon:
+  name: Oregon
+  code_2: OR
+  country: 'Country(01_usa)'
+  status: 1
+  status_changed_at: 2018-01-01 00:00:00
+
+03_washington:
+  name: Washington
+  code_2: WA
+  country: 'Country(01_usa)'
+  status: 1
+  status_changed_at: 2018-01-01 00:00:00
+
+04_alabama:
+  name: Alabama
+  code_2: AL
+  country: 'Country(01_usa)'
+  status: 2
+  status_changed_at: 2018-01-02 00:00:00
+
+05_alaska:
+  name: Alaska
+  code_2: AK
+  country: 'Country(01_usa)'
+  status: 3
+  status_changed_at: 2018-01-03 00:00:00
+
+06_arizona:
+  name: Arizona
+  code_2: AZ
+  country: 'Country(01_usa)'
+  status: 4
+  status_changed_at: 2018-01-04 00:00:00
+
+07_arkansas:
+  name: Arkansas
+  code_2: AR
+  country: 'Country(01_usa)'
+  status: 5
+  status_changed_at: 2018-01-05 00:00:00
+
+08_british_columbia:
+  name: British Columbia
+  code_2: BC
+  country: 'Country(03_canada)'
+  status: 1
+  status_changed_at: 2018-01-06 00:00:00

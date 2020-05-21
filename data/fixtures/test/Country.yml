@@ -1,0 +1,50 @@
+# Country.yml
+
+01_usa:
+  name: United States
+  code_2: US
+  code_3: USA
+  status: 1
+  status_changed_at: 2018-01-01 00:00:00
+
+02_mexico:
+  name: Mexico
+  code_2: MX
+  code_3: MEX
+  status: 1
+  status_changed_at: 2018-01-01 00:00:00
+
+03_canada:
+  name: Canada
+  code_2: CA
+  code_3: CAN
+  status: 1
+  status_changed_at: 2018-01-01 00:00:00
+
+04_france:
+  name: France
+  code_2: FR
+  code_3: FRA
+  status: 2
+  status_changed_at: 2018-01-02 00:00:00
+
+05_spain:
+  name: Spain
+  code_2: ES
+  code_3: ESP
+  status: 3
+  status_changed_at: 2018-01-03 00:00:00
+
+06_united_kingdom:
+  name: United Kingdom
+  code_2: GB
+  code_3: GBR
+  status: 4
+  status_changed_at: 2018-01-04 00:00:00
+
+07_germany:
+  name: Germany
+  code_2: DE
+  code_3: DEU
+  status: 5
+  status_changed_at: 2018-01-05 00:00:00

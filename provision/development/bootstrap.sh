@@ -15,10 +15,10 @@
 #   Nginx 1.17
 #   vim tmux screen git zip
 #   awscli
-#   ansible (not suppoted yet)
+#   ansible
 #
 #  author: https://github.com/okebinda
-#  date: April, 2020
+#  date: May, 2020
 #
 ############################
 
@@ -36,19 +36,6 @@ apt update
 apt upgrade -y
 
 
-###################
-#
-# Install Ansible
-#
-###################
-
-#apt install -y software-properties-common
-#apt-add-repository --yes --update ppa:ansible/ansible
-#apt install ansible -y
-#chown -R vagrant:vagrant /home/vagrant.ansible/
-#cp /vagrant/provision/development/templates/etc/ansible/hosts /etc/ansible/hosts
-
-
 ################
 #
 # Install Tools
@@ -60,6 +47,10 @@ apt install -y vim tmux screen git zip
 
 # install AWS command line interface
 apt install -y awscli
+
+# install ansible
+apt install ansible -y
+cp /vagrant/provision/development/templates/etc/ansible/hosts /etc/ansible/hosts
 
 
 #####################
@@ -88,17 +79,25 @@ host    all             all              ::/0                            md5
 systemctl restart postgresql
 
 
-########################
+############################
 #
-# Install Python Tools
+# Install Python with Tools
 #
-########################
+############################
 
-# install build tools
-apt install -y build-essential python3-dev
+# install pyenv for vagrant user
+apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl
+su - vagrant -c "curl https://pyenv.run | bash"
+echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /home/vagrant/.bashrc
+echo 'eval "$(pyenv init -)"' >> /home/vagrant/.bashrc
+echo 'eval "$(pyenv virtualenv-init -)"' >> /home/vagrant/.bashrc
 
-# install virtualenv
-apt install -y python3-virtualenv
+# install and use python 3.8.3
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv install 3.8.3"
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv global 3.8.3"
+
+# install pipenv
+su - vagrant -c "/home/vagrant/.pyenv/shims/pip install pipenv"
 
 
 ################

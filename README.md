@@ -27,13 +27,11 @@ Also, to access the API from your host machine you should update your local DNS 
 
 ### Start Virtual Machine
 
-Starts the local development environment. This is a prerequisite for any following steps if the machine is not already booted.
+Starts the local development environment and logs in to the virtual machine. This is a prerequisite for any following steps if the machine is not already booted.
 
 ```ssh
 > vagrant up
 > vagrant ssh
-$ cd /vagrant/application
-$ source env/bin/activate
 ```
 
 ### Stop Virtual Machine
@@ -56,6 +54,15 @@ Sometimes it is useful to completely remove all residual Vagrant files after des
 
 ```ssh
 > rm -rf ./vagrant
+```
+
+### Activate the Python virtual environment
+
+Most of the shell commands manage their own Python virtual environment, but if you want to activate your own session to run Python scripts manually use the following command:
+
+```ssh
+$ cd /vagrant/application
+$ source env/bin/activate
 ```
 
 ### Rebuild the Project

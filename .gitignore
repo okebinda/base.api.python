@@ -3,7 +3,8 @@ __pycache__
 .idea/
 .vscode/
 .vagrant/
-application/env/
-deploy/packages/*.zip
-ubuntu-bionic-18.04-cloudimg-console.log
-venv/
+application/.pybuilder/
+application/.pytest_cache/
+.coverage
+htmlcov/
+application/target/
