@@ -9,11 +9,12 @@ echo "\n${HIGHLIGHT_COLOR}Creating virtual environment and installing dependenci
 
 cd /vagrant/application
 
+# install global packages
+pip install uwsgi
+pip install pybuilder
+
 # create and activate virtual environment
 pipenv install --dev
-
-# install uwsgi
-pip install uwsgi
 
 echo "\n${HIGHLIGHT_COLOR}Adding database extensions...${DEFAULT_COLOR}"
 
