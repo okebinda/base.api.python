@@ -10,7 +10,7 @@ from flask import Flask
 from init_dep import db, ma
 from lib.wsgi import ReverseProxied
 from lib import errors
-from modules import health_check, locations
+from modules import health_check, locations, app_keys
 
 
 def create_app(config):
@@ -40,5 +40,6 @@ def create_app(config):
     # register modules
     health_check.register(app)
     locations.register(app)
+    app_keys.register(app)
 
     return app

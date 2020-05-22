@@ -1,5 +1,4 @@
 import pytest
-from flask import Blueprint
 
 from app import create_app
 from config import Config

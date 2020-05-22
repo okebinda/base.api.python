@@ -1,0 +1,49 @@
+# AppKey.yml
+
+01_appkey1:
+  application: Application 1
+  key: 7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW
+  status: 1
+  status_changed_at: 2018-01-03 00:00:00
+  created_at: 2018-01-01 00:00:00
+  updated_at: 2018-01-02 00:00:00
+
+02_appkey2:
+  application: Application 2
+  key: cvBtQGgL9gNnSZk4DmKnva4QMcpTV7Mx
+  status: 1
+  status_changed_at: 2018-01-07 00:00:00
+  created_at: 2018-01-05 00:00:00
+  updated_at: 2018-01-06 00:00:00
+
+03_appkey3:
+  application: Application 3
+  key: 9CR45hFpTahbqDvmZFJdENAKz5VPqLG3
+  status: 2
+  status_changed_at: 2018-01-12 00:00:00
+  created_at: 2018-01-10 00:00:00
+  updated_at: 2018-01-11 00:00:00
+
+04_appkey4:
+  application: Application 4
+  key: Zp4DFyUH6nYQb5acw2Y23sga5CfQhRgZ
+  status: 3
+  status_changed_at: 2018-01-17 00:00:00
+  created_at: 2018-01-15 00:00:00
+  updated_at: 2018-01-16 00:00:00
+
+05_appkey5:
+  application: Application 5
+  key: TRrD8GjTtHnGvJZZektcgg6DMVeBkhHB
+  status: 4
+  status_changed_at: 2018-01-22 00:00:00
+  created_at: 2018-01-20 00:00:00
+  updated_at: 2018-01-21 00:00:00
+
+06_appkey6:
+  application: Application 6
+  key: kP4k7vun5RwTBbESwHrCuDdFUtRchbVf
+  status: 5
+  status_changed_at: 2018-01-27 00:00:00
+  created_at: 2018-01-25 00:00:00
+  updated_at: 2018-01-26 00:00:00

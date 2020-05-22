@@ -23,6 +23,7 @@ sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, '../../../main/python'
 from app import db
 # from config import Config
 from modules.locations.model import Country, Region
+from modules.app_keys.model import AppKey
 
 
 class Fixtures:
@@ -35,7 +36,7 @@ class Fixtures:
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://api_admin:passpass@localhost:5432/api_db_test'
         self.app.config['CRYPT_SYM_SECRET_KEY'] = 'VEsuvPZ2W5M8Hb8s7cddMyAMB3g9LPf8VmC4hFmJWckG5htZfgybREBeDa2WaUDs'
         self.app.config['CRYPT_DIGEST_SALT'] = 'mTqjD2YZKU4SXwT7uADbA5bndcc2meEz9PWgX56acdZUZpKn9X82SaJ67F8x8XAK'
-        self.model_classes = [Country, Region]
+        self.model_classes = [Country, Region, AppKey]
         self.PY_YAML_FIXTURES_DIR = os.path.normpath(
             os.path.join(SCRIPT_DIR, '../../../../data/fixtures/test'))
 
