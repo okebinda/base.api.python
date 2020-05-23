@@ -27,13 +27,14 @@ def app(request):
 
 
 @pytest.mark.integration
-def test_country_schema_dump(app):
+def test_app_key_schema_dump(app):
     app_key = AppKey.query.get(1)
     result = AppKeySchema().dump(app_key)
-    assert result['application'] == 'Application 1'
-    assert 'created_at' in result
+    assert len(result) == 7
     assert result['id'] == 1
+    assert result['application'] == 'Application 1'
     assert result['key'] == '7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW'
     assert result['status'] == AppKey.STATUS_ENABLED
     assert result['status_changed_at'] == '2018-01-03T00:00:00+0000'
-    assert 'updated_at' in result
+    assert result['created_at'] == '2018-01-01T00:00:00+0000'
+    assert result['updated_at'] == '2018-01-02T00:00:00+0000'

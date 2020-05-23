@@ -1,0 +1,46 @@
+# Role.yml
+
+01_user:
+  name: USER
+  is_admin_role: false
+  priority: 100
+  login_lockout_policy: false
+  login_max_attempts: 10
+  login_timeframe: 600
+  login_ban_time: 1800
+  login_ban_by_ip: true
+  password_policy: false
+  password_reuse_history: 10
+  password_reset_days: 365
+  created_at: 2018-01-01 00:00:00
+  updated_at: 2018-01-02 00:00:00
+
+02_admin:
+  name: SUPER_ADMIN
+  is_admin_role: true
+  priority: 10
+  login_lockout_policy: true
+  login_max_attempts: 5
+  login_timeframe: 300
+  login_ban_time: 1800
+  login_ban_by_ip: True
+  password_policy: True
+  password_reuse_history: 24
+  password_reset_days: 90
+  created_at: 2018-01-05 00:00:00
+  updated_at: 2018-01-06 00:00:00
+
+03_service:
+  name: SERVICE
+  is_admin_role: False
+  priority: 50
+  login_lockout_policy: true
+  login_max_attempts: 5
+  login_timeframe: 300
+  login_ban_time: 1800
+  login_ban_by_ip: true
+  password_policy: true
+  password_reuse_history: 24
+  password_reset_days: 365
+  created_at: 2018-01-10 00:00:00
+  updated_at: 2018-01-11 00:00:00

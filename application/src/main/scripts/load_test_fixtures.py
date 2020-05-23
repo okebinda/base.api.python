@@ -15,10 +15,11 @@ from app import db
 from config import Config
 from modules.locations.model import Country, Region
 from modules.app_keys.model import AppKey
+from modules.roles.model import Role
 
 # init att and prep fixtures
 app = create_app(Config)
-model_classes = [Country, Region, AppKey]
+model_classes = [Country, Region, AppKey, Role]
 PY_YAML_FIXTURES_DIR = os.path.normpath(
     os.path.join(SCRIPT_DIR, '../../../../data/fixtures/test'))
 
