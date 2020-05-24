@@ -1,6 +1,6 @@
 # Role.yml
 
-01_user:
+01_role_user:
   name: USER
   is_admin_role: false
   priority: 100
@@ -15,7 +15,7 @@
   created_at: 2018-01-01 00:00:00
   updated_at: 2018-01-02 00:00:00
 
-02_admin:
+02_role_admin:
   name: SUPER_ADMIN
   is_admin_role: true
   priority: 10
@@ -30,7 +30,7 @@
   created_at: 2018-01-05 00:00:00
   updated_at: 2018-01-06 00:00:00
 
-03_service:
+03_role_service:
   name: SERVICE
   is_admin_role: False
   priority: 50

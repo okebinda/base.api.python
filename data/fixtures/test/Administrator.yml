@@ -1,0 +1,99 @@
+# Administrator.yml
+
+01_admin1:
+  username: admin1
+  email: admin1@test.com
+  password: admin1pass
+  first_name: Tommy
+  last_name: Lund
+  joined_at: 2018-11-01 00:00:00
+  password_changed_at: 2018-11-04 00:00:00
+  roles: [Role(02_role_admin)]
+  status: 1
+  status_changed_at: 2018-11-03 00:00:00
+  created_at: 2018-11-01 00:00:00
+  updated_at: 2018-11-02 00:00:00
+
+02_admin2:
+  username: admin2
+  email: admin2@test.com
+  password: admin2pass
+  first_name: Selma
+  last_name: Keyes
+  joined_at: 2018-11-05 00:00:00
+  password_changed_at: 2018-11-08 00:00:00
+  roles: [Role(02_role_admin)]
+  status: 1
+  status_changed_at: 2018-11-07 00:00:00
+  created_at: 2018-11-05 00:00:00
+  updated_at: 2018-11-06 00:00:00
+
+03_admin3:
+  username: admin3
+  email: admin3@test.com
+  password: admin3pass
+  first_name: Victor
+  last_name: Landon
+  joined_at: 2018-11-15 00:00:00
+  password_changed_at: 2018-11-13 00:00:00
+  roles: []
+  status: 1
+  status_changed_at: 2018-11-12 00:00:00
+  created_at: 2018-11-10 00:00:00
+  updated_at: 2018-11-11 00:00:00
+
+04_admin4:
+  username: admin4
+  email: admin4@test.com
+  password: admin4pass
+  first_name: Tamela
+  last_name: Coburn
+  joined_at: 2018-11-20 00:00:00
+  password_changed_at: 2018-11-18 00:00:00
+  roles: [Role(02_role_admin)]
+  status: 2
+  status_changed_at: 2018-11-17 00:00:00
+  created_at: 2018-11-15 00:00:00
+  updated_at: 2018-11-16 00:00:00
+
+05_admin5:
+  username: admin5
+  email: admin5@test.com
+  password: admin5pass
+  first_name: Leigh
+  last_name: Beck
+  joined_at: 2018-11-25 00:00:00
+  password_changed_at: 2018-11-23 00:00:00
+  roles: [Role(02_role_admin)]
+  status: 3
+  status_changed_at: 2018-11-22 00:00:00
+  created_at: 2018-11-20 00:00:00
+  updated_at: 2018-11-21 00:00:00
+
+06_admin6:
+  username: admin6
+  email: admin6@test.com
+  password: admin6pass
+  first_name: Bob
+  last_name: Waters
+  joined_at: 2018-11-30 00:00:00
+  password_changed_at: 2018-11-28 00:00:00
+  roles: [Role(02_role_admin)]
+  status: 4
+  status_changed_at: 2018-11-27 00:00:00
+  created_at: 2018-11-25 00:00:00
+  updated_at: 2018-11-26 00:00:00
+
+07_admin7:
+  username: admin7
+  email: admin7@test.com
+  password: admin7pass
+  first_name: Nigel
+  last_name: Sams
+  joined_at: 2018-11-10 00:00:00
+  password_changed_at: 2018-11-13 00:00:00
+  roles: [Role(02_role_admin)]
+  status: 5
+  status_changed_at: 2018-12-03 00:00:00
+  created_at: 2018-12-01 00:00:00
+  updated_at: 2018-12-02 00:00:00

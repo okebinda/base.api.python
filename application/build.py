@@ -1,4 +1,6 @@
 #   -*- coding: utf-8 -*-
+import os
+
 from pybuilder.core import use_plugin, init
 
 use_plugin("python.core")
@@ -38,4 +40,4 @@ def set_properties(project):
     project.build_depends_on("py_yaml_fixtures")
 
     project.set_property("dir_source_pytest_python", r"src/pytest/python")
-    # project.set_property("pytest_extra_args", ["-m unit"])
+    project.set_property("pytest_extra_args", ["-m unit"])
