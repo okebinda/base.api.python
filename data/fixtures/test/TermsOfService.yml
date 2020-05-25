@@ -1,0 +1,55 @@
+# TermsOfService.yml
+
+01_tos1:
+  text: This is TOS 1
+  version: "1.0"
+  publish_date: 2018-06-18 00:00:00
+  status: 1
+  status_changed_at: 2018-06-17 00:00:00
+  created_at: 2018-06-15 00:00:00
+  updated_at: 2018-06-17 00:00:00
+
+02_tos2:
+  text: This is TOS 2
+  version: "1.1"
+  publish_date: 2019-01-04 00:00:00
+  status: 1
+  status_changed_at: 2019-01-03
+  created_at: 2019-01-01 00:00:00
+  updated_at: 2019-01-02 00:00:00
+
+03_tos3:
+  text: This is TOS 3
+  version: "1.2"
+  publish_date: 2019-09-18 00:00:00
+  status: 3
+  status_changed_at: 2019-01-17
+  created_at: 2019-01-15 00:00:00
+  updated_at: 2019-01-16 00:00:00
+
+04_tos4:
+  text: This is TOS 4
+  version: "1.3"
+  publish_date: 2019-01-23 00:00:00
+  status: 2
+  status_changed_at: 2019-01-22 00:00:00
+  created_at: 2019-01-20 00:00:00
+  updated_at: 2019-01-21 00:00:00
+
+05_tos5:
+  text: This is TOS 5
+  version: "1.4"
+  publish_date: 2019-01-28 00:00:00
+  status: 4
+  status_changed_at: 2019-01-27 00:00:00
+  created_at: 2019-01-25 00:00:00
+  updated_at: 2019-01-26 00:00:00
+
+06_tos6:
+  text: This is TOS 6
+  version: "2.0"
+  publish_date: 2019-02-04 00:00:00
+  status: 5
+  status_changed_at: 2019-02-03 00:00:00
+  created_at: 2019-02-01 00:00:00
+  updated_at: 2019-02-02 00:00:00

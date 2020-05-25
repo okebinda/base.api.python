@@ -46,7 +46,7 @@ shift $((OPTIND-1))
 
 # run unit tests
 cd /vagrant/application/src/main/python
-pipenv run coverage run -m --source=. pytest -W ignore -m unit ../../pytest/python/
+pipenv run coverage run -m --source=. pytest -vv -W ignore -m unit ../../pytest/python/
 
 # show coverage
 if [ "$FLAG_COVERAGE_REPORT" = true ]

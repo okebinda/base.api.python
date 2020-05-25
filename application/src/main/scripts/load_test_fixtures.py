@@ -18,11 +18,12 @@ from modules.app_keys.model import AppKey
 from modules.roles.model import Role
 from modules.administrators.model import Administrator, \
     AdministratorPasswordHistory
+from modules.terms_of_services.model import TermsOfService
 
 # init att and prep fixtures
 app = create_app(Config)
 model_classes = [Country, Region, AppKey, Role, Administrator,
-                 AdministratorPasswordHistory]
+                 AdministratorPasswordHistory, TermsOfService]
 PY_YAML_FIXTURES_DIR = os.path.normpath(
     os.path.join(SCRIPT_DIR, '../../../../data/fixtures/test'))
 
