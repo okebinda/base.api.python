@@ -1,0 +1,81 @@
+# UserProfile.yml
+
+01_userprofile1:
+  user: User(01_user1)
+  first_name: Fiona
+  last_name: Farnham
+  joined_at: 2018-12-03 00:00:00
+  status: 1
+  status_changed_at: 2018-12-04 00:00:00
+  created_at: 2018-12-01 00:00:00
+  updated_at: 2018-12-02 00:00:00
+
+02_userprofile2:
+  user: User(02_user2)
+  first_name: Lynne
+  last_name: Harford
+  joined_at: 2018-12-07 00:00:00
+  status: 1
+  status_changed_at: 2018-12-08 00:00:00
+  created_at: 2018-12-05 00:00:00
+  updated_at: 2018-12-06 00:00:00
+
+03_userprofile3:
+  user: User(03_user3)
+  first_name: Duane
+  last_name: Hargrave
+  joined_at: 2018-12-12 00:00:00
+  status: 1
+  status_changed_at: 2018-12-13 00:00:00
+  created_at: 2018-12-10 00:00:00
+  updated_at: 2018-12-11 00:00:00
+
+04_userprofile4:
+  user: User(04_user4)
+  first_name: Leta
+  last_name: Hillam
+  joined_at: 2018-12-17 00:00:00
+  status: 3
+  status_changed_at: 2018-12-18 00:00:00
+  created_at: 2018-12-15 00:00:00
+  updated_at: 2018-12-16 00:00:00
+
+05_userprofile5:
+  user: User(05_user5)
+  first_name: Elroy
+  last_name: Hunnicutt
+  joined_at: 2018-12-22 00:00:00
+  status: 2
+  status_changed_at: 2018-12-23 00:00:00
+  created_at: 2018-12-20 00:00:00
+  updated_at: 2018-12-21 00:00:00
+
+06_userprofile6:
+  user: User(06_user6)
+  first_name: Alease
+  last_name: Richards
+  joined_at: 2018-12-27 00:00:00
+  status: 5
+  status_changed_at: 2018-12-28 00:00:00
+  created_at: 2018-12-25 00:00:00
+  updated_at: 2018-12-26 00:00:00
+
+07_userprofile7:
+  user: User(07_user7)
+  first_name: Thaddeus
+  last_name: Towner
+  joined_at: 2019-01-03 00:00:00
+  status: 4
+  status_changed_at: 2019-01-04 00:00:00
+  created_at: 2019-01-01 00:00:00
+  updated_at: 2019-01-02 00:00:00
+
+08_userprofile8:
+  user: User(08_user8)
+  first_name: Luke
+  last_name: Tennyson
+  joined_at: 2019-01-07 00:00:00
+  status: 1
+  status_changed_at: 2019-01-08 00:00:00
+  created_at: 2019-01-05 00:00:00
+  updated_at: 2019-01-06 00:00:00

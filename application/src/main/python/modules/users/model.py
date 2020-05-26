@@ -192,11 +192,11 @@ class User(db.Model, BaseModel):
     #     cascade="all,delete-orphan",
     #     back_populates='user',
     #     order_by=Notification.sent_at.desc())
-    # profile = db.relationship(
-    #     'UserProfile',
-    #     uselist=False,
-    #     cascade="all,delete-orphan",
-    #     back_populates='user')
+    profile = db.relationship(
+        'UserProfile',
+        uselist=False,
+        cascade="all,delete-orphan",
+        back_populates='user')
     password_history = db.relationship(
         'UserPasswordHistory',
         cascade="all,delete-orphan",

@@ -635,7 +635,7 @@ def test_post_user_username_character_fail(app, mocker):
 
 
 @pytest.mark.unit
-def test_post_administrator_min_fail(app, mocker):
+def test_post_user_min_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
         'username': ['Value must be between 2 and 40 characters long.'],
@@ -1462,7 +1462,7 @@ def test_put_user_route_ok(app, mocker, client):
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
-    response = client.put("/user/{}".format(expected_m_role_id))
+    response = client.put("/user/{}".format(expected_m_id))
 
     assert response.status_code == expected_status
     assert 'user' in response.json
@@ -1518,7 +1518,7 @@ def test_delete_user_fail(app, mocker):
 
 
 @pytest.mark.integration
-def test_get_administrators_route_with_data(client):
+def test_get_users_route_with_data(client):
     expected_status = 200
     expected_json = {
         "limit": 10,

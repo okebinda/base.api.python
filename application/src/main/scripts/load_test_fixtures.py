@@ -20,12 +20,13 @@ from modules.administrators.model import Administrator, \
     AdministratorPasswordHistory
 from modules.terms_of_services.model import TermsOfService
 from modules.users.model import User, UserPasswordHistory, UserTermsOfService
+from modules.user_profiles.model import UserProfile
 
 # init att and prep fixtures
 app = create_app(Config)
 model_classes = [Country, Region, AppKey, Role, Administrator,
                  AdministratorPasswordHistory, TermsOfService, User,
-                 UserPasswordHistory, UserTermsOfService]
+                 UserPasswordHistory, UserTermsOfService, UserProfile]
 PY_YAML_FIXTURES_DIR = os.path.normpath(
     os.path.join(SCRIPT_DIR, '../../../../data/fixtures/test'))
 
