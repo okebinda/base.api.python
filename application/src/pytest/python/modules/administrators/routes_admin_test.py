@@ -127,7 +127,7 @@ def test_get_administrators_limit_10_page_2_of_3(app, mocker):
 
 
 @pytest.mark.unit
-def test_get_app_keys_empty(app, mocker):
+def test_get_administrators_empty(app, mocker):
     expected_status = 204
     expected_content = ''
 

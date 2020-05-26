@@ -20,6 +20,7 @@ from modules.roles.model import Role
 from modules.administrators.model import Administrator, \
     AdministratorPasswordHistory
 from modules.terms_of_services.model import TermsOfService
+from modules.users.model import User, UserPasswordHistory, UserTermsOfService
 
 
 class Fixtures:
@@ -29,7 +30,8 @@ class Fixtures:
         # init att and prep fixtures
         self.app = app
         self.model_classes = [Country, Region, AppKey, Role, Administrator,
-                              AdministratorPasswordHistory, TermsOfService]
+                              AdministratorPasswordHistory, TermsOfService,
+                              User, UserPasswordHistory, UserTermsOfService]
         self.PY_YAML_FIXTURES_DIR = os.path.normpath(
             os.path.join(SCRIPT_DIR, '../../../../data/fixtures/test'))
 

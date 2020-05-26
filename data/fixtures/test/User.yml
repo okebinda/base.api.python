@@ -1,0 +1,109 @@
+# User.yml
+
+01_user1:
+  username: user1
+  email: user1@test.com
+  password: user1pass
+  password_changed_at: 2018-12-04 00:00:00
+  is_verified: false
+  roles: []
+  status: 2
+  status_changed_at: 2018-12-03 00:00:00
+  created_at: 2018-12-01 00:00:00
+  updated_at: 2018-12-02 00:00:00
+
+02_user2:
+  username: user2
+  email: user2@test.com
+  password: user2pass
+  password_changed_at: 2018-12-08 00:00:00
+  is_verified: true
+  roles: [Role(01_role_user)]
+  status: 1
+  status_changed_at: 2018-12-07 00:00:00
+  created_at: 2018-12-05 00:00:00
+  updated_at: 2018-12-06 00:00:00
+
+03_user3:
+  username: user3
+  email: user3@test.com
+  password: user3pass
+  password_changed_at: 2018-12-13 00:00:00
+  is_verified: true
+  roles: [Role(01_role_user)]
+  status: 1
+  status_changed_at: 2018-12-12 00:00:00
+  created_at: 2018-12-10 00:00:00
+  updated_at: 2018-12-11 00:00:00
+
+04_user4:
+  username: user4
+  email: user4@test.com
+  password: user4pass
+  password_changed_at: 2018-12-18 00:00:00
+  is_verified: true
+  roles: [Role(01_role_user)]
+  status: 3
+  status_changed_at: 2018-12-17 00:00:00
+  created_at: 2018-12-15 00:00:00
+  updated_at: 2018-12-16 00:00:00
+
+05_user5:
+  username: user5
+  email: user5@test.com
+  password: user5pass
+  password_changed_at: 2018-12-23 00:00:00
+  is_verified: false
+  roles: [Role(01_role_user)]
+  status: 2
+  status_changed_at: 2018-12-22 00:00:00
+  created_at: 2018-12-20 00:00:00
+  updated_at: 2018-12-21 00:00:00
+
+06_user6:
+  username: user6
+  email: user6@test.com
+  password: user6pass
+  password_changed_at: 2018-12-28 00:00:00
+  is_verified: true
+  roles: [Role(01_role_user)]
+  status: 5
+  status_changed_at: 2018-12-27 00:00:00
+  created_at: 2018-12-25 00:00:00
+  updated_at: 2018-12-26 00:00:00
+
+07_user7:
+  username: user7
+  email: user7@test.com
+  password: user7pass
+  password_changed_at: 2019-01-04 00:00:00
+  is_verified: true
+  roles: [Role(01_role_user)]
+  status: 4
+  status_changed_at: 2019-01-03 00:00:00
+  created_at: 2019-01-01 00:00:00
+  updated_at: 2019-01-02 00:00:00
+
+08_user8:
+  username: user8
+  email: user8@test.com
+  password: user8pass
+  password_changed_at: 2019-01-08 00:00:00
+  is_verified: false
+  roles: [Role(01_role_user)]
+  status: 1
+  status_changed_at: 2019-01-07 00:00:00
+  created_at: 2019-01-05 00:00:00
+  updated_at: 2019-01-06 00:00:00
+
+09_service1:
+  username: service1
+  email: service1@test.com
+  password: service1pass
+  password_changed_at: 2019-01-13 00:00:00
+  is_verified: false
+  roles: [Role(03_role_service)]
+  status: 1
+  status_changed_at: 2019-01-12 00:00:00
+  created_at: 2019-01-10 00:00:00
+  updated_at: 2019-01-11 00:00:00

@@ -14,9 +14,7 @@ from init_dep import db
 
 from lib.routes.pager import Pager
 from lib.routes.query import Query
-from lib.schema.validate import unique
-from lib.schema.validate import unique_email
-from lib.schema.validate import exists
+from lib.schema.validate import unique, unique_email, exists
 from modules.roles.model import Role
 from .model import Administrator
 from .schema_admin import AdministratorSchema

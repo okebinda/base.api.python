@@ -868,7 +868,7 @@ def test_delete_terms_of_service_1_route_with_data(client):
     expected_status = 204
     expected_json = None
 
-    response = client.delete("/terms_of_service/1")
+    response = client.delete("/terms_of_service/5")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
