@@ -16,7 +16,7 @@ from lib.routes.pager import Pager
 from lib.routes.query import Query
 from lib.schema.validate import unique, unique_email, exists
 from modules.roles.model import Role
-# from modules.user_profiles.model import UserProfile
+from modules.user_profiles.model import UserProfile
 from .model import User
 from .schema_admin import UserSchema
 
@@ -108,16 +108,16 @@ def post_user():
     for role in roles:
         user.roles.append(role)
 
-    # # save user profile
-    # if 'profile' in data:
-    #     user_profile = UserProfile(
-    #         user=user,
-    #         first_name=data['profile']['first_name'].strip(),
-    #         last_name=data['profile']['last_name'].strip(),
-    #         joined_at=data['profile']['joined_at'],
-    #         status=data['status'],
-    #         status_changed_at=datetime.now())
-    #     db.session.add(user_profile)
+    # save user profile
+    if 'profile' in data:
+        user_profile = UserProfile(
+            user=user,
+            first_name=data['profile']['first_name'].strip(),
+            last_name=data['profile']['last_name'].strip(),
+            joined_at=data['profile']['joined_at'],
+            status=data['status'],
+            status_changed_at=datetime.now())
+        db.session.add(user_profile)
 
     db.session.add(user)
     db.session.commit()
@@ -205,25 +205,26 @@ def put_user(user_id):
         user.status = data['status']
         user.status_changed_at = datetime.now()
 
-    # # save user profile
-    # if 'profile' in data:
-    #     user_profile = user.profile if user.profile else None
-    #     if user_profile:
-    #         user_profile.first_name = data['profile']['first_name'].strip()
-    #         user_profile.last_name = data['profile']['last_name'].strip()
-    #         user_profile.joined_at = data['profile']['joined_at']
-    #         if user_profile.status != data['status']:
-    #             user_profile.status = data['status']
-    #             user_profile.status_changed_at = datetime.now()
-    #     else:
-    #         user_profile = UserProfile(
-    #             user_id=user.id,
-    #             first_name=data['profile']['first_name'].strip(),
-    #             last_name=data['profile']['last_name'].strip(),
-    #             joined_at=data['profile']['joined_at'],
-    #             status=data['status'],
-    #             status_changed_at=datetime.now())
-    #         db.session.add(user_profile)
+    # save user profile
+    if 'profile' in data:
+        user_profile = user.profile if user.profile else None
+        if user_profile:
+            user_profile.first_name = data['profile']['first_name'].strip()
+            user_profile.last_name = data['profile']['last_name'].strip()
+            user_profile.joined_at = data['profile']['joined_at']
+            if user_profile.status != data['status']:
+                user_profile.status = data['status']
+                user_profile.status_changed_at = datetime.now()
+        else:
+            user_profile = UserProfile(
+                user_id=user.id,
+                first_name=data['profile']['first_name'].strip(),
+                last_name=data['profile']['last_name'].strip(),
+                joined_at=data['profile']['joined_at'],
+                status=data['status'],
+                status_changed_at=datetime.now())
+            db.session.add(user_profile)
+            user.profile = user_profile
 
     db.session.commit()
 

@@ -30,7 +30,7 @@ def app(request):
 def test_user_schema_dump(app):
     user = User.query.get(2)
     result = UserSchema().dump(user)
-    assert len(result) == 12
+    assert len(result) == 13
     assert result['id'] == 2
     assert result['username'] == 'user2'
     assert result['email'] == 'user2@test.com'
@@ -45,6 +45,10 @@ def test_user_schema_dump(app):
     assert result['terms_of_services'][0]['terms_of_service']['id'] == 2
     assert result['terms_of_services'][0]['terms_of_service']['version'] == \
         '1.1'
+    assert len(result['profile']) == 3
+    assert result['profile']['first_name'] == "Lynne"
+    assert result['profile']['last_name'] == "Harford"
+    assert result['profile']['joined_at'] == "2018-12-07T00:00:00+0000"
     assert result['password_changed_at'] == '2018-12-08T00:00:00+0000'
     assert result['is_verified'] is True
     assert result['status'] == User.STATUS_ENABLED

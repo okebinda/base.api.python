@@ -74,8 +74,7 @@ class UserSchema(ma.Schema):
         fields = ('id', 'username', 'email', 'roles', 'status',
                   'status_changed_at', 'uri', 'created_at', 'updated_at',
                   'password', 'terms_of_services', 'password_changed_at',
-                  # 'profile', 'is_verified')
-                  'is_verified')
+                  'profile', 'is_verified')
         load_only = ['password']
         unknown = EXCLUDE  # fix for `role` property after marshmallow 3
 
@@ -93,9 +92,9 @@ class UserSchema(ma.Schema):
         only=('accept_date', 'ip_address', 'terms_of_service'),
         many=True,
         dump_only=True)
-    # profile = fields.Nested(
-    #     'UserProfileSchema',
-    #     only=('first_name', 'last_name', 'joined_at'))
+    profile = fields.Nested(
+        'UserProfileSchema',
+        only=('first_name', 'last_name', 'joined_at'))
 
     # field validation
     id = fields.Integer()

@@ -11,7 +11,7 @@ from init_dep import db, ma
 from lib.wsgi import ReverseProxied
 from lib import errors
 from modules import health_check, locations, app_keys, roles, administrators, \
-    terms_of_services, users, user_profiles, logins
+    terms_of_services, users, user_profiles, logins, password_resets
 
 
 def create_app(config):
@@ -48,5 +48,6 @@ def create_app(config):
     users.register(app)
     user_profiles.register(app)
     logins.register(app)
+    password_resets.register(app)
 
     return app

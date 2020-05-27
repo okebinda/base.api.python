@@ -23,6 +23,7 @@ from modules.terms_of_services.model import TermsOfService
 from modules.users.model import User, UserPasswordHistory, UserTermsOfService
 from modules.user_profiles.model import UserProfile
 from modules.logins.model import Login
+from modules.password_resets.model import PasswordReset
 
 
 class Fixtures:
@@ -34,7 +35,7 @@ class Fixtures:
         self.model_classes = [Country, Region, AppKey, Role, Administrator,
                               AdministratorPasswordHistory, TermsOfService,
                               User, UserPasswordHistory, UserTermsOfService,
-                              UserProfile, Login]
+                              UserProfile, Login, PasswordReset]
         self.PY_YAML_FIXTURES_DIR = os.path.normpath(
             os.path.join(SCRIPT_DIR, '../../../../data/fixtures/test'))
 

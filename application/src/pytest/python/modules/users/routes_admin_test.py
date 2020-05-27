@@ -41,6 +41,7 @@ def test_get_users(app, mocker):
         'id': None,
         'is_verified': None,
         'password_changed_at': None,
+        'profile': None,
         'roles': [],
         'status': None,
         'status_changed_at': None,
@@ -85,6 +86,7 @@ def test_get_users_limit_10_page_2_of_3(app, mocker):
         'id': None,
         'is_verified': None,
         'password_changed_at': None,
+        'profile': None,
         'roles': [],
         'status': None,
         'status_changed_at': None,
@@ -156,6 +158,7 @@ def test_get_users_by_role(app, mocker):
         'id': None,
         'is_verified': None,
         'password_changed_at': None,
+        'profile': None,
         'roles': [],
         'status': None,
         'status_changed_at': None,
@@ -295,6 +298,7 @@ def test_get_user_ok(app, mocker):
         'id': None,
         'is_verified': None,
         'password_changed_at': None,
+        'profile': None,
         'roles': [],
         'status': None,
         'status_changed_at': None,
@@ -330,7 +334,7 @@ def test_get_user_not_found(app, mocker):
 @pytest.mark.unit
 def test_post_user_ok(app, mocker):
     expected_status = 201
-    expected_m_length = 12
+    expected_m_length = 13
     expected_m_email = 'user9@test.com'
     expected_m_id = None
     expected_m_is_verified = False
@@ -338,6 +342,7 @@ def test_post_user_ok(app, mocker):
     expected_m_role_id = 1
     expected_m_roles = [{'id': expected_m_role_id, 'name': 'USER'}]
     expected_m_terms_of_services = []
+    expected_m_profile = None
     expected_m_uri = None
     expected_m_status = User.STATUS_ENABLED
     expected_m_created_at = None
@@ -385,6 +390,81 @@ def test_post_user_ok(app, mocker):
     assert result[0].json['user']['roles'] == expected_m_roles
     assert result[0].json['user']['terms_of_services'] == \
         expected_m_terms_of_services
+    assert result[0].json['user']['profile'] == expected_m_profile
+    assert result[0].json['user']['uri'] == expected_m_uri
+    assert result[0].json['user']['status'] == expected_m_status
+    assert bool(re_datetime.match(
+        result[0].json['user']['password_changed_at']))
+    assert bool(re_datetime.match(result[0].json['user']['status_changed_at']))
+    assert result[0].json['user']['created_at'] == expected_m_created_at
+    assert result[0].json['user']['updated_at'] == expected_m_updated_at
+
+
+@pytest.mark.unit
+def test_post_user_with_profile_ok(app, mocker):
+    expected_status = 201
+    expected_m_length = 13
+    expected_m_email = 'user9@test.com'
+    expected_m_id = None
+    expected_m_is_verified = False
+    expected_m_username = 'user9'
+    expected_m_role_id = 1
+    expected_m_roles = [{'id': expected_m_role_id, 'name': 'USER'}]
+    expected_m_terms_of_services = []
+    expected_m_profile = {
+        'first_name': "Service",
+        'joined_at': "2019-02-04T00:00:00+0000",
+        'last_name': "Account",
+    }
+    expected_m_uri = None
+    expected_m_status = User.STATUS_ENABLED
+    expected_m_created_at = None
+    expected_m_updated_at = None
+    # @todo: timezone
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+    request_mock = mocker.patch('modules.users.routes_admin.request')
+    request_mock.json = {
+        'email': expected_m_email,
+        'is_verified': expected_m_is_verified,
+        'profile': expected_m_profile,
+        'roles': [expected_m_role_id],
+        'status': expected_m_status,
+        'username': expected_m_username,
+        'password': 'user9Pass'
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    # mock exists() validation
+    role_1 = Role()
+    role_1.id = 1
+    role_1.name = 'USER'
+    query_mock.return_value \
+        .get.return_value = role_1
+
+    db_mock = mocker.patch('modules.users.routes_admin.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    result = post_user()
+
+    assert result[1] == expected_status
+    assert 'user' in result[0].json
+    assert len(result[0].json['user']) == expected_m_length
+    assert result[0].json['user']['id'] == expected_m_id
+    assert result[0].json['user']['username'] == expected_m_username
+    assert result[0].json['user']['email'] == expected_m_email
+    assert result[0].json['user']['is_verified'] == expected_m_is_verified
+    assert result[0].json['user']['roles'] == expected_m_roles
+    assert result[0].json['user']['terms_of_services'] == \
+        expected_m_terms_of_services
+    assert result[0].json['user']['profile'] == expected_m_profile
     assert result[0].json['user']['uri'] == expected_m_uri
     assert result[0].json['user']['status'] == expected_m_status
     assert bool(re_datetime.match(
@@ -775,7 +855,7 @@ def test_post_user_type_fail(app, mocker):
 @pytest.mark.unit
 def test_post_user_route_ok(app, mocker, client):
     expected_status = 201
-    expected_m_length = 12
+    expected_m_length = 13
     expected_m_email = 'user9@test.com'
     expected_m_id = None
     expected_m_is_verified = False
@@ -783,6 +863,7 @@ def test_post_user_route_ok(app, mocker, client):
     expected_m_role_id = 1
     expected_m_roles = [{'id': expected_m_role_id, 'name': 'USER'}]
     expected_m_terms_of_services = []
+    expected_m_profile = None
     expected_m_uri = None
     expected_m_status = User.STATUS_ENABLED
     expected_m_created_at = None
@@ -831,6 +912,7 @@ def test_post_user_route_ok(app, mocker, client):
     assert response.json['user']['terms_of_services'] == \
         expected_m_terms_of_services
     assert response.json['user']['uri'] == expected_m_uri
+    assert response.json['user']['profile'] == expected_m_profile
     assert response.json['user']['status'] == expected_m_status
     assert bool(re_datetime.match(
         response.json['user']['password_changed_at']))
@@ -842,7 +924,7 @@ def test_post_user_route_ok(app, mocker, client):
 @pytest.mark.unit
 def test_put_user_ok(app, mocker):
     expected_status = 200
-    expected_m_length = 12
+    expected_m_length = 13
     expected_m_email = 'user2a@test.com'
     expected_m_id = 2
     expected_m_is_verified = False
@@ -850,6 +932,7 @@ def test_put_user_ok(app, mocker):
     expected_m_role_id = 3
     expected_m_roles = [{'id': expected_m_role_id, 'name': 'SERVICE'}]
     expected_m_terms_of_services = []
+    expected_m_profile = None
     expected_m_uri = 'http://localhost/user/2'
     expected_m_status = User.STATUS_DISABLED
     expected_m_created_at = None
@@ -901,6 +984,86 @@ def test_put_user_ok(app, mocker):
     assert result[0].json['user']['terms_of_services'] == \
         expected_m_terms_of_services
     assert result[0].json['user']['uri'] == expected_m_uri
+    assert result[0].json['user']['profile'] == expected_m_profile
+    assert result[0].json['user']['status'] == expected_m_status
+    assert bool(re_datetime.match(
+        result[0].json['user']['password_changed_at']))
+    assert bool(re_datetime.match(result[0].json['user']['status_changed_at']))
+    assert result[0].json['user']['created_at'] == expected_m_created_at
+    assert result[0].json['user']['updated_at'] == expected_m_updated_at
+
+
+@pytest.mark.unit
+def test_put_user_with_profile_ok(app, mocker):
+    expected_status = 200
+    expected_m_length = 13
+    expected_m_email = 'user2a@test.com'
+    expected_m_id = 2
+    expected_m_is_verified = False
+    expected_m_username = 'user2a'
+    expected_m_role_id = 3
+    expected_m_roles = [{'id': expected_m_role_id, 'name': 'SERVICE'}]
+    expected_m_terms_of_services = []
+    expected_m_profile = {
+        'first_name': "LynneA",
+        'joined_at': "2019-01-15T00:00:00+0000",
+        'last_name': "HarfordA",
+    }
+    expected_m_uri = 'http://localhost/user/2'
+    expected_m_status = User.STATUS_DISABLED
+    expected_m_created_at = None
+    expected_m_updated_at = None
+    # @todo: timezone
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+    request_mock = mocker.patch('modules.users.routes_admin.request')
+    request_mock.json = {
+        'email': expected_m_email,
+        'is_verified': expected_m_is_verified,
+        'profile': expected_m_profile,
+        'roles': [expected_m_role_id],
+        'status': expected_m_status,
+        'username': expected_m_username,
+        'password': 'user9Pass2'
+    }
+
+    user_2 = User()
+    user_2.id = expected_m_id
+
+    role_3 = Role()
+    role_3.id = 3
+    role_3.name = 'SERVICE'
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock initial resource query and exists() validation
+    query_mock.return_value \
+        .get.side_effect = [user_2, role_3]
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    db_mock = mocker.patch('modules.users.routes_admin.db')
+    db_mock.commit.return_value = None
+
+    result = put_user(expected_m_id)
+
+    print(result[0].json)
+
+    assert result[1] == expected_status
+    assert 'user' in result[0].json
+    assert len(result[0].json['user']) == expected_m_length
+    assert result[0].json['user']['id'] == expected_m_id
+    assert result[0].json['user']['username'] == expected_m_username
+    assert result[0].json['user']['email'] == expected_m_email
+    assert result[0].json['user']['is_verified'] == expected_m_is_verified
+    assert result[0].json['user']['roles'] == expected_m_roles
+    assert result[0].json['user']['terms_of_services'] == \
+        expected_m_terms_of_services
+    assert result[0].json['user']['uri'] == expected_m_uri
+    assert result[0].json['user']['profile'] == expected_m_profile
     assert result[0].json['user']['status'] == expected_m_status
     assert bool(re_datetime.match(
         result[0].json['user']['password_changed_at']))
@@ -912,7 +1075,7 @@ def test_put_user_ok(app, mocker):
 @pytest.mark.unit
 def test_put_user_no_password_ok(app, mocker):
     expected_status = 200
-    expected_m_length = 12
+    expected_m_length = 13
     expected_m_email = 'user2a@test.com'
     expected_m_id = 2
     expected_m_is_verified = False
@@ -920,6 +1083,7 @@ def test_put_user_no_password_ok(app, mocker):
     expected_m_role_id = 3
     expected_m_roles = [{'id': expected_m_role_id, 'name': 'SERVICE'}]
     expected_m_terms_of_services = []
+    expected_m_profile = None
     expected_m_uri = 'http://localhost/user/2'
     expected_m_status = User.STATUS_DISABLED
     expected_m_password_changed_at = None
@@ -970,6 +1134,7 @@ def test_put_user_no_password_ok(app, mocker):
     assert result[0].json['user']['roles'] == expected_m_roles
     assert result[0].json['user']['terms_of_services'] == \
         expected_m_terms_of_services
+    assert result[0].json['user']['profile'] == expected_m_profile
     assert result[0].json['user']['uri'] == expected_m_uri
     assert result[0].json['user']['status'] == expected_m_status
     assert result[0].json['user']['password_changed_at'] == \
@@ -1415,7 +1580,7 @@ def test_put_user_type_fail(app, mocker):
 @pytest.mark.unit
 def test_put_user_route_ok(app, mocker, client):
     expected_status = 200
-    expected_m_length = 12
+    expected_m_length = 13
     expected_m_email = 'user2a@test.com'
     expected_m_id = 2
     expected_m_is_verified = False
@@ -1423,6 +1588,7 @@ def test_put_user_route_ok(app, mocker, client):
     expected_m_role_id = 3
     expected_m_roles = [{'id': expected_m_role_id, 'name': 'SERVICE'}]
     expected_m_terms_of_services = []
+    expected_m_profile = None
     expected_m_uri = 'http://localhost/user/2'
     expected_m_status = User.STATUS_DISABLED
     expected_m_created_at = None
@@ -1474,6 +1640,7 @@ def test_put_user_route_ok(app, mocker, client):
     assert response.json['user']['roles'] == expected_m_roles
     assert response.json['user']['terms_of_services'] == \
         expected_m_terms_of_services
+    assert response.json['user']['profile'] == expected_m_profile
     assert response.json['user']['uri'] == expected_m_uri
     assert response.json['user']['status'] == expected_m_status
     assert bool(re_datetime.match(
@@ -1514,7 +1681,7 @@ def test_delete_user_fail(app, mocker):
         assert True
 
 
-# # INTEGRATION TESTS
+# INTEGRATION TESTS
 
 
 @pytest.mark.integration
@@ -1531,6 +1698,11 @@ def test_get_users_route_with_data(client):
                 "id": 1,
                 "is_verified": False,
                 "password_changed_at": "2018-12-04T00:00:00+0000",
+                "profile": {
+                    "first_name": "Fiona",
+                    "joined_at": "2018-12-03T00:00:00+0000",
+                    "last_name": "Farnham"
+                },
                 "roles": [],
                 "status": 2,
                 "status_changed_at": "2018-12-03T00:00:00+0000",
@@ -1550,7 +1722,7 @@ def test_get_users_route_with_data(client):
                             "id": 1,
                             "version": "1.0"
                         }
-                    }
+                }
                 ],
                 "updated_at": "2018-12-02T00:00:00+0000",
                 "uri": "http://localhost/user/1",
@@ -1562,6 +1734,11 @@ def test_get_users_route_with_data(client):
                 "id": 2,
                 "is_verified": True,
                 "password_changed_at": "2018-12-08T00:00:00+0000",
+                "profile": {
+                    "first_name": "Lynne",
+                    "joined_at": "2018-12-07T00:00:00+0000",
+                    "last_name": "Harford"
+                },
                 "roles": [
                     {
                         "id": 1,
@@ -1598,6 +1775,11 @@ def test_get_users_route_with_data(client):
                 "id": 3,
                 "is_verified": True,
                 "password_changed_at": "2018-12-13T00:00:00+0000",
+                "profile": {
+                    "first_name": "Duane",
+                    "joined_at": "2018-12-12T00:00:00+0000",
+                    "last_name": "Hargrave"
+                },
                 "roles": [
                     {
                         "id": 1,
@@ -1626,6 +1808,11 @@ def test_get_users_route_with_data(client):
                 "id": 5,
                 "is_verified": False,
                 "password_changed_at": "2018-12-23T00:00:00+0000",
+                "profile": {
+                    "first_name": "Elroy",
+                    "joined_at": "2018-12-22T00:00:00+0000",
+                    "last_name": "Hunnicutt"
+                },
                 "roles": [
                     {
                         "id": 1,
@@ -1645,6 +1832,11 @@ def test_get_users_route_with_data(client):
                 "id": 6,
                 "is_verified": True,
                 "password_changed_at": "2018-12-28T00:00:00+0000",
+                "profile": {
+                    "first_name": "Alease",
+                    "joined_at": "2018-12-27T00:00:00+0000",
+                    "last_name": "Richards"
+                },
                 "roles": [
                     {
                         "id": 1,
@@ -1664,6 +1856,11 @@ def test_get_users_route_with_data(client):
                 "id": 8,
                 "is_verified": False,
                 "password_changed_at": "2019-01-08T00:00:00+0000",
+                "profile": {
+                    "first_name": "Luke",
+                    "joined_at": "2019-01-07T00:00:00+0000",
+                    "last_name": "Tennyson"
+                },
                 "roles": [
                     {
                         "id": 1,
@@ -1683,6 +1880,7 @@ def test_get_users_route_with_data(client):
                 "id": 9,
                 "is_verified": False,
                 "password_changed_at": "2019-01-13T00:00:00+0000",
+                "profile": None,
                 "roles": [
                     {
                         "id": 3,
@@ -1715,6 +1913,11 @@ def test_get_user_2_route_with_data(client):
             "id": 2,
             "is_verified": True,
             "password_changed_at": "2018-12-08T00:00:00+0000",
+            "profile": {
+                "first_name": "Lynne",
+                "joined_at": "2018-12-07T00:00:00+0000",
+                "last_name": "Harford"
+            },
             "roles": [
                 {
                     "id": 1,
@@ -1756,7 +1959,7 @@ def test_get_user_2_route_with_data(client):
 @pytest.mark.integration
 def test_post_users_route_with_data(client, mocker):
     expected_status = 201
-    expected_m_length = 12
+    expected_m_length = 13
     expected_m_email = 'user9@test.com'
     expected_m_id = 10
     expected_m_is_verified = False
@@ -1764,6 +1967,7 @@ def test_post_users_route_with_data(client, mocker):
     expected_m_role_id = 1
     expected_m_roles = [{'id': expected_m_role_id, 'name': 'USER'}]
     expected_m_terms_of_services = []
+    expected_m_profile = None
     expected_m_uri = 'http://localhost/user/10'
     expected_m_status = User.STATUS_ENABLED
     re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
@@ -1790,6 +1994,7 @@ def test_post_users_route_with_data(client, mocker):
     assert response.json['user']['roles'] == expected_m_roles
     assert response.json['user']['terms_of_services'] == \
         expected_m_terms_of_services
+    assert response.json['user']['profile'] == expected_m_profile
     assert response.json['user']['uri'] == expected_m_uri
     assert response.json['user']['status'] == expected_m_status
     assert bool(re_datetime.match(
@@ -1805,7 +2010,7 @@ def test_post_users_route_with_data(client, mocker):
 @pytest.mark.integration
 def test_put_user_route_with_data(client, mocker):
     expected_status = 200
-    expected_m_length = 12
+    expected_m_length = 13
     expected_m_email = 'user2a@test.com'
     expected_m_id = 2
     expected_m_is_verified = False
@@ -1813,6 +2018,11 @@ def test_put_user_route_with_data(client, mocker):
     expected_m_role_id = 3
     expected_m_roles = [{'id': expected_m_role_id, 'name': 'SERVICE'}]
     expected_m_terms_of_services_length = 2
+    expected_m_profile = {
+        "first_name": "Lynne",
+        "joined_at": "2018-12-07T00:00:00+0000",
+        "last_name": "Harford"
+    }
     expected_m_uri = 'http://localhost/user/2'
     expected_m_status = User.STATUS_DISABLED
     re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
@@ -1839,6 +2049,7 @@ def test_put_user_route_with_data(client, mocker):
     assert response.json['user']['roles'] == expected_m_roles
     assert len(response.json['user']['terms_of_services']) == \
         expected_m_terms_of_services_length
+    assert response.json['user']['profile'] == expected_m_profile
     assert response.json['user']['uri'] == expected_m_uri
     assert response.json['user']['status'] == expected_m_status
     assert bool(re_datetime.match(

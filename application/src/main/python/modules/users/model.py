@@ -17,7 +17,7 @@ from init_dep import db
 from config import Config
 from lib.sqlalchemy.base_model import BaseModel
 from lib.sqlalchemy.pgp_string import PGPString
-# from app.models.PasswordReset import PasswordReset
+from modules.password_resets.model import PasswordReset
 # from app.models.Notification import Notification
 
 # relation tables
@@ -182,11 +182,11 @@ class User(db.Model, BaseModel):
         lazy='subquery',
         cascade="all,delete-orphan",
         order_by=UserTermsOfService.accept_date.desc())
-    # password_resets = db.relationship(
-    #     'PasswordReset',
-    #     cascade="all,delete-orphan",
-    #     back_populates='user',
-    #     order_by=PasswordReset.requested_at.desc())
+    password_resets = db.relationship(
+        'PasswordReset',
+        cascade="all,delete-orphan",
+        back_populates='user',
+        order_by=PasswordReset.requested_at.desc())
     # notifications = db.relationship(
     #     'Notification',
     #     cascade="all,delete-orphan",
