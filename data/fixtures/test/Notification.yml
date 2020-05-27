@@ -1,0 +1,99 @@
+# Notification.yml
+
+01_notification1:
+  user: User(01_user1)
+  channel: 1
+  template: template-1
+  service: Service 1
+  notification_id: "123456"
+  accepted: 1
+  rejected: 0
+  sent_at: 2019-02-01 10:45:00
+  status: 1
+  status_changed_at: 2019-02-03 00:00:00
+  created_at: 2019-02-01 00:00:00
+  updated_at: 2019-02-02 00:00:00
+
+02_notification2:
+  user: User(02_user2)
+  channel: 1
+  template: template-1
+  service: Service 1
+  notification_id: "123457"
+  accepted: 1
+  rejected: 0
+  sent_at: 2019-02-03 12:10:07
+  status: 1
+  status_changed_at: 2019-02-05 00:00:00
+  created_at: 2019-02-03 00:00:00
+  updated_at: 2019-02-04 00:00:00
+
+03_notification3:
+  user: User(01_user1)
+  channel: 1
+  template: template-2
+  service: Service 1
+  notification_id: "123458"
+  accepted: 0
+  rejected: 1
+  sent_at: 2019-02-04 18:51:36
+  status: 2
+  status_changed_at: 2019-02-06 00:00:00
+  created_at: 2019-02-04 00:00:00
+  updated_at: 2019-02-05 00:00:00
+
+04_notification4:
+  user: User(03_user3)
+  channel: 1
+  template: template-1
+  service: Service 1
+  notification_id: "123459"
+  accepted: 1
+  rejected: 0
+  sent_at: 2019-02-06 21:29:15
+  status: 3
+  status_changed_at: 2019-02-08 00:00:00
+  created_at: 2019-02-06 00:00:00
+  updated_at: 2019-02-07 00:00:00
+
+05_notification5:
+  user: User(02_user2)
+  channel: 1
+  template: template-2
+  service: Service 2
+  notification_id: "123460"
+  accepted: 1
+  rejected: 0
+  sent_at: 2019-02-06 22:00:40
+  status: 4
+  status_changed_at: 2019-02-08 00:00:00
+  created_at: 2019-02-06 00:00:00
+  updated_at: 2019-02-07 00:00:00
+
+06_notification6:
+  user: User(03_user3)
+  channel: 1
+  template: template-3
+  service: Service 2
+  notification_id: "AB123461"
+  accepted: 2
+  rejected: 1
+  sent_at: 2019-02-10 06:21:39
+  status: 5
+  status_changed_at: 2019-02-12 00:00:00
+  created_at: 2019-02-10 00:00:00
+  updated_at: 2019-02-11 00:00:00
+
+07_notification7:
+  user: User(01_user1)
+  channel: 2
+  template: template-3
+  service: Service 1
+  notification_id: "123462"
+  accepted: 0
+  rejected: 1
+  sent_at: 2019-02-13 17:03:46
+  status: 1
+  status_changed_at: 2019-02-15 00:00:00
+  created_at: 2019-02-13 00:00:00
+  updated_at: 2019-02-14 00:00:00

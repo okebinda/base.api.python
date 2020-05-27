@@ -18,7 +18,8 @@ from config import Config
 from lib.sqlalchemy.base_model import BaseModel
 from lib.sqlalchemy.pgp_string import PGPString
 from modules.password_resets.model import PasswordReset
-# from app.models.Notification import Notification
+from modules.notifications.model import Notification
+
 
 # relation tables
 roles = db.Table(
@@ -187,11 +188,11 @@ class User(db.Model, BaseModel):
         cascade="all,delete-orphan",
         back_populates='user',
         order_by=PasswordReset.requested_at.desc())
-    # notifications = db.relationship(
-    #     'Notification',
-    #     cascade="all,delete-orphan",
-    #     back_populates='user',
-    #     order_by=Notification.sent_at.desc())
+    notifications = db.relationship(
+        'Notification',
+        cascade="all,delete-orphan",
+        back_populates='user',
+        order_by=Notification.sent_at.desc())
     profile = db.relationship(
         'UserProfile',
         uselist=False,
