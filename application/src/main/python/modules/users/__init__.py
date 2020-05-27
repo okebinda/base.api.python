@@ -12,12 +12,13 @@ from .routes_admin import get_users, post_user, get_user, put_user, delete_user
 
 
 def register(app):
-    """Register health user with the application.
+    """Register user routes with the application.
 
     :param app: Flask application
     :type app: Flask
     """
-    admin_routes(app)
+    if app.config.get('APP_TYPE') == 'admin':
+        admin_routes(app)
 
 
 def admin_routes(app):

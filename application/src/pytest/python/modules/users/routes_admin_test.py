@@ -1,3 +1,4 @@
+from copy import copy
 import re
 
 import pytest
@@ -14,14 +15,14 @@ from modules.roles.model import Role
 
 @pytest.fixture
 def app(request):
-    Config.TESTING = True
-    app = create_app(Config)
+    config = copy(Config)
+    config.TESTING = True
+    config.APP_TYPE = 'admin' if 'admin_api' in request.keywords else 'public'
+    app = create_app(config)
 
     if 'unit' in request.keywords:
-        # unit tests don't get data fixtures
         yield app
     else:
-        # other tests need the test data set
         fixtures = Fixtures(app)
         fixtures.setup()
         yield app
@@ -32,6 +33,7 @@ def app(request):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_users(app, mocker):
     expected_status = 200
     expected_length = 2
@@ -77,6 +79,7 @@ def test_get_users(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_users_limit_10_page_2_of_3(app, mocker):
     expected_status = 200
     expected_length = 10
@@ -126,6 +129,7 @@ def test_get_users_limit_10_page_2_of_3(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_users_empty(app, mocker):
     expected_status = 204
     expected_content = ''
@@ -149,6 +153,7 @@ def test_get_users_empty(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_users_by_role(app, mocker):
     expected_status = 200
     expected_length = 5
@@ -203,6 +208,7 @@ def test_get_users_by_role(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_users_route(app, mocker, client):
     expected_status = 200
     expected_length = 10
@@ -234,6 +240,7 @@ def test_get_users_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_users_limit_5_page_2_of_3_route(app, mocker, client):
     expected_status = 200
     expected_length = 5
@@ -267,6 +274,7 @@ def test_get_users_limit_5_page_2_of_3_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_users_empty_route(app, mocker, client):
     expected_status = 204
     expected_json = None
@@ -290,6 +298,7 @@ def test_get_users_empty_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_user_ok(app, mocker):
     expected_status = 200
     expected_json = {
@@ -319,6 +328,7 @@ def test_get_user_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_user_not_found(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
@@ -332,6 +342,7 @@ def test_get_user_not_found(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_ok(app, mocker):
     expected_status = 201
     expected_m_length = 13
@@ -401,6 +412,7 @@ def test_post_user_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_with_profile_ok(app, mocker):
     expected_status = 201
     expected_m_length = 13
@@ -475,6 +487,7 @@ def test_post_user_with_profile_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_required_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -498,6 +511,7 @@ def test_post_user_required_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_unique_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -535,6 +549,7 @@ def test_post_user_unique_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_role_exists_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -568,6 +583,7 @@ def test_post_user_role_exists_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_password_complexity_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -604,6 +620,7 @@ def test_post_user_password_complexity_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_unique_and_is_verified_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -642,6 +659,7 @@ def test_post_user_unique_and_is_verified_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_username_numeric_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -678,6 +696,7 @@ def test_post_user_username_numeric_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_username_character_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -715,6 +734,7 @@ def test_post_user_username_character_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_min_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -752,6 +772,7 @@ def test_post_user_min_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_max_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -789,6 +810,7 @@ def test_post_user_max_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_empty_roles_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -819,6 +841,7 @@ def test_post_user_empty_roles_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_type_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -853,6 +876,7 @@ def test_post_user_type_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_user_route_ok(app, mocker, client):
     expected_status = 201
     expected_m_length = 13
@@ -922,6 +946,7 @@ def test_post_user_route_ok(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_ok(app, mocker):
     expected_status = 200
     expected_m_length = 13
@@ -994,6 +1019,7 @@ def test_put_user_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_with_profile_ok(app, mocker):
     expected_status = 200
     expected_m_length = 13
@@ -1073,6 +1099,7 @@ def test_put_user_with_profile_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_no_password_ok(app, mocker):
     expected_status = 200
     expected_m_length = 13
@@ -1145,6 +1172,7 @@ def test_put_user_no_password_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_required_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -1176,6 +1204,7 @@ def test_put_user_required_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_unique_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1217,6 +1246,7 @@ def test_put_user_unique_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_role_exists_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1253,6 +1283,7 @@ def test_put_user_role_exists_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_password_complexity_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1293,6 +1324,7 @@ def test_put_user_password_complexity_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_unique_and_no_is_verified_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1335,6 +1367,7 @@ def test_put_user_unique_and_no_is_verified_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_username_numeric_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1375,6 +1408,7 @@ def test_put_user_username_numeric_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_username_character_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1416,6 +1450,7 @@ def test_put_user_username_character_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_min_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1457,6 +1492,7 @@ def test_put_user_min_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_max_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1498,6 +1534,7 @@ def test_put_user_max_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_empty_roles_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {
@@ -1535,6 +1572,7 @@ def test_put_user_empty_roles_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_type_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -1578,6 +1616,7 @@ def test_put_user_type_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_user_route_ok(app, mocker, client):
     expected_status = 200
     expected_m_length = 13
@@ -1651,6 +1690,7 @@ def test_put_user_route_ok(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_delete_user_ok(app, mocker):
     expected_status = 204
     expected_content = ''
@@ -1669,6 +1709,7 @@ def test_delete_user_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_delete_user_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
@@ -1685,6 +1726,7 @@ def test_delete_user_fail(app, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_users_route_with_data(client):
     expected_status = 200
     expected_json = {
@@ -1904,6 +1946,7 @@ def test_get_users_route_with_data(client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_user_2_route_with_data(client):
     expected_status = 200
     expected_json = {
@@ -1957,6 +2000,7 @@ def test_get_user_2_route_with_data(client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_post_users_route_with_data(client, mocker):
     expected_status = 201
     expected_m_length = 13
@@ -2008,6 +2052,7 @@ def test_post_users_route_with_data(client, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_put_user_route_with_data(client, mocker):
     expected_status = 200
     expected_m_length = 13
@@ -2063,6 +2108,7 @@ def test_put_user_route_with_data(client, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_delete_user_7_route_with_data(client):
     expected_status = 204
     expected_json = None

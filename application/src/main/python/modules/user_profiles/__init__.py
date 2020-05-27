@@ -13,16 +13,17 @@ from .routes_admin import get_user_profiles, post_user_profiles,\
 
 
 def register(app):
-    """Register health user with the application.
+    """Register user profile routes with the application.
 
     :param app: Flask application
     :type app: Flask
     """
-    admin_routes(app)
+    if app.config.get('APP_TYPE') == 'admin':
+        admin_routes(app)
 
 
 def admin_routes(app):
-    """Register admin user routes with the application.
+    """Register admin user profile routes with the application.
 
     :param app: Flask application
     :type app: Flask

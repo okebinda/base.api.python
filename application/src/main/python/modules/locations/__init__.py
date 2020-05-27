@@ -12,16 +12,17 @@ from .routes_public import get_countries, get_regions
 
 
 def register(app):
-    """Register health check routes with the application.
+    """Register locations routes with the application.
 
     :param app: Flask application
     :type app: Flask
     """
-    public_routes(app)
+    if app.config.get('APP_TYPE') != 'admin':
+        public_routes(app)
 
 
 def public_routes(app):
-    """Register public health check routes with the application.
+    """Register locations check routes with the application.
 
     :param app: Flask application
     :type app: Flask

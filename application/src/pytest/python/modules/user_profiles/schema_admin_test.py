@@ -1,3 +1,5 @@
+from copy import copy
+
 import pytest
 
 from app import create_app
@@ -9,14 +11,14 @@ from fixtures import Fixtures
 
 @pytest.fixture
 def app(request):
-    Config.TESTING = True
-    app = create_app(Config)
+    config = copy(Config)
+    config.TESTING = True
+    config.APP_TYPE = 'admin' if 'admin_api' in request.keywords else 'public'
+    app = create_app(config)
 
     if 'unit' in request.keywords:
-        # unit tests don't get data fixtures
-        return app
+        yield app
     else:
-        # other tests need the test data set
         fixtures = Fixtures(app)
         fixtures.setup()
         yield app
@@ -27,6 +29,7 @@ def app(request):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_user_schema_dump(app):
     user_profile = UserProfile.query.get(2)
     result = UserProfileSchema().dump(user_profile)

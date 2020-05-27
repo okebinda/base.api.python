@@ -13,16 +13,17 @@ from .routes_admin import get_terms_of_services, post_terms_of_services,\
 
 
 def register(app):
-    """Register health check routes with the application.
+    """Register terms of services routes with the application.
 
     :param app: Flask application
     :type app: Flask
     """
-    admin_routes(app)
+    if app.config.get('APP_TYPE') == 'admin':
+        admin_routes(app)
 
 
 def admin_routes(app):
-    """Register admin health check routes with the application.
+    """Register admin terms of services routes with the application.
 
     :param app: Flask application
     :type app: Flask

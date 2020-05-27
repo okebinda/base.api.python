@@ -1,3 +1,5 @@
+from copy import copy
+
 import pytest
 
 from fixtures import Fixtures
@@ -9,14 +11,14 @@ from modules.logins.model import Login
 
 @pytest.fixture
 def app(request):
-    Config.TESTING = True
-    app = create_app(Config)
+    config = copy(Config)
+    config.TESTING = True
+    config.APP_TYPE = 'admin' if 'admin_api' in request.keywords else 'public'
+    app = create_app(config)
 
     if 'unit' in request.keywords:
-        # unit tests don't get data fixtures
         yield app
     else:
-        # other tests need the test data set
         fixtures = Fixtures(app)
         fixtures.setup()
         yield app
@@ -27,6 +29,7 @@ def app(request):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins(app, mocker):
     expected_status = 200
     expected_length = 2
@@ -66,6 +69,7 @@ def test_get_logins(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins_limit_10_page_2_of_3(app, mocker):
     expected_status = 200
     expected_length = 10
@@ -109,6 +113,7 @@ def test_get_logins_limit_10_page_2_of_3(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins_empty(app, mocker):
     expected_status = 204
     expected_content = ''
@@ -130,6 +135,7 @@ def test_get_logins_empty(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins_filter(app, mocker):
     expected_status = 200
     expected_length = 2
@@ -174,6 +180,7 @@ def test_get_logins_filter(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins_route(app, mocker, client):
     expected_status = 200
     expected_length = 25
@@ -203,6 +210,7 @@ def test_get_logins_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins_limit_5_page_2_of_3_route(app, mocker, client):
     expected_status = 200
     expected_length = 5
@@ -235,6 +243,7 @@ def test_get_logins_limit_5_page_2_of_3_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins_empty_route(app, mocker, client):
     expected_status = 204
     expected_json = None
@@ -256,6 +265,7 @@ def test_get_logins_empty_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_logins_filter_route(app, mocker, client):
     expected_status = 200
     expected_length = 25
@@ -290,6 +300,7 @@ def test_get_logins_filter_route(app, mocker, client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_logins_route_with_data(client):
     expected_status = 200
     expected_json = {
@@ -395,6 +406,7 @@ def test_get_logins_route_with_data(client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_logins_filter_route_with_data(client):
     expected_status = 200
     expected_json = {

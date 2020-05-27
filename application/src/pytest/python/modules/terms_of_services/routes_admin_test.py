@@ -1,3 +1,4 @@
+from copy import copy
 import re
 
 import pytest
@@ -14,14 +15,14 @@ from modules.terms_of_services.model import TermsOfService
 
 @pytest.fixture
 def app(request):
-    Config.TESTING = True
-    app = create_app(Config)
+    config = copy(Config)
+    config.TESTING = True
+    config.APP_TYPE = 'admin' if 'admin_api' in request.keywords else 'public'
+    app = create_app(config)
 
     if 'unit' in request.keywords:
-        # unit tests don't get data fixtures
         yield app
     else:
-        # other tests need the test data set
         fixtures = Fixtures(app)
         fixtures.setup()
         yield app
@@ -32,6 +33,7 @@ def app(request):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_services(app, mocker):
     expected_status = 200
     expected_length = 2
@@ -66,6 +68,7 @@ def test_get_terms_of_services(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_services_limit_10_page_2_of_3(app, mocker):
     expected_status = 200
     expected_length = 10
@@ -104,6 +107,7 @@ def test_get_terms_of_services_limit_10_page_2_of_3(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_services_empty(app, mocker):
     expected_status = 204
     expected_content = ''
@@ -127,6 +131,7 @@ def test_get_terms_of_services_empty(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_services_route(app, mocker, client):
     expected_status = 200
     expected_length = 10
@@ -158,6 +163,7 @@ def test_get_terms_of_services_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_services_limit_5_page_2_of_3_route(app, mocker, client):
     expected_status = 200
     expected_length = 5
@@ -192,6 +198,7 @@ def test_get_terms_of_services_limit_5_page_2_of_3_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_services_empty_route(app, mocker, client):
     expected_status = 204
     expected_json = None
@@ -215,6 +222,7 @@ def test_get_terms_of_services_empty_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_service_ok(app, mocker):
     expected_status = 200
     expected_properties = ['created_at', 'id', 'publish_date', 'status',
@@ -233,6 +241,7 @@ def test_get_terms_of_service_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_terms_of_service_not_found(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
@@ -246,6 +255,7 @@ def test_get_terms_of_service_not_found(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_terms_of_services_ok(app, mocker):
     expected_status = 201
     expected_m_length = 8
@@ -293,6 +303,7 @@ def test_post_terms_of_services_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_terms_of_services_required_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -316,6 +327,7 @@ def test_post_terms_of_services_required_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_terms_of_services_min_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -340,6 +352,7 @@ def test_post_terms_of_services_min_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_terms_of_services_max_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -364,6 +377,7 @@ def test_post_terms_of_services_max_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_terms_of_services_type_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -391,6 +405,7 @@ def test_post_terms_of_services_type_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_terms_of_services_route_ok(app, mocker, client):
     expected_status = 201
     expected_m_length = 8
@@ -438,6 +453,7 @@ def test_post_terms_of_services_route_ok(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_terms_of_service_ok(app, mocker):
     expected_status = 200
     expected_m_length = 8
@@ -491,6 +507,7 @@ def test_put_terms_of_service_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_terms_of_service_required_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -521,6 +538,7 @@ def test_put_terms_of_service_required_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_terms_of_service_min_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -552,6 +570,7 @@ def test_put_terms_of_service_min_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_terms_of_service_max_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -583,6 +602,7 @@ def test_put_terms_of_service_max_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_terms_of_service_type_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -617,6 +637,7 @@ def test_put_terms_of_service_type_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_terms_of_service_route_ok(app, mocker, client):
     expected_status = 200
     expected_m_length = 8
@@ -670,6 +691,7 @@ def test_put_terms_of_service_route_ok(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_delete_terms_of_service_ok(app, mocker):
     expected_status = 204
     expected_content = ''
@@ -688,6 +710,7 @@ def test_delete_terms_of_service_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_delete_terms_of_service_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
@@ -704,6 +727,7 @@ def test_delete_terms_of_service_fail(app, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_terms_of_services_route_with_data(client):
     expected_status = 200
     expected_json = {
@@ -761,6 +785,7 @@ def test_get_terms_of_services_route_with_data(client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_terms_of_service_1_route_with_data(client):
     expected_status = 200
     expected_json = {
@@ -783,6 +808,7 @@ def test_get_terms_of_service_1_route_with_data(client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_post_terms_of_services_route_with_data(client, mocker):
     expected_status = 201
     expected_m_length = 8
@@ -823,6 +849,7 @@ def test_post_terms_of_services_route_with_data(client, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_put_terms_of_service_route_with_data(client, mocker):
     expected_status = 200
     expected_m_length = 8
@@ -864,6 +891,7 @@ def test_put_terms_of_service_route_with_data(client, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_delete_terms_of_service_1_route_with_data(client):
     expected_status = 204
     expected_json = None

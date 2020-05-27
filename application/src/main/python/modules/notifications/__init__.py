@@ -17,7 +17,8 @@ def register(app):
     :param app: Flask application
     :type app: Flask
     """
-    admin_routes(app)
+    if app.config.get('APP_TYPE') == 'admin':
+        admin_routes(app)
 
 
 def admin_routes(app):

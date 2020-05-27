@@ -16,7 +16,10 @@ def register(app):
     :param app: Flask application
     :type app: Flask
     """
-    public_routes(app)
+    if app.config.get('APP_TYPE') == 'admin':
+        admin_routes(app)
+    else:
+        public_routes(app)
 
 
 def public_routes(app):
@@ -26,6 +29,20 @@ def public_routes(app):
     :type app: Flask
     """
     public = Blueprint('public_health_check', __name__)
+
+    # GET /health_check
+    public.route("/health_check", methods=['GET'])(get_health_check)
+
+    app.register_blueprint(public)
+
+
+def admin_routes(app):
+    """Register admin health check routes with the application.
+
+    :param app: Flask application
+    :type app: Flask
+    """
+    public = Blueprint('admin_health_check', __name__)
 
     # GET /health_check
     public.route("/health_check", methods=['GET'])(get_health_check)

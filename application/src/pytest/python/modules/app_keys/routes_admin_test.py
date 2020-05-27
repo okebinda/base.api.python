@@ -1,3 +1,4 @@
+from copy import copy
 import re
 
 import pytest
@@ -13,14 +14,14 @@ from modules.app_keys.model import AppKey
 
 @pytest.fixture
 def app(request):
-    Config.TESTING = True
-    app = create_app(Config)
+    config = copy(Config)
+    config.TESTING = True
+    config.APP_TYPE = 'admin' if 'admin_api' in request.keywords else 'public'
+    app = create_app(config)
 
     if 'unit' in request.keywords:
-        # unit tests don't get data fixtures
         yield app
     else:
-        # other tests need the test data set
         fixtures = Fixtures(app)
         fixtures.setup()
         yield app
@@ -31,6 +32,7 @@ def app(request):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_keys(app, mocker):
     expected_status = 200
     expected_length = 2
@@ -64,6 +66,7 @@ def test_get_app_keys(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_keys_limit_10_page_2_of_3(app, mocker):
     expected_status = 200
     expected_length = 10
@@ -101,6 +104,7 @@ def test_get_app_keys_limit_10_page_2_of_3(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_keys_empty(app, mocker):
     expected_status = 204
     expected_content = ''
@@ -124,6 +128,7 @@ def test_get_app_keys_empty(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_keys_route(app, mocker, client):
     expected_status = 200
     expected_length = 10
@@ -155,6 +160,7 @@ def test_get_app_keys_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_keys_limit_5_page_2_of_3_route(app, mocker, client):
     expected_status = 200
     expected_length = 5
@@ -189,6 +195,7 @@ def test_get_app_keys_limit_5_page_2_of_3_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_keys_empty_route(app, mocker, client):
     expected_status = 204
     expected_json = None
@@ -212,6 +219,7 @@ def test_get_app_keys_empty_route(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_key_ok(app, mocker):
     expected_status = 200
     expected_properties = ['application', 'created_at', 'id', 'key', 'status',
@@ -229,6 +237,7 @@ def test_get_app_key_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_get_app_key_not_found(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
@@ -242,6 +251,7 @@ def test_get_app_key_not_found(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_app_key_ok(app, mocker):
     expected_status = 201
     expected_m_length = 7
@@ -286,6 +296,7 @@ def test_post_app_key_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_app_key_unique_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {'key': ['Value must be unique.']}}
@@ -309,6 +320,7 @@ def test_post_app_key_unique_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_app_key_required_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -330,6 +342,7 @@ def test_post_app_key_required_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_app_key_min_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -359,6 +372,7 @@ def test_post_app_key_min_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_app_key_max_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -388,6 +402,7 @@ def test_post_app_key_max_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_app_key_type_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -417,6 +432,7 @@ def test_post_app_key_type_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_post_app_key_route_ok(app, mocker, client):
     expected_status = 201
     expected_m_length = 7
@@ -461,6 +477,7 @@ def test_post_app_key_route_ok(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_app_key_ok(app, mocker):
     expected_status = 200
     expected_m_length = 7
@@ -509,6 +526,7 @@ def test_put_app_key_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_app_key_unique_fail(app, mocker):
     expected_status = 400
     expected_json = {'error': {'key': ['Value must be unique.']}}
@@ -537,6 +555,7 @@ def test_put_app_key_unique_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_app_key_required_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -568,6 +587,7 @@ def test_put_app_key_required_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_app_key_min_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -602,6 +622,7 @@ def test_put_app_key_min_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_app_key_max_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -636,6 +657,7 @@ def test_put_app_key_max_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_app_key_type_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -670,6 +692,7 @@ def test_put_app_key_type_fail(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_put_app_key_route_ok(app, mocker, client):
     expected_status = 200
     expected_m_length = 7
@@ -718,6 +741,7 @@ def test_put_app_key_route_ok(app, mocker, client):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_delete_app_key_ok(app, mocker):
     expected_status = 204
     expected_content = ''
@@ -736,6 +760,7 @@ def test_delete_app_key_ok(app, mocker):
 
 
 @pytest.mark.unit
+@pytest.mark.admin_api
 def test_delete_app_key_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
@@ -752,6 +777,7 @@ def test_delete_app_key_fail(app, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_app_keys_route_with_data(client):
     expected_status = 200
     expected_json = {
@@ -805,6 +831,7 @@ def test_get_app_keys_route_with_data(client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_get_app_key_1_route_with_data(client):
     expected_status = 200
     expected_json = {
@@ -826,6 +853,7 @@ def test_get_app_key_1_route_with_data(client):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_post_app_keys_route_with_data(client, mocker):
     expected_status = 201
     expected_m_length = 7
@@ -858,6 +886,7 @@ def test_post_app_keys_route_with_data(client, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_put_app_keys_route_with_data(client, mocker):
     expected_status = 200
     expected_m_length = 7
@@ -890,6 +919,7 @@ def test_put_app_keys_route_with_data(client, mocker):
 
 
 @pytest.mark.integration
+@pytest.mark.admin_api
 def test_delete_app_key_1_route_with_data(client):
     expected_status = 204
     expected_json = None
