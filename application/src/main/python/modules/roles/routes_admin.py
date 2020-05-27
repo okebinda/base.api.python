@@ -4,6 +4,7 @@ Admin controllers for the Roles module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
+# pylint: disable=no-member
 
 from flask import jsonify, abort, request
 from marshmallow import ValidationError
@@ -65,8 +66,8 @@ def get_roles(page=1, limit=10, role_type=None):
                                      output['total'], request.args,
                                      role_type=role_type))
         return jsonify(output), 200
-    else:
-        return '', 204
+
+    return '', 204
 
 
 def post_roles():

@@ -14,6 +14,7 @@ class Config:
 
     # application properties
     SECRET_KEY = os.environ.get('SECRET_KEY')
+    APP_TYPE = os.environ.get('APP_TYPE')
 
     # database properties
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')

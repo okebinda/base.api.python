@@ -221,8 +221,8 @@ class Administrator(db.Model, BaseModel):
         :rtype: str
         """
 
-        s = Serializer(self.AUTH_SECRET_KEY, expires_in=expiration)
-        return s.dumps({'id': self.id, 'type': 'administrator'})
+        ser = Serializer(self.AUTH_SECRET_KEY, expires_in=expiration)
+        return ser.dumps({'id': self.id, 'type': 'administrator'})
 
     @staticmethod
     def verify_auth_token(token):
@@ -234,9 +234,9 @@ class Administrator(db.Model, BaseModel):
         :rtype: User | None
         """
 
-        s = Serializer(Administrator.AUTH_SECRET_KEY)
+        ser = Serializer(Administrator.AUTH_SECRET_KEY)
         try:
-            data = s.loads(token)
+            data = ser.loads(token)
         except SignatureExpired:
             return None  # valid token, but expired
         except BadSignature:
@@ -244,5 +244,4 @@ class Administrator(db.Model, BaseModel):
         if 'type' in data and data['type'] == 'administrator':
             admin = Administrator.query.get(data['id'])
             return admin
-        else:
-            return None
+        return None

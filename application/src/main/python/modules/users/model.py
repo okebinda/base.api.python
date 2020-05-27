@@ -305,8 +305,8 @@ class User(db.Model, BaseModel):
         :rtype: str
         """
 
-        s = Serializer(self.AUTH_SECRET_KEY, expires_in=expiration)
-        return s.dumps({'id': self.id, 'type': 'user'})
+        ser = Serializer(self.AUTH_SECRET_KEY, expires_in=expiration)
+        return ser.dumps({'id': self.id, 'type': 'user'})
 
     @staticmethod
     def verify_auth_token(token):
@@ -318,9 +318,9 @@ class User(db.Model, BaseModel):
         :rtype: User | None
         """
 
-        s = Serializer(User.AUTH_SECRET_KEY)
+        ser = Serializer(User.AUTH_SECRET_KEY)
         try:
-            data = s.loads(token)
+            data = ser.loads(token)
         except SignatureExpired:
             return None  # valid token, but expired
         except BadSignature:
@@ -328,5 +328,4 @@ class User(db.Model, BaseModel):
         if 'type' in data and data['type'] == 'user':
             user = User.query.get(data['id'])
             return user
-        else:
-            return None
+        return None

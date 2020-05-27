@@ -10,6 +10,7 @@ export FLASK_ENV=development
 export FLASK_DEBUG=1
 
 # application variables
+export APP_TYPE="public" # 'admin', 'public'
 export DATABASE_URL='postgresql://api_admin:passpass@localhost:5432/api_db_dev'
 export SECRET_KEY='SrJMTtdN7vu9NBBLgzNYRczC3UaWbUYuSwzD7CDduRfNjSPPKQZYzpjQFP4fKD3C'
 export AUTH_SECRET_KEY='XHmhmQzSqudjUBpuYT7CXUCnsJC4j274T84E7Hm7MYHccY8Gyfeg4apzPKxbb76N'

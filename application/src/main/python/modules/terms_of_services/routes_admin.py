@@ -4,6 +4,7 @@ Admin controllers for the Terms of Services module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
+# pylint: disable=no-member
 
 from datetime import datetime
 
@@ -58,7 +59,7 @@ def get_terms_of_services(page=1, limit=10):
         # add pagination URIs and return
         output.update(
             Pager.get_uris('admin_terms_of_services.get_terms_of_services',
-                           page,  limit, output['total'], request.args))
+                           page, limit, output['total'], request.args))
         return jsonify(output), 200
 
     return '', 204

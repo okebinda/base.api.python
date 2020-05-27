@@ -7,7 +7,7 @@ which is part of this source code package.
 """
 # pylint: disable=no-member,too-few-public-methods
 
-from app import db
+from init_dep import db
 
 
 class BaseModel:
