@@ -192,7 +192,7 @@ $ ./scripts/build.sh
 | `│ │ ├─python/`      | Python source code |
 | `│ │ └─scripts/`     | Source code for various scripts used during application operation |
 | `│ └─pytest/`        | Unit and integration tests written with pytest |
-| `│   └─python/`      | Automated tests for python source code |
+| `│ · └─python/`      | Automated tests for python source code |
 | `├─build.py`         | The build spec used by pybuilder |
 | `└─Pipfile`          | The Pip dependency manifest file for the project |
 | `data/`              | Contains the data used to populate the application for development and testing, such as data fixtures |
