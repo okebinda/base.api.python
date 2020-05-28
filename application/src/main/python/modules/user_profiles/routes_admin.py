@@ -17,7 +17,7 @@ from lib.routes.query import Query
 from lib.schema.validate import exists
 from modules.users.model import User
 from .model import UserProfile
-from .schema_admin import UserProfileSchema
+from .schema_admin import UserProfileAdminSchema
 
 
 def get_user_profiles(page=1, limit=10):
@@ -52,7 +52,7 @@ def get_user_profiles(page=1, limit=10):
 
         # prep initial output
         output = {
-            'user_profiles': UserProfileSchema(many=True).dump(results),
+            'user_profiles': UserProfileAdminSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()
@@ -80,7 +80,7 @@ def post_user_profiles():
 
     # validate data
     try:
-        data = UserProfileSchema().load(request.json)
+        data = UserProfileAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -101,7 +101,7 @@ def post_user_profiles():
 
     # response
     return jsonify(
-        {'user_profile': UserProfileSchema().dump(user_profile)}), 201
+        {'user_profile': UserProfileAdminSchema().dump(user_profile)}), 201
 
 
 def get_user_profile(user_profile_id=None):
@@ -121,7 +121,7 @@ def get_user_profile(user_profile_id=None):
 
     # response
     return jsonify(
-        {'user_profile': UserProfileSchema().dump(user_profile)}), 200
+        {'user_profile': UserProfileAdminSchema().dump(user_profile)}), 200
 
 
 def put_user_profile(user_profile_id):
@@ -144,7 +144,7 @@ def put_user_profile(user_profile_id):
 
     # validate data
     try:
-        data = UserProfileSchema().load(request.json)
+        data = UserProfileAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -164,7 +164,7 @@ def put_user_profile(user_profile_id):
 
     # response
     return jsonify(
-        {'user_profile': UserProfileSchema().dump(user_profile)}), 200
+        {'user_profile': UserProfileAdminSchema().dump(user_profile)}), 200
 
 
 def delete_user_profile(user_profile_id):

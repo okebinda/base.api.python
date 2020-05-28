@@ -4,7 +4,7 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.app_keys.schema_admin import AppKeySchema
+from modules.app_keys.schema_admin import AppKeyAdminSchema
 from modules.app_keys.model import AppKey
 from fixtures import Fixtures
 
@@ -32,7 +32,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_app_key_schema_dump(app):
     app_key = AppKey.query.get(1)
-    result = AppKeySchema().dump(app_key)
+    result = AppKeyAdminSchema().dump(app_key)
     assert len(result) == 7
     assert result['id'] == 1
     assert result['application'] == 'Application 1'

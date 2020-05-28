@@ -16,7 +16,7 @@ from lib.routes.pager import Pager
 from lib.routes.query import Query
 from lib.schema.validate import unique
 from .model import AppKey
-from .schema_admin import AppKeySchema
+from .schema_admin import AppKeyAdminSchema
 
 
 def get_app_keys(page=1, limit=10):
@@ -49,7 +49,7 @@ def get_app_keys(page=1, limit=10):
 
         # prep initial output
         output = {
-            'app_keys': AppKeySchema(many=True).dump(results),
+            'app_keys': AppKeyAdminSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()
@@ -75,7 +75,7 @@ def post_app_keys():
 
     # validate data
     try:
-        data = AppKeySchema().load(request.json)
+        data = AppKeyAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -92,7 +92,7 @@ def post_app_keys():
     db.session.commit()
 
     # response
-    return jsonify({'app_key': AppKeySchema().dump(app_key)}), 201
+    return jsonify({'app_key': AppKeyAdminSchema().dump(app_key)}), 201
 
 
 def get_app_key(app_key_id=None):
@@ -111,7 +111,7 @@ def get_app_key(app_key_id=None):
         abort(404)
 
     # response
-    return jsonify({'app_key': AppKeySchema().dump(app_key)}), 200
+    return jsonify({'app_key': AppKeyAdminSchema().dump(app_key)}), 200
 
 
 def put_app_key(app_key_id):
@@ -134,7 +134,7 @@ def put_app_key(app_key_id):
 
     # validate data
     try:
-        data = AppKeySchema().load(request.json)
+        data = AppKeyAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -151,7 +151,7 @@ def put_app_key(app_key_id):
     db.session.commit()
 
     # response
-    return jsonify({'app_key': AppKeySchema().dump(app_key)}), 200
+    return jsonify({'app_key': AppKeyAdminSchema().dump(app_key)}), 200
 
 
 def delete_app_key(app_key_id):

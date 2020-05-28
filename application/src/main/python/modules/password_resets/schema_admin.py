@@ -14,11 +14,11 @@ from lib.datetime import Formats
 from .model import PasswordReset
 
 
-class PasswordResetSchema(ma.Schema):
-    """Schema for PasswordReset model"""
+class PasswordResetAdminSchema(ma.Schema):
+    """Admin schema for PasswordReset model"""
 
     class Meta:
-        """PasswordResetSchema meta data"""
+        """PasswordResetAdminSchema meta data"""
 
         model = PasswordReset
 
@@ -29,7 +29,7 @@ class PasswordResetSchema(ma.Schema):
         load_only = ['user_id']
 
     # nested schema
-    user = fields.Nested('UserSchema', only=('id', 'username', 'uri'))
+    user = fields.Nested('UserAdminSchema', only=('id', 'username', 'uri'))
 
     # field validation
     id = fields.Integer()

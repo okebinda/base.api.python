@@ -13,11 +13,11 @@ from lib.datetime import Formats
 from .model import UserProfile
 
 
-class UserProfileSchema(ma.Schema):
-    """Schema for UserProfile model"""
+class UserProfileAdminSchema(ma.Schema):
+    """Admin schema for UserProfile model"""
 
     class Meta:
-        """UserProfileSchema meta data"""
+        """UserProfileAdminSchema meta data"""
 
         model = UserProfile
 

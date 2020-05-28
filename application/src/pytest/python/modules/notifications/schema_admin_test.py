@@ -4,7 +4,7 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.notifications.schema_admin import NotificationSchema
+from modules.notifications.schema_admin import NotificationAdminSchema
 from modules.notifications.model import Notification
 from fixtures import Fixtures
 
@@ -32,7 +32,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_login_schema_dump(app):
     notification = Notification.query.get(1)
-    result = NotificationSchema().dump(notification)
+    result = NotificationAdminSchema().dump(notification)
     assert len(result) == 13
     assert result['id'] == 1
     assert result['user']['id'] == 1

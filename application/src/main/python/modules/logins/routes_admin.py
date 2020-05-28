@@ -10,7 +10,7 @@ from flask import jsonify, request
 from lib.routes.pager import Pager
 from lib.routes.query import Query
 from .model import Login
-from .schema_admin import LoginSchema
+from .schema_admin import LoginAdminSchema
 
 
 def get_logins(page=1, limit=25):
@@ -57,7 +57,7 @@ def get_logins(page=1, limit=25):
 
         # prep initial output
         output = {
-            'logins': LoginSchema(many=True).dump(results),
+            'logins': LoginAdminSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()

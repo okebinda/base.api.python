@@ -13,11 +13,11 @@ from lib.datetime import Formats
 from .model import Role
 
 
-class RoleSchema(ma.Schema):
-    """Schema for Role model"""
+class RoleAdminSchema(ma.Schema):
+    """Admin schema for Role model"""
 
     class Meta:
-        """RoleSchema meta data"""
+        """RoleAdminSchema meta data"""
 
         model = Role
 

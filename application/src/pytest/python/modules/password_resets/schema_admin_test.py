@@ -4,7 +4,7 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.password_resets.schema_admin import PasswordResetSchema
+from modules.password_resets.schema_admin import PasswordResetAdminSchema
 from modules.password_resets.model import PasswordReset
 from fixtures import Fixtures
 
@@ -32,7 +32,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_login_schema_dump(app):
     pr = PasswordReset.query.get(1)
-    result = PasswordResetSchema().dump(pr)
+    result = PasswordResetAdminSchema().dump(pr)
     assert len(result) == 10
     assert result['id'] == 1
     assert result['user']['id'] == 1

@@ -13,11 +13,11 @@ from lib.datetime import Formats
 from .model import AppKey
 
 
-class AppKeySchema(ma.Schema):
-    """Schema for AppKey model"""
+class AppKeyAdminSchema(ma.Schema):
+    """Admin schema for AppKey model"""
 
     class Meta:
-        """AppKeySchema meta data"""
+        """AppKeyAdminSchema meta data"""
 
         model = AppKey
 

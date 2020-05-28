@@ -4,7 +4,7 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.roles.schema_admin import RoleSchema
+from modules.roles.schema_admin import RoleAdminSchema
 from modules.roles.model import Role
 from fixtures import Fixtures
 
@@ -32,7 +32,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_role_schema_dump(app):
     role = Role.query.get(1)
-    result = RoleSchema().dump(role)
+    result = RoleAdminSchema().dump(role)
     assert len(result) == 14
     assert result['id'] == 1
     assert result['name'] == 'USER'

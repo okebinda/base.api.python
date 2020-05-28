@@ -18,7 +18,7 @@ from lib.routes.query import Query
 from lib.schema.validate import unique, unique_email, exists
 from modules.roles.model import Role
 from .model import Administrator
-from .schema_admin import AdministratorSchema
+from .schema_admin import AdministratorAdminSchema
 
 
 def get_administrators(page=1, limit=10):
@@ -57,7 +57,8 @@ def get_administrators(page=1, limit=10):
 
         # prep initial output
         output = {
-            'administrators': AdministratorSchema(many=True).dump(results),
+            'administrators': AdministratorAdminSchema(
+                many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()
@@ -90,7 +91,7 @@ def post_administrator():
 
     # validate data
     try:
-        data = AdministratorSchema().load(request.json)
+        data = AdministratorAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -116,7 +117,7 @@ def post_administrator():
 
     # response
     return jsonify(
-        {'administrator': AdministratorSchema().dump(admin)}), 201
+        {'administrator': AdministratorAdminSchema().dump(admin)}), 201
 
 
 def get_administrator(administrator_id=None):
@@ -135,7 +136,7 @@ def get_administrator(administrator_id=None):
 
     # response
     return jsonify(
-        {'administrator': AdministratorSchema().dump(administrator)}), 200
+        {'administrator': AdministratorAdminSchema().dump(administrator)}), 200
 
 
 def put_administrator(administrator_id):
@@ -165,9 +166,9 @@ def put_administrator(administrator_id):
     # validate data
     try:
         if request.json.get('password', None):
-            data = AdministratorSchema().load(request.json)
+            data = AdministratorAdminSchema().load(request.json)
         else:
-            data = AdministratorSchema(
+            data = AdministratorAdminSchema(
                 exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
@@ -198,7 +199,7 @@ def put_administrator(administrator_id):
 
     # response
     return jsonify(
-        {'administrator': AdministratorSchema().dump(administrator)}), 200
+        {'administrator': AdministratorAdminSchema().dump(administrator)}), 200
 
 
 def delete_administrator(administrator_id):

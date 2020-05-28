@@ -4,7 +4,7 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.administrators.schema_admin import AdministratorSchema
+from modules.administrators.schema_admin import AdministratorAdminSchema
 from modules.administrators.model import Administrator
 from fixtures import Fixtures
 
@@ -32,7 +32,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_administrator_schema_dump(app):
     administrator = Administrator.query.get(1)
-    result = AdministratorSchema().dump(administrator)
+    result = AdministratorAdminSchema().dump(administrator)
     assert len(result) == 13
     assert result['id'] == 1
     assert result['username'] == 'admin1'

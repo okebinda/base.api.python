@@ -10,7 +10,7 @@ from flask import jsonify, request
 from lib.routes.pager import Pager
 from lib.routes.query import Query
 from .model import Notification
-from .schema_admin import NotificationSchema
+from .schema_admin import NotificationAdminSchema
 
 
 def get_notifications(page=1, limit=10):
@@ -51,7 +51,7 @@ def get_notifications(page=1, limit=10):
 
         # prep initial output
         output = {
-            'notifications': NotificationSchema(many=True).dump(results),
+            'notifications': NotificationAdminSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()

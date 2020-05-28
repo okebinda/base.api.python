@@ -13,11 +13,11 @@ from lib.datetime import Formats
 from .model import User, UserTermsOfService
 
 
-class UserTermsOfServiceSchema(ma.Schema):
-    """Schema for UserTermsOfService model"""
+class UserTermsOfServiceAdminSchema(ma.Schema):
+    """Admin schema for UserTermsOfService model"""
 
     class Meta:
-        """UserTermsOfServiceSchema meta data"""
+        """UserTermsOfServiceAdminSchema meta data"""
 
         model = UserTermsOfService
 
@@ -29,11 +29,11 @@ class UserTermsOfServiceSchema(ma.Schema):
 
     # nested schema
     user = fields.Nested(
-        'UserSchema',
+        'UserAdminSchema',
         only=('id', 'username', 'uri'),
         many=False)
     terms_of_service = fields.Nested(
-        'TermsOfServiceSchema',
+        'TermsOfServiceAdminSchema',
         only=('id', 'version'),
         many=False)
 
@@ -47,8 +47,8 @@ class UserTermsOfServiceSchema(ma.Schema):
     updated_at = fields.DateTime(format=Formats.ISO_8601_DATETIME)
 
 
-class UserSchema(ma.Schema):
-    """Schema for User model"""
+class UserAdminSchema(ma.Schema):
+    """Admin schema for User model"""
 
     # Rules:
     #  1) 3 out of 4:
@@ -66,7 +66,7 @@ class UserSchema(ma.Schema):
     ])
 
     class Meta:
-        """UserSchema meta data"""
+        """UserAdminSchema meta data"""
 
         model = User
 
@@ -83,17 +83,17 @@ class UserSchema(ma.Schema):
 
     # nested schema
     roles = fields.Nested(
-        'RoleSchema',
+        'RoleAdminSchema',
         only=('id', 'name'),
         many=True,
         dump_only=True)
     terms_of_services = fields.Nested(
-        UserTermsOfServiceSchema,
+        'UserTermsOfServiceAdminSchema',
         only=('accept_date', 'ip_address', 'terms_of_service'),
         many=True,
         dump_only=True)
     profile = fields.Nested(
-        'UserProfileSchema',
+        'UserProfileAdminSchema',
         only=('first_name', 'last_name', 'joined_at'))
 
     # field validation

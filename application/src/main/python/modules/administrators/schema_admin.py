@@ -13,8 +13,8 @@ from lib.datetime import Formats
 from .model import Administrator
 
 
-class AdministratorSchema(ma.Schema):
-    """Schema for Administrator model"""
+class AdministratorAdminSchema(ma.Schema):
+    """Admin schema for Administrator model"""
 
     # Rules:
     #  1) 3 out of 4:
@@ -32,7 +32,7 @@ class AdministratorSchema(ma.Schema):
     ])
 
     class Meta:
-        """AdministratorSchema meta data"""
+        """AdministratorAdminSchema meta data"""
 
         model = Administrator
 
@@ -48,7 +48,7 @@ class AdministratorSchema(ma.Schema):
         'admin_administrators.get_administrator', administrator_id='<id>')
 
     # nested schema
-    roles = fields.Nested('RoleSchema', only=('id', 'name'), many=True,
+    roles = fields.Nested('RoleAdminSchema', only=('id', 'name'), many=True,
                           dump_only=True)
 
     # field validation

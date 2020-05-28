@@ -10,7 +10,7 @@ from flask import jsonify, request
 from lib.routes.pager import Pager
 from lib.routes.query import Query
 from .model import PasswordReset
-from .schema_admin import PasswordResetSchema
+from .schema_admin import PasswordResetAdminSchema
 
 
 def get_password_resets(page=1, limit=10):
@@ -48,7 +48,8 @@ def get_password_resets(page=1, limit=10):
 
         # prep initial output
         output = {
-            'password_resets': PasswordResetSchema(many=True).dump(results),
+            'password_resets': PasswordResetAdminSchema(
+                many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()

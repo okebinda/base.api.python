@@ -19,7 +19,7 @@ from lib.schema.validate import unique, unique_email, exists
 from modules.roles.model import Role
 from modules.user_profiles.model import UserProfile
 from .model import User
-from .schema_admin import UserSchema
+from .schema_admin import UserAdminSchema
 
 
 def get_users(page=1, limit=10):
@@ -57,7 +57,7 @@ def get_users(page=1, limit=10):
 
         # prep initial output
         output = {
-            'users': UserSchema(many=True).dump(results),
+            'users': UserAdminSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()
@@ -90,7 +90,7 @@ def post_user():
 
     # validate data
     try:
-        data = UserSchema().load(request.json)
+        data = UserAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -124,7 +124,7 @@ def post_user():
     db.session.commit()
 
     # response
-    return jsonify({'user': UserSchema().dump(user)}), 201
+    return jsonify({'user': UserAdminSchema().dump(user)}), 201
 
 
 def get_user(user_id=None, username=None):
@@ -150,7 +150,7 @@ def get_user(user_id=None, username=None):
         abort(404)
 
     # response
-    return jsonify({'user': UserSchema().dump(user)}), 200
+    return jsonify({'user': UserAdminSchema().dump(user)}), 200
 
 
 def put_user(user_id):
@@ -180,9 +180,9 @@ def put_user(user_id):
     # validate data
     try:
         if request.json.get('password', None):
-            data = UserSchema().load(request.json)
+            data = UserAdminSchema().load(request.json)
         else:
-            data = UserSchema(exclude=('password',)).load(request.json)
+            data = UserAdminSchema(exclude=('password',)).load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -230,7 +230,7 @@ def put_user(user_id):
     db.session.commit()
 
     # response
-    return jsonify({'user': UserSchema().dump(user)}), 200
+    return jsonify({'user': UserAdminSchema().dump(user)}), 200
 
 
 def delete_user(user_id):

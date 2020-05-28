@@ -1,6 +1,6 @@
 """
-Schemas to serialize/deserialize/validate models for the Terms of Service
-module.
+Schemas to serialize/deserialize/validate models in admin controllers for for
+the Terms of Service module.
 
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
@@ -14,11 +14,11 @@ from lib.datetime import Formats
 from .model import TermsOfService
 
 
-class TermsOfServiceSchema(ma.Schema):
-    """Schema for TermsOfService model"""
+class TermsOfServiceAdminSchema(ma.Schema):
+    """Admin schema for TermsOfService model"""
 
     class Meta:
-        """TermsOfServiceSchema meta data"""
+        """TermsOfServiceAdminSchema meta data"""
 
         model = TermsOfService
 

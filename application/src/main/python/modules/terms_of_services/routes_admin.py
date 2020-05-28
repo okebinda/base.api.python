@@ -15,7 +15,7 @@ from init_dep import db
 from lib.routes.pager import Pager
 from lib.routes.query import Query
 from .model import TermsOfService
-from .schema_admin import TermsOfServiceSchema
+from .schema_admin import TermsOfServiceAdminSchema
 
 
 def get_terms_of_services(page=1, limit=10):
@@ -50,7 +50,8 @@ def get_terms_of_services(page=1, limit=10):
 
         # prep initial output
         output = {
-            'terms_of_services': TermsOfServiceSchema(many=True).dump(results),
+            'terms_of_services': TermsOfServiceAdminSchema(
+                many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()
@@ -74,7 +75,7 @@ def post_terms_of_services():
 
     # validate data
     try:
-        data = TermsOfServiceSchema().load(request.json)
+        data = TermsOfServiceAdminSchema().load(request.json)
     except ValidationError as err:
         return jsonify({"error": err.messages}), 400
 
@@ -89,7 +90,8 @@ def post_terms_of_services():
     db.session.commit()
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(tos)}), 201
+    return jsonify(
+        {'terms_of_service': TermsOfServiceAdminSchema().dump(tos)}), 201
 
 
 def get_terms_of_service(terms_of_service_id=None):
@@ -108,7 +110,8 @@ def get_terms_of_service(terms_of_service_id=None):
         abort(404)
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(tos)}), 200
+    return jsonify(
+        {'terms_of_service': TermsOfServiceAdminSchema().dump(tos)}), 200
 
 
 def put_terms_of_service(terms_of_service_id):
@@ -127,7 +130,7 @@ def put_terms_of_service(terms_of_service_id):
 
     # validate data
     try:
-        data = TermsOfServiceSchema().load(request.json)
+        data = TermsOfServiceAdminSchema().load(request.json)
     except ValidationError as err:
         return jsonify({"error": err.messages}), 400
 
@@ -141,7 +144,8 @@ def put_terms_of_service(terms_of_service_id):
     db.session.commit()
 
     # response
-    return jsonify({'terms_of_service': TermsOfServiceSchema().dump(tos)}), 200
+    return jsonify(
+        {'terms_of_service': TermsOfServiceAdminSchema().dump(tos)}), 200
 
 
 def delete_terms_of_service(terms_of_service_id):

@@ -15,7 +15,7 @@ from lib.routes.pager import Pager
 from lib.routes.query import Query
 from lib.schema.validate import unique
 from .model import Role
-from .schema_admin import RoleSchema
+from .schema_admin import RoleAdminSchema
 
 
 def get_roles(page=1, limit=10, role_type=None):
@@ -55,7 +55,7 @@ def get_roles(page=1, limit=10, role_type=None):
 
         # prep initial output
         output = {
-            'roles': RoleSchema(many=True).dump(results),
+            'roles': RoleAdminSchema(many=True).dump(results),
             'page': page,
             'limit': limit,
             'total': query.count()
@@ -84,7 +84,7 @@ def post_roles():
 
     # validate data
     try:
-        data = RoleSchema().load(request.json)
+        data = RoleAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -109,7 +109,7 @@ def post_roles():
     db.session.commit()
 
     # response
-    return jsonify({'role': RoleSchema().dump(role)}), 201
+    return jsonify({'role': RoleAdminSchema().dump(role)}), 201
 
 
 def get_role(role_id=None, name=None):
@@ -135,7 +135,7 @@ def get_role(role_id=None, name=None):
         abort(404)
 
     # response
-    return jsonify({'role': RoleSchema().dump(role)}), 200
+    return jsonify({'role': RoleAdminSchema().dump(role)}), 200
 
 
 def put_role(role_id):
@@ -160,7 +160,7 @@ def put_role(role_id):
 
     # validate data
     try:
-        data = RoleSchema().load(request.json)
+        data = RoleAdminSchema().load(request.json)
     except ValidationError as err:
         errors = dict(list(errors.items()) + list(err.messages.items()))
 
@@ -183,7 +183,7 @@ def put_role(role_id):
     db.session.commit()
 
     # response
-    return jsonify({'role': RoleSchema().dump(role)}), 200
+    return jsonify({'role': RoleAdminSchema().dump(role)}), 200
 
 
 def delete_role(role_id):

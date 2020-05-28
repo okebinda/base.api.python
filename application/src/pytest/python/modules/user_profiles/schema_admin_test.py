@@ -4,7 +4,7 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.user_profiles.schema_admin import UserProfileSchema
+from modules.user_profiles.schema_admin import UserProfileAdminSchema
 from modules.user_profiles.model import UserProfile
 from fixtures import Fixtures
 
@@ -32,7 +32,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_user_schema_dump(app):
     user_profile = UserProfile.query.get(2)
-    result = UserProfileSchema().dump(user_profile)
+    result = UserProfileAdminSchema().dump(user_profile)
     assert len(result) == 9
     assert result['id'] == 2
     assert result['user_id'] == 2

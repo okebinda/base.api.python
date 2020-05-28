@@ -4,7 +4,8 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.users.schema_admin import UserSchema, UserTermsOfServiceSchema
+from modules.users.schema_admin import UserAdminSchema, \
+    UserTermsOfServiceAdminSchema
 from modules.users.model import User, UserTermsOfService
 from fixtures import Fixtures
 
@@ -32,7 +33,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_user_schema_dump(app):
     user = User.query.get(2)
-    result = UserSchema().dump(user)
+    result = UserAdminSchema().dump(user)
     assert len(result) == 13
     assert result['id'] == 2
     assert result['username'] == 'user2'
@@ -64,7 +65,7 @@ def test_user_schema_dump(app):
 @pytest.mark.admin_api
 def test_user_schema_dump(app):
     utos = UserTermsOfService.query.get((1, 1))
-    result = UserTermsOfServiceSchema().dump(utos)
+    result = UserTermsOfServiceAdminSchema().dump(utos)
     assert len(result) == 6
     assert result['accept_date'] == '2018-12-03T08:00:00+0000'
     assert result['ip_address'] == '1.1.1.1'

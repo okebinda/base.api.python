@@ -13,11 +13,11 @@ from lib.datetime import Formats
 from .model import Notification
 
 
-class NotificationSchema(ma.Schema):
-    """Schema for Notification model"""
+class NotificationAdminSchema(ma.Schema):
+    """Admin schema for Notification model"""
 
     class Meta:
-        """NotificationSchema meta data"""
+        """NotificationAdminSchema meta data"""
 
         model = Notification
 
@@ -29,7 +29,7 @@ class NotificationSchema(ma.Schema):
         load_only = ['user_id']
 
     # nested schema
-    user = fields.Nested('UserSchema', only=('id', 'username', 'uri'))
+    user = fields.Nested('UserAdminSchema', only=('id', 'username', 'uri'))
 
     # field validation
     id = fields.Integer()

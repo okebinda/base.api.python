@@ -4,7 +4,7 @@ import pytest
 
 from app import create_app
 from config import Config
-from modules.logins.schema_admin import LoginSchema
+from modules.logins.schema_admin import LoginAdminSchema
 from modules.logins.model import Login
 from fixtures import Fixtures
 
@@ -32,7 +32,7 @@ def app(request):
 @pytest.mark.admin_api
 def test_login_schema_dump(app):
     login = Login.query.get(1)
-    result = LoginSchema().dump(login)
+    result = LoginAdminSchema().dump(login)
     assert len(result) == 9
     assert result['id'] == 1
     assert result['user_id'] == 1
