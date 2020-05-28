@@ -37,6 +37,15 @@ def test_error_401(app):
 
 
 @pytest.mark.unit
+def test_error_401_custom_description(app):
+    with app.app_context():
+        result = error_401(Unauthorized("You shall not pass."))
+        assert 'error' in result.json
+        assert result.json['error'] == "You shall not pass."
+        assert result == 401
+
+
+@pytest.mark.unit
 def test_error_403(app):
     with app.app_context():
         result = error_403(Forbidden())

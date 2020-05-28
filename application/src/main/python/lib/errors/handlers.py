@@ -28,7 +28,13 @@ def error_401(error):
     :returns: JSON string of error response; status code
     :rtype: (str, int)
     """
-    return make_response(jsonify({'error': 'Unauthorized'}), 401)
+
+    # replace default message with a simpler one
+    # don't like testing the content, but didn't see a better way...
+    description = 'Unauthorized' if error.description.startswith(
+        "The server could not verify that you are authorized"
+    ) else error.description
+    return make_response(jsonify({'error': description}), 401)
 
 
 def error_403(error):
