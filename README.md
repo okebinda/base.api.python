@@ -183,23 +183,23 @@ $ ./scripts/build.sh
 
 ## Repository Directory Structure
 
-| Directory/File           | Purpose       |
-| ------------------------ | ------------- |
-| ```application/```       | Contains all files required for the application to run |
-| ```├─ docs/```           | Location for automatically generated source code documentation (not currently enabled) |
-| ```├─ src/```            | Source code |
-| ```│ ├─ main/```         | Application source code |
-| ```│ │ ├─ python/```     | Python source code |
-| ```│ │ └─ scripts/```    | Source code for various scripts used during application operation |
-| ```│ └─ pytest/```       | Unit and integration tests written with pytest |
-| ```│   └─ python/```     | Automated tests for python source code |
-| ```├─ build.py```        | The build spec used by pybuilder |
-| ```└─ Pipfile```         | The Pip dependency manifest file for the project |
-| ```data/```              | Contains the data used to populate the application for development and testing, such as data fixtures |
-| ```documentation/```     | Documentation files |
-| ```provision/```         | Provision scripts for local virtual machine and production servers |
-| ```scripts/```           | Contains various scripts, such as the script to build the application for the first time (installs dependencies) |
-| ```tests/```             | Unit and integration tests |
-| ```LICENSE```            | The project's licensing terms |
-| ```README.md```          | This file |
-| ```Vagrantfile```        | Configuration file for Vagrant when provisioning local development virtual machine |
+| Directory/File       | Purpose       |
+| -------------------- | ------------- |
+| `application/`       | Contains all files required for the application to run |
+| `├─docs/`            | Location for automatically generated source code documentation (not currently enabled) |
+| `├─src/`             | Source code |
+| `│ ├─main/`          | Application source code |
+| `│ │ ├─python/`      | Python source code |
+| `│ │ └─scripts/`     | Source code for various scripts used during application operation |
+| `│ └─pytest/`        | Unit and integration tests written with pytest |
+| `│   └─python/`      | Automated tests for python source code |
+| `├─build.py`         | The build spec used by pybuilder |
+| `└─Pipfile`          | The Pip dependency manifest file for the project |
+| `data/`              | Contains the data used to populate the application for development and testing, such as data fixtures |
+| `documentation/`     | Documentation files |
+| `provision/`         | Provision scripts for local virtual machine and production servers |
+| `scripts/`           | Contains various scripts, such as the script to build the application for the first time (installs dependencies) |
+| `tests/`             | Unit and integration tests |
+| `LICENSE`            | The project's licensing terms |
+| `README.md`          | This file |
+| `Vagrantfile`        | Configuration file for Vagrant when provisioning local development virtual machine |
