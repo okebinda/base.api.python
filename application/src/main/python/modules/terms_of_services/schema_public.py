@@ -15,7 +15,7 @@ from .model import TermsOfService
 
 
 class TermsOfServiceSchema(ma.Schema):
-    """Schema for TermsOfService model"""
+    """Public schema for TermsOfService model"""
 
     class Meta:
         """TermsOfServiceSchema meta data"""

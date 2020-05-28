@@ -8,6 +8,7 @@ which is part of this source code package.
 
 from flask import Blueprint
 
+from .routes_public import get_terms_of_service as public_get_terms_of_service
 from .routes_admin import get_terms_of_services, post_terms_of_services,\
     get_terms_of_service, put_terms_of_service, delete_terms_of_service
 
@@ -20,6 +21,22 @@ def register(app):
     """
     if app.config.get('APP_TYPE') == 'admin':
         admin_routes(app)
+    else:
+        public_routes(app)
+
+
+def public_routes(app):
+    """Register public terms of services routes with the application.
+
+    :param app: Flask application
+    :type app: Flask
+    """
+    public = Blueprint('public_terms_of_services', __name__)
+
+    # GET /terms_of_service/current
+    public.route("/terms_of_service/current", methods=['GET'])(public_get_terms_of_service)  # noqa
+
+    app.register_blueprint(public)
 
 
 def admin_routes(app):
