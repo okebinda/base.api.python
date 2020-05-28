@@ -40,4 +40,5 @@ def set_properties(project):
     project.build_depends_on("py_yaml_fixtures")
 
     project.set_property("dir_source_pytest_python", r"src/pytest/python")
-    project.set_property("pytest_extra_args", ["-m unit"])
+    project.set_property('integrationtest_inherit_environment', True)
+    # project.set_property("pytest_extra_args", ["-m unit"])

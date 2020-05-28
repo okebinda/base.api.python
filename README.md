@@ -2,7 +2,7 @@
 
 This repository holds the source code for a simple RESTful API written in Python using Flask that can be used as the starter package for a new project. It also contains a virtual machine for local development.
 
-Contains the source code for two API domains: base.api.python.vm and base.api.admin.python.vm. The first is the public API for user-facing products, the second is the private API for administrator use to manage data. The two APIs have different routes and schema, while sharing the data model, library and dependencies. They are packaged independently for deployment.
+Contains the source code for two API domains: base.api.python.vm and base.api.admin.python.vm. The first is the public API for user-facing products, the second is the private API for administrator use to manage data. The two APIs have different routes and schema, while sharing the data model, library and dependencies. The build process creates a single artifact that can serve both APIs, determined by configuration settings.
 
 Local development is run on a local virtual machine managed by Vagrant. To install the virtual machine, make sure you have installed Vagrant (https://www.vagrantup.com/) and a virtual machine provider, such as VirtualBox (https://www.virtualbox.org/).
 
@@ -16,7 +16,7 @@ Sets up the local development environment.
 > vagrant up
 > vagrant ssh
 $ cd /vagrant
-$ ./scripts/build.sh
+$ ./scripts/build.sh -d
 ```
 
 Also, to access the API from your host machine you should update your local DNS to point the two development API domains to the virtual machine's IP address. For example, on a Mac/Linux box you can update your `/etc/hosts` file with the following line:
@@ -62,7 +62,7 @@ Most of the shell commands manage their own Python virtual environment, but if y
 
 ```ssh
 $ cd /vagrant/application
-$ source env/bin/activate
+$ pipenv shell
 ```
 
 ### Rebuild the Project
@@ -71,7 +71,7 @@ To reinstall any dependencies (if there are updates in the Pipfile, for example)
 
 ```ssh
 $ cd /vagrant
-$ ./scripts/rebuild.sh
+$ ./scripts/build.sh -r
 ```
 
 ### Rebuild the Development Database
@@ -80,7 +80,7 @@ The development database is built and data fixtures are loaded as part of the in
 
 ```ssh
 $ cd /vagrant
-$ ./scripts/load_fixtures.sh
+$ ./scripts/load_data.sh
 ```
 
 ## Public API: base.api.python.vm
@@ -90,22 +90,11 @@ $ ./scripts/load_fixtures.sh
 Runs the local Flask development server, displays logs in standard output.
 
 ```ssh
-$ cd /vagrant/application
-$ ./run_public.sh
+$ cd /vagrant
+$ ./scripts/run_public.sh
 ```
 
 URL: http://base.api.python.vm/v/dev/
-
-### Run Tests
-
-All tests must pass before committing any code into the repository.
-
-The optional [MODULE] argument can be used to limit the scope of testing to a single set of tests.
-
-```ssh
-$ cd /vagrant
-$ ./scripts/test.sh public [MODULE]
-```
 
 ## Admin API: base.api.admin.python.vm
 
@@ -114,33 +103,46 @@ $ ./scripts/test.sh public [MODULE]
 Runs the local Flask development server, displays logs in standard output.
 
 ```ssh
-$ cd /vagrant/application
-$ ./run_admin.sh
+$ cd /vagrant
+$ ./scripts/run_admin.sh
 ```
 
 URL: http://base.api.admin.python.vm/v/dev/
 
-### Run Tests
+## Testing
 
 All tests must pass before committing any code into the repository.
 
-The optional [MODULE] argument can be used to limit the scope of testing to a single set of tests.
+For both unit and integration tests the following options are available: `-c` to display the coverage report and `-h` to create an HTML coverage report for detailed gap analysis.
+
+### Unit Tests
 
 ```ssh
 $ cd /vagrant
-$ ./scripts/test.sh admin [MODULE]
+$ ./tests/unit/run.sh [OPTIONS]
+```
+
+### Integration Tests
+
+```ssh
+$ cd /vagrant
+$ ./tests/integration/run.sh [OPTIONS]
 ```
 
 ## Linters
 
+Before committing code into the repository static analysis should be performed and any issues resolved.
+
+```ssh
+$ cd /vagrant
+$ ./scripts/lint.sh
+```
+
+The following linters are are run as part of the `lint.sh` command:
+
 #### Bandit
 
 Bandit is a security linter to find common security issues in Python code.
-
-```ssh
-$ cd /vagrant/application
-$ bandit -r src/app/
-```
 
 Ref: https://bandit.readthedocs.io/en/latest/
 
@@ -148,21 +150,12 @@ Ref: https://bandit.readthedocs.io/en/latest/
 
 Pyflakes is a simple linter that checks for errors.
 
-```ssh
-$ cd /vagrant/application
-$ pyflakes src/app/
-```
-
 Ref: https://github.com/PyCQA/pyflakes
 
 #### Pycodestyle
 
 Pycodestyle is a tool to check Python code against the style conventions of PEP 8.
 
-```ssh
-$ cd /vagrant/application
-$ pycodestyle src/app/
-```
 
 Ref: https://pycodestyle.readthedocs.io/en/latest/
 
@@ -170,57 +163,32 @@ Ref: https://pycodestyle.readthedocs.io/en/latest/
 
 Pylint is a robust linter that checks for errors, coding standards, and code smell.
 
-```ssh
-$ cd /vagrant/application
-$ pylint src/app/
-```
 
 Ref: https://pylint.readthedocs.io/en/latest/
 
 ## Deployment
 
-Deployment is broken up into two steps: `make` and `deploy`.
-
-`make` creates a deployment package with all the required code, installs production dependencies, and optionally runs tests and uploads the package to a storage bucket.
-
-`deploy` logs into the production server, downloads the package from the storage bucket, installs it in a new directory and promotes the new packages using a blue-green deployment.
-
-Details can be found at the top of each script in the `/deploy` directory.
-
-Options for [API NAME] are: `public` or `admin`.
-
-The [TAG] argument for production releases should follow the pattern: major.minor.build. For the build I usually use the git commit (short) hash.
-
-```ssh
-$ cd /vagrant
-$ ./deploy/make.sh [OPTIONS] [API NAME] [TAG]
-$ ./deploy/deploy.sh [OPTIONS] [API NAME] [VERSION] [FILENAME]
-```
-
-#### Example:
-
-```ssh
-$ cd /vagrant
-$ ./deploy/make.sh -tu public 1.1.3.165
-$ ./deploy/deploy.sh -p public 1.1 base.api.python.vm-1.1.3.165.zip
-```
+[TBD]
 
 ## Repository Directory Structure
 
 | Directory/File     | Purpose       |
 | ------------------ | ------------- |
-| /application       | Contains all files required for the application to run |
-| ├─/env             | Contains application dependencies installed via `virtualenv`, `pip` or `pipenv` |
-| ├─/etc             | Sample config files |
-| ├─/src             | Application source code |
-| └─/web             | Any publicly available web resources, such as HTML, CSS, images, etc. |
-| /data              | Contains the data used to populate the application for development and testing, such as data fixtures |
-| /deploy            | Deployment scripts |
-| └─/packages        | Contains packages created by the `make` script - can be temporary or committed |
-| /documentation     | Documentation files |
-| /provision         | Provision scripts for local virtual machine and production servers |
-| /scripts           | Contains various scripts, such as the script to build the application for the first time (installs dependencies) |
-| /tests             | Unit and functional tests |
+| application/       | Contains all files required for the application to run |
+| ├─ docs/           | Location for automatically generated source code documentation (not currently enabled) |
+| ├─ src/            | Source code |
+| │ ├─ main/         | Application source code |
+| │ │ ├─ python/     | Python source code |
+| │ │ └─ scripts/    | Source code for various scripts used during application operation |
+| │ └─ pytest/       | Unit and integration tests written with pytest |
+| │   └─ python/     | Automated tests for python source code |
+| ├─ build.py        | The build spec used by pybuilder |
+| └─ Pipfile         | The Pip dependency manifest file for the project |
+| data/              | Contains the data used to populate the application for development and testing, such as data fixtures |
+| documentation/     | Documentation files |
+| provision/         | Provision scripts for local virtual machine and production servers |
+| scripts/           | Contains various scripts, such as the script to build the application for the first time (installs dependencies) |
+| tests/             | Unit and integration tests |
+| LICENSE            | The project's licensing terms |
 | README.md          | This file |
 | Vagrantfile        | Configuration file for Vagrant when provisioning local development virtual machine |
-
