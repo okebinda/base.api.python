@@ -190,7 +190,7 @@ $ ./scripts/build.sh
 | ```├─ src/```            | Source code |
 | ```│ ├─ main/```         | Application source code |
 | ```│ │ ├─ python/```     | Python source code |
-| ```│ │ └─scripts/```     | Source code for various scripts used during application operation |
+| ```│ │ └─ scripts/```    | Source code for various scripts used during application operation |
 | ```│ └─ pytest/```       | Unit and integration tests written with pytest |
 | ```│   └─ python/```     | Automated tests for python source code |
 | ```├─ build.py```        | The build spec used by pybuilder |
