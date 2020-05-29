@@ -3,6 +3,7 @@ import re
 
 import pytest
 from werkzeug.exceptions import NotFound
+from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
 from app import create_app
@@ -10,6 +11,7 @@ from config import Config
 from modules.roles.routes_admin import get_roles, post_roles, get_role, \
     put_role, delete_role
 from modules.roles.model import Role
+from modules.app_keys.model import AppKey
 
 
 @pytest.fixture
@@ -178,6 +180,12 @@ def test_get_roles_route(app, mocker, client):
     expected_next_uri = 'http://localhost/roles/2/10'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .order_by.return_value \
         .limit.return_value \
@@ -187,7 +195,7 @@ def test_get_roles_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/roles")
+    response = client.get("/roles?app_key=123")
 
     assert response.status_code == expected_status
     assert len(response.json['roles']) == expected_length
@@ -209,6 +217,12 @@ def test_get_roles_limit_5_page_2_of_3_route(app, mocker, client):
     expected_previous_uri = 'http://localhost/roles/1/5'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .order_by.return_value \
         .limit.return_value \
@@ -218,8 +232,8 @@ def test_get_roles_limit_5_page_2_of_3_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/roles/{}/{}".format(expected_page,
-                                                   expected_limit))
+    response = client.get("/roles/{}/{}?app_key=123".format(expected_page,
+                                                            expected_limit))
 
     assert response.status_code == expected_status
     assert len(response.json['roles']) == expected_length
@@ -241,6 +255,12 @@ def test_get_roles_user_route(app, mocker, client):
     expected_next_uri = 'http://localhost/roles/user/2/10'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .order_by.return_value \
         .filter.return_value \
@@ -252,7 +272,7 @@ def test_get_roles_user_route(app, mocker, client):
         .filter.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/roles/user")
+    response = client.get("/roles/user?app_key=123")
 
     assert response.status_code == expected_status
     assert len(response.json['roles']) == expected_length
@@ -269,6 +289,12 @@ def test_get_roles_empty_route(app, mocker, client):
     expected_json = None
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -280,10 +306,39 @@ def test_get_roles_empty_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = 15
 
-    response = client.get("/roles/3")
+    response = client.get("/roles/3?app_key=123")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_roles_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/roles")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_roles_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/roles?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -355,6 +410,58 @@ def test_get_role_by_name_not_found(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_role_by_id_route_ok(app, mocker, client):
+    expected_status = 200
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = Role()
+
+    response = client.get("/role/1?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'role' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_role_by_id_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/role/1")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_role_by_id_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/role/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -646,6 +753,12 @@ def test_post_roles_route_ok(app, mocker, client):
     }
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .first.return_value = None
@@ -654,7 +767,7 @@ def test_post_roles_route_ok(app, mocker, client):
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
-    response = client.post("/roles")
+    response = client.post("/roles?app_key=123")
 
     assert response.status_code == expected_status
     assert 'role' in response.json
@@ -1009,6 +1122,12 @@ def test_put_role_route_ok(app, mocker, client):
     role_1.id = expected_m_id
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .get.return_value = role_1
     query_mock.return_value \
@@ -1018,7 +1137,7 @@ def test_put_role_route_ok(app, mocker, client):
     db_mock = mocker.patch('modules.roles.routes_admin.db')
     db_mock.commit.return_value = None
 
-    response = client.put("/role/{}".format(expected_m_id))
+    response = client.put("/role/{}?app_key=123".format(expected_m_id))
 
     assert response.status_code == expected_status
     assert 'role' in response.json
@@ -1078,6 +1197,63 @@ def test_delete_role_fail(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_role_route_ok(app, mocker, client):
+    expected_status = 204
+    expected_json = None
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = Role()
+
+    # mock db commit
+    db_mock = mocker.patch('modules.roles.routes_admin.db')
+    db_mock.commit.return_value = None
+
+    response = client.delete("/role/3?app_key=123")
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_role_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.delete("/role/3")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_role_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.delete("/role/3?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 # INTEGRATION TESTS
@@ -1143,7 +1319,7 @@ def test_get_roles_route_with_data(client):
         "total": 3
     }
 
-    response = client.get("/roles")
+    response = client.get("/roles?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -1172,7 +1348,7 @@ def test_get_role_1_route_with_data(client):
         }
     }
 
-    response = client.get("/role/1")
+    response = client.get("/role/1?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -1212,7 +1388,7 @@ def test_post_app_keys_route_with_data(client, mocker):
         "password_reset_days": expected_m_password_reset_days
     }
 
-    response = client.post("/roles")
+    response = client.post("/roles?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert 'role' in response.json
@@ -1275,7 +1451,9 @@ def test_put_role_route_with_data(client, mocker):
         "password_reset_days": expected_m_password_reset_days
     }
 
-    response = client.put("/role/{}".format(expected_m_id))
+    response = client.put(
+        "/role/{}?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW".format(
+            expected_m_id))
 
     assert response.status_code == expected_status
     assert 'role' in response.json
@@ -1310,7 +1488,8 @@ def test_delete_role_1_route_with_data(client):
     expected_status = 204
     expected_json = None
 
-    response = client.delete("/role/1")
+    response = client.delete(
+        "/role/1?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json

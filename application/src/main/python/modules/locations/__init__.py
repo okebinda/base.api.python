@@ -4,10 +4,11 @@ Locations module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long,bad-continuation
 
 from flask import Blueprint
 
+from modules.app_keys.middleware import require_appkey
 from .routes_public import get_countries, get_regions
 
 
@@ -30,13 +31,15 @@ def public_routes(app):
     public = Blueprint('public_locations', __name__)
 
     # GET /health_check
-    public.route("/countries", methods=['GET'])(get_countries)
-    public.route("/countries/<int:page>", methods=['GET'])(get_countries)
-    public.route("/countries/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(get_countries)  # noqa
+    public.route("/countries", methods=['GET'])(
+    public.route("/countries/<int:page>", methods=['GET'])(
+    public.route("/countries/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(  # noqa
+        require_appkey(get_countries))))
 
     # GET /regions
-    public.route("/regions/<string:country_code>", methods=['GET'])(get_regions)  # noqa
-    public.route("/regions/<string:country_code>/<int:page>", methods=['GET'])(get_regions)  # noqa
-    public.route("/regions/<string:country_code>/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(get_regions)  # noqa
+    public.route("/regions/<string:country_code>", methods=['GET'])(
+    public.route("/regions/<string:country_code>/<int:page>", methods=['GET'])(
+    public.route("/regions/<string:country_code>/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(  # noqa
+        require_appkey(get_regions))))
 
     app.register_blueprint(public)

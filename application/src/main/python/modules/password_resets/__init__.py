@@ -4,10 +4,11 @@ Password Resets module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long,bad-continuation
 
 from flask import Blueprint
 
+from modules.app_keys.middleware import require_appkey
 from .routes_admin import get_password_resets
 
 
@@ -30,8 +31,9 @@ def admin_routes(app):
     admin = Blueprint('admin_password_resets', __name__)
 
     # GET /users
-    admin.route("/password_resets", methods=['GET'])(get_password_resets)
-    admin.route("/password_resets/<int:page>", methods=['GET'])(get_password_resets)  # noqa
-    admin.route("/password_resets/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(get_password_resets)  # noqa
+    admin.route("/password_resets", methods=['GET'])(
+    admin.route("/password_resets/<int:page>", methods=['GET'])(
+    admin.route("/password_resets/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
+        require_appkey(get_password_resets))))
 
     app.register_blueprint(admin)

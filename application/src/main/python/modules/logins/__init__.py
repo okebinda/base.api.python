@@ -4,10 +4,11 @@ Logins module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long,bad-continuation
 
 from flask import Blueprint
 
+from modules.app_keys.middleware import require_appkey
 from .routes_admin import get_logins
 
 
@@ -30,8 +31,9 @@ def admin_routes(app):
     admin = Blueprint('admin_logins', __name__)
 
     # GET /users
-    admin.route("/logins", methods=['GET'])(get_logins)
-    admin.route("/logins/<int:page>", methods=['GET'])(get_logins)
-    admin.route("/logins/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(get_logins)  # noqa
+    admin.route("/logins", methods=['GET'])(
+    admin.route("/logins/<int:page>", methods=['GET'])(
+    admin.route("/logins/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
+        require_appkey(get_logins))))
 
     app.register_blueprint(admin)

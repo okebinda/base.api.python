@@ -3,6 +3,7 @@ import re
 
 import pytest
 from werkzeug.exceptions import NotFound
+from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
 from app import create_app
@@ -11,6 +12,7 @@ from modules.terms_of_services.routes_admin import get_terms_of_services, \
     post_terms_of_services, get_terms_of_service, put_terms_of_service, \
     delete_terms_of_service
 from modules.terms_of_services.model import TermsOfService
+from modules.app_keys.model import AppKey
 
 
 @pytest.fixture
@@ -141,6 +143,12 @@ def test_get_terms_of_services_route(app, mocker, client):
     expected_next_uri = 'http://localhost/terms_of_services/2/10'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -152,7 +160,7 @@ def test_get_terms_of_services_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/terms_of_services")
+    response = client.get("/terms_of_services?app_key=123")
 
     assert response.status_code == expected_status
     assert len(response.json['terms_of_services']) == expected_length
@@ -174,6 +182,12 @@ def test_get_terms_of_services_limit_5_page_2_of_3_route(app, mocker, client):
     expected_previous_uri = 'http://localhost/terms_of_services/1/5'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -185,8 +199,9 @@ def test_get_terms_of_services_limit_5_page_2_of_3_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/terms_of_services/{}/{}".format(expected_page,
-                                                            expected_limit))
+    response = client.get(
+        "/terms_of_services/{}/{}?app_key=123".format(expected_page,
+                                                      expected_limit))
 
     assert response.status_code == expected_status
     assert len(response.json['terms_of_services']) == expected_length
@@ -204,6 +219,12 @@ def test_get_terms_of_services_empty_route(app, mocker, client):
     expected_json = None
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -215,10 +236,39 @@ def test_get_terms_of_services_empty_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = 15
 
-    response = client.get("/terms_of_services/3")
+    response = client.get("/terms_of_services/3?app_key=123")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_terms_of_services_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/terms_of_services")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_terms_of_services_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/terms_of_services?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -252,6 +302,58 @@ def test_get_terms_of_service_not_found(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_terms_of_service_route_ok(app, mocker, client):
+    expected_status = 200
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = TermsOfService()
+
+    response = client.get("/terms_of_service/1?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'terms_of_service' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_terms_of_service_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/terms_of_service/1")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_terms_of_service_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/terms_of_service/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -428,11 +530,19 @@ def test_post_terms_of_services_route_ok(app, mocker, client):
         "status": expected_m_status,
     }
 
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     db_mock = mocker.patch('modules.terms_of_services.routes_admin.db')
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
-    response = client.post("/terms_of_services")
+    response = client.post("/terms_of_services?app_key=123")
 
     assert response.status_code == expected_status
     assert 'terms_of_service' in response.json
@@ -450,6 +560,35 @@ def test_post_terms_of_services_route_ok(app, mocker, client):
         expected_m_created_at
     assert response.json['terms_of_service']['updated_at'] == \
         expected_m_updated_at
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_post_terms_of_service_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.post("/terms_of_services")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_post_terms_of_service_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.post("/terms_of_services?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -664,13 +803,20 @@ def test_put_terms_of_service_route_ok(app, mocker, client):
     tos_1.id = expected_m_id
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .get.return_value = tos_1
 
     db_mock = mocker.patch('modules.terms_of_services.routes_admin.db')
     db_mock.commit.return_value = None
 
-    response = client.put("/terms_of_service/{}".format(expected_m_id))
+    response = client.put(
+        "/terms_of_service/{}?app_key=123".format(expected_m_id))
 
     assert response.status_code == expected_status
     assert 'terms_of_service' in response.json
@@ -688,6 +834,35 @@ def test_put_terms_of_service_route_ok(app, mocker, client):
         expected_m_created_at
     assert response.json['terms_of_service']['updated_at'] == \
         expected_m_updated_at
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_terms_of_service_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.put("/terms_of_service/1")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_terms_of_service_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.put("/terms_of_service/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -721,6 +896,63 @@ def test_delete_terms_of_service_fail(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_terms_of_service_route_ok(app, mocker, client):
+    expected_status = 204
+    expected_json = None
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = TermsOfService()
+
+    # mock db commit
+    db_mock = mocker.patch('modules.terms_of_services.routes_admin.db')
+    db_mock.commit.return_value = None
+
+    response = client.delete("/terms_of_service/4?app_key=123")
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_terms_of_service_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.delete("/terms_of_service/4")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_terms_of_service_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.delete("/terms_of_service/4?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 # INTEGRATION TESTS
@@ -778,7 +1010,8 @@ def test_get_terms_of_services_route_with_data(client):
         "total": 4
     }
 
-    response = client.get("/terms_of_services")
+    response = client.get(
+        "/terms_of_services?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -801,7 +1034,8 @@ def test_get_terms_of_service_1_route_with_data(client):
         }
     }
 
-    response = client.get("/terms_of_service/1")
+    response = client.get(
+        "/terms_of_service/1?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -828,7 +1062,8 @@ def test_post_terms_of_services_route_with_data(client, mocker):
         "status": expected_m_status,
     }
 
-    response = client.post("/terms_of_services")
+    response = client.post(
+        "/terms_of_services?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert 'terms_of_service' in response.json
@@ -870,7 +1105,9 @@ def test_put_terms_of_service_route_with_data(client, mocker):
         "status": expected_m_status,
     }
 
-    response = client.put("/terms_of_service/{}".format(expected_m_id))
+    response = client.put(
+        "/terms_of_service/{}?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW".format(
+            expected_m_id))
 
     assert response.status_code == expected_status
     assert 'terms_of_service' in response.json
@@ -896,7 +1133,8 @@ def test_delete_terms_of_service_1_route_with_data(client):
     expected_status = 204
     expected_json = None
 
-    response = client.delete("/terms_of_service/5")
+    response = client.delete(
+        "/terms_of_service/5?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json

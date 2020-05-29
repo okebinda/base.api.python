@@ -3,6 +3,7 @@ import re
 
 import pytest
 from werkzeug.exceptions import NotFound
+from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
 from app import create_app
@@ -11,6 +12,7 @@ from modules.user_profiles.routes_admin import get_user_profiles, \
     post_user_profiles, get_user_profile, put_user_profile, delete_user_profile
 from modules.user_profiles.model import UserProfile
 from modules.users.model import User
+from modules.app_keys.model import AppKey
 
 
 @pytest.fixture
@@ -157,6 +159,12 @@ def test_get_user_profiles_route(app, mocker, client):
     expected_next_uri = 'http://localhost/user_profiles/2/10'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -168,7 +176,7 @@ def test_get_user_profiles_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/user_profiles")
+    response = client.get("/user_profiles?app_key=123")
 
     assert response.status_code == expected_status
     assert len(response.json['user_profiles']) == expected_length
@@ -190,6 +198,12 @@ def test_get_user_profiles_limit_5_page_2_of_3_route(app, mocker, client):
     expected_previous_uri = 'http://localhost/user_profiles/1/5'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -201,8 +215,8 @@ def test_get_user_profiles_limit_5_page_2_of_3_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/user_profiles/{}/{}".format(expected_page,
-                                                        expected_limit))
+    response = client.get("/user_profiles/{}/{}?app_key=123".format(
+        expected_page, expected_limit))
 
     assert response.status_code == expected_status
     assert len(response.json['user_profiles']) == expected_length
@@ -220,6 +234,12 @@ def test_get_user_profiles_empty_route(app, mocker, client):
     expected_json = None
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -231,10 +251,39 @@ def test_get_user_profiles_empty_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = 15
 
-    response = client.get("/user_profiles/3")
+    response = client.get("/user_profiles/3?app_key=123")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_user_profiles_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/user_profiles")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_user_profiles_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/user_profiles?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -276,6 +325,58 @@ def test_get_user_profile_not_found(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_user_profile_route_ok(app, mocker, client):
+    expected_status = 200
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = UserProfile()
+
+    response = client.get("/user_profile/1?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'user_profile' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_user_profile_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/user_profile/1")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_user_profile_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/user_profile/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -513,6 +614,11 @@ def test_post_user_route_ok(app, mocker, client):
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
 
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     # mock exists() validation
     user_9 = User()
     user_9.id = 9
@@ -523,7 +629,7 @@ def test_post_user_route_ok(app, mocker, client):
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
-    response = client.post("/user_profiles")
+    response = client.post("/user_profiles?app_key=123")
 
     assert response.status_code == expected_status
     assert 'user_profile' in response.json
@@ -541,6 +647,35 @@ def test_post_user_route_ok(app, mocker, client):
         expected_m_created_at
     assert response.json['user_profile']['updated_at'] == \
         expected_m_updated_at
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_post_user_profiles_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.post("/user_profiles")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_post_user_profiles_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.post("/user_profiles?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -810,6 +945,11 @@ def test_put_user_profile_route_ok(app, mocker, client):
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
 
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     # mock initial resource query and exists() validation
     query_mock.return_value \
         .get.side_effect = [user_profile_2, user_9]
@@ -818,7 +958,7 @@ def test_put_user_profile_route_ok(app, mocker, client):
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
-    response = client.put("/user_profile/{}".format(expected_m_id))
+    response = client.put("/user_profile/{}?app_key=123".format(expected_m_id))
 
     assert response.status_code == expected_status
     assert 'user_profile' in response.json
@@ -836,6 +976,35 @@ def test_put_user_profile_route_ok(app, mocker, client):
         expected_m_created_at
     assert response.json['user_profile']['updated_at'] == \
         expected_m_updated_at
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_user_profile_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.put("/user_profile/1")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_user_profile_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.put("/user_profile/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -869,6 +1038,63 @@ def test_delete_user_fail(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_user_profile_route_ok(app, mocker, client):
+    expected_status = 204
+    expected_json = None
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = UserProfile()
+
+    # mock db commit
+    db_mock = mocker.patch('modules.user_profiles.routes_admin.db')
+    db_mock.commit.return_value = None
+
+    response = client.delete("/user_profile/7?app_key=123")
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_user_profile_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.delete("/user_profile/7")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_user_profile_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.delete("/user_profile/7?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 # INTEGRATION TESTS
@@ -952,7 +1178,8 @@ def test_get_user_profiles_route_with_data(client):
         ]
     }
 
-    response = client.get("/user_profiles")
+    response = client.get(
+        "/user_profiles?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -976,7 +1203,8 @@ def test_get_user_profile_2_route_with_data(client):
         }
     }
 
-    response = client.get("/user_profile/2")
+    response = client.get(
+        "/user_profile/2?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -1004,7 +1232,8 @@ def test_post_user_profiles_route_with_data(client, mocker):
         'status': expected_m_status,
     }
 
-    response = client.post("/user_profiles")
+    response = client.post(
+        "/user_profiles?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert 'user_profile' in response.json
@@ -1046,7 +1275,9 @@ def test_put_user_profile_route_with_data(client, mocker):
         'status': expected_m_status,
     }
 
-    response = client.put("/user_profile/{}".format(expected_m_id))
+    response = client.put(
+        "/user_profile/{}?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW".format(
+            expected_m_id))
 
     assert response.status_code == expected_status
     assert 'user_profile' in response.json
@@ -1072,7 +1303,8 @@ def test_delete_user_profile_7_route_with_data(client):
     expected_status = 204
     expected_json = None
 
-    response = client.delete("/user_profile/7")
+    response = client.delete(
+        "/user_profile/7?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json

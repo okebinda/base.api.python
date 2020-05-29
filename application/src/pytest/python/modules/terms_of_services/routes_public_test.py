@@ -1,12 +1,14 @@
 from copy import copy
 
 import pytest
+from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
 from app import create_app
 from config import Config
 from modules.terms_of_services.routes_public import get_terms_of_service
 from modules.terms_of_services.model import TermsOfService
+from modules.app_keys.model import AppKey
 
 
 @pytest.fixture
@@ -78,13 +80,19 @@ def test_get_terms_of_service_ok_route(app, mocker, client):
     }
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
         .limit.return_value \
         .__iter__.return_value = [TermsOfService()]
 
-    response = client.get("/terms_of_service/current")
+    response = client.get("/terms_of_service/current?app_key=123")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -96,16 +104,49 @@ def test_get_terms_of_service_empty_route(app, mocker, client):
     expected_json = None
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
         .limit.return_value \
         .__iter__.return_value = []
 
-    response = client.get("/terms_of_service/current")
+    response = client.get("/terms_of_service/current?app_key=123")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
+
+
+@pytest.mark.unit
+def test_get_terms_of_service_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/terms_of_service/current")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_get_terms_of_service_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/terms_of_service/current?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 # INTEGRATION TESTS
@@ -123,7 +164,8 @@ def test_get_terms_of_service_route_with_data(client):
         }
     }
 
-    response = client.get("/terms_of_service/current")
+    response = client.get(
+        "/terms_of_service/current?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json

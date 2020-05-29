@@ -3,6 +3,7 @@ import re
 
 import pytest
 from werkzeug.exceptions import NotFound
+from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
 from app import create_app
@@ -138,6 +139,12 @@ def test_get_app_keys_route(app, mocker, client):
     expected_next_uri = 'http://localhost/app_keys/2/10'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -149,7 +156,7 @@ def test_get_app_keys_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/app_keys")
+    response = client.get("/app_keys?app_key=123")
 
     assert response.status_code == expected_status
     assert len(response.json['app_keys']) == expected_length
@@ -171,6 +178,12 @@ def test_get_app_keys_limit_5_page_2_of_3_route(app, mocker, client):
     expected_previous_uri = 'http://localhost/app_keys/1/5'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -182,8 +195,9 @@ def test_get_app_keys_limit_5_page_2_of_3_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/app_keys/{}/{}".format(expected_page,
-                                                   expected_limit))
+    response = client.get(
+        "/app_keys/{}/{}?app_key=123".format(expected_page,
+                                             expected_limit))
 
     assert response.status_code == expected_status
     assert len(response.json['app_keys']) == expected_length
@@ -201,6 +215,12 @@ def test_get_app_keys_empty_route(app, mocker, client):
     expected_json = None
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -212,10 +232,39 @@ def test_get_app_keys_empty_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = 15
 
-    response = client.get("/app_keys/3")
+    response = client.get("/app_keys/3?app_key=123")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_app_keys_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/app_keys")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_app_keys_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/app_keys?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -248,6 +297,58 @@ def test_get_app_key_not_found(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_app_key_route_ok(app, mocker, client):
+    expected_status = 200
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = AppKey()
+
+    response = client.get("/app_key/1?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'app_key' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_app_key_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/app_key/1")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_app_key_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/app_key/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -453,6 +554,12 @@ def test_post_app_key_route_ok(app, mocker, client):
     }
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .first.return_value = None
@@ -461,7 +568,7 @@ def test_post_app_key_route_ok(app, mocker, client):
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
-    response = client.post("/app_keys")
+    response = client.post("/app_keys?app_key=123")
 
     assert response.status_code == expected_status
     assert 'app_key' in response.json
@@ -474,6 +581,35 @@ def test_post_app_key_route_ok(app, mocker, client):
         response.json['app_key']['status_changed_at']))
     assert response.json['app_key']['created_at'] == expected_m_created_at
     assert response.json['app_key']['updated_at'] == expected_m_updated_at
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_post_app_key_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.post("/app_keys")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_post_app_key_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.post("/app_keys?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -716,6 +852,12 @@ def test_put_app_key_route_ok(app, mocker, client):
     app_key_1.id = expected_m_id
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .get.return_value = app_key_1
     query_mock.return_value \
@@ -725,7 +867,7 @@ def test_put_app_key_route_ok(app, mocker, client):
     db_mock = mocker.patch('modules.app_keys.routes_admin.db')
     db_mock.commit.return_value = None
 
-    response = client.put("/app_key/{}".format(expected_m_id))
+    response = client.put("/app_key/{}?app_key=123".format(expected_m_id))
 
     assert response.status_code == expected_status
     assert 'app_key' in response.json
@@ -738,6 +880,35 @@ def test_put_app_key_route_ok(app, mocker, client):
         response.json['app_key']['status_changed_at']))
     assert response.json['app_key']['created_at'] == expected_m_created_at
     assert response.json['app_key']['updated_at'] == expected_m_updated_at
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_app_key_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.put("/app_key/1")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_app_key_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.put("/app_key/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 @pytest.mark.unit
@@ -771,6 +942,63 @@ def test_delete_app_key_fail(app, mocker):
         assert False
     except NotFound:
         assert True
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_app_key_route_ok(app, mocker, client):
+    expected_status = 204
+    expected_json = None
+
+    # mock db query
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock resource query
+    query_mock.return_value \
+        .get.return_value = AppKey()
+
+    # mock db commit
+    db_mock = mocker.patch('modules.administrators.routes_admin.db')
+    db_mock.commit.return_value = None
+
+    response = client.delete("/app_key/5?app_key=123")
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_app_key_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.delete("/app_key/5")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_app_key_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.delete("/app_key/5?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 # INTEGRATION TESTS
@@ -824,7 +1052,7 @@ def test_get_app_keys_route_with_data(client):
         "total": 4
     }
 
-    response = client.get("/app_keys")
+    response = client.get("/app_keys?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -846,7 +1074,8 @@ def test_get_app_key_1_route_with_data(client):
         }
     }
 
-    response = client.get("/app_key/1")
+    response = client.get(
+        "/app_key/1?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -870,7 +1099,8 @@ def test_post_app_keys_route_with_data(client, mocker):
         "status": expected_m_status
     }
 
-    response = client.post("/app_keys")
+    response = client.post(
+        "/app_keys?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert 'app_key' in response.json
@@ -903,7 +1133,9 @@ def test_put_app_keys_route_with_data(client, mocker):
         "status": expected_m_status
     }
 
-    response = client.put("/app_key/{}".format(expected_m_id))
+    response = client.put(
+        "/app_key/{}?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW".format(
+            expected_m_id))
 
     assert response.status_code == expected_status
     assert 'app_key' in response.json
@@ -924,7 +1156,8 @@ def test_delete_app_key_1_route_with_data(client):
     expected_status = 204
     expected_json = None
 
-    response = client.delete("/app_key/1")
+    response = client.delete(
+        "/app_key/5?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json

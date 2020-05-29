@@ -1,12 +1,14 @@
 from copy import copy
 
 import pytest
+from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
 from app import create_app
 from config import Config
 from modules.locations.routes_public import get_countries, get_regions
 from modules.locations.model import Country, Region
+from modules.app_keys.model import AppKey
 
 
 @pytest.fixture
@@ -120,6 +122,138 @@ def test_get_countries_empty(app, mocker):
 
 
 @pytest.mark.unit
+def test_get_countries_route_ok(app, mocker, client):
+    expected_status = 200
+    expected_length = 8
+    expected_limit = 250
+    expected_page = 1
+    expected_total = 8
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .offset.return_value \
+        .__iter__.return_value = [Country()] * expected_length
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .count.return_value = expected_total
+
+    response = client.get("/countries?app_key=123")
+
+    assert response.status_code == expected_status
+    assert len(response.json['countries']) == expected_length
+    assert response.json['limit'] == expected_limit
+    assert response.json['page'] == expected_page
+    assert response.json['total'] == expected_total
+
+
+@pytest.mark.unit
+def test_get_countries_limit_5_page_2_of_3_route(app, mocker, client):
+    expected_status = 200
+    expected_length = 5
+    expected_limit = 5
+    expected_page = 2
+    expected_total = 12
+    expected_next_uri = 'http://localhost/countries/3/5'
+    expected_previous_uri = 'http://localhost/countries/1/5'
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .offset.return_value \
+        .__iter__.return_value = [Country()] * expected_length
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .count.return_value = expected_total
+
+    response = client.get(
+        "/countries/{}/{}?app_key=123".format(expected_page,
+                                              expected_limit))
+
+    assert response.status_code == expected_status
+    assert len(response.json['countries']) == expected_length
+    assert response.json['limit'] == expected_limit
+    assert response.json['page'] == expected_page
+    assert response.json['total'] == expected_total
+    assert response.json['next_uri'] == expected_next_uri
+    assert response.json['previous_uri'] == expected_previous_uri
+
+
+@pytest.mark.unit
+def test_get_countries_empty_route(app, mocker, client):
+    expected_status = 204
+    expected_json = None
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .offset.return_value \
+        .__iter__.return_value = []
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .count.return_value = 15
+
+    response = client.get("/countries/3?app_key=123")
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.unit
+def test_get_countries_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/countries")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_get_countries_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/countries?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
 def test_get_regions(app, mocker):
     expected_status = 200
     expected_length = 3
@@ -216,6 +350,144 @@ def test_get_regions_empty(app, mocker):
     assert result[0] == expected_content
 
 
+@pytest.mark.unit
+def test_get_regions_route_ok(app, mocker, client):
+    expected_status = 200
+    expected_length = 8
+    expected_limit = 100
+    expected_page = 1
+    expected_total = 8
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .filter.return_value \
+        .limit.return_value \
+        .offset.return_value \
+        .__iter__.return_value = [Region()] * expected_length
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .filter.return_value \
+        .count.return_value = expected_total
+
+    response = client.get("/regions/US?app_key=123")
+
+    assert response.status_code == expected_status
+    assert len(response.json['regions']) == expected_length
+    assert response.json['limit'] == expected_limit
+    assert response.json['page'] == expected_page
+    assert response.json['total'] == expected_total
+
+
+@pytest.mark.unit
+def test_get_regions_limit_5_page_2_of_3_route(app, mocker, client):
+    expected_status = 200
+    expected_length = 5
+    expected_limit = 5
+    expected_page = 2
+    expected_total = 12
+    expected_next_uri = 'http://localhost/regions/US/3/5'
+    expected_previous_uri = 'http://localhost/regions/US/1/5'
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .filter.return_value \
+        .limit.return_value \
+        .offset.return_value \
+        .__iter__.return_value = [Region()] * expected_length
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .filter.return_value \
+        .count.return_value = expected_total
+
+    response = client.get(
+        "/regions/US/{}/{}?app_key=123".format(expected_page,
+                                               expected_limit))
+
+    assert response.status_code == expected_status
+    assert len(response.json['regions']) == expected_length
+    assert response.json['limit'] == expected_limit
+    assert response.json['page'] == expected_page
+    assert response.json['total'] == expected_total
+    assert response.json['next_uri'] == expected_next_uri
+    assert response.json['previous_uri'] == expected_previous_uri
+
+
+@pytest.mark.unit
+def test_get_regions_empty_route(app, mocker, client):
+    expected_status = 204
+    expected_json = None
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .filter.return_value \
+        .limit.return_value \
+        .offset.return_value \
+        .__iter__.return_value = []
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .filter.return_value \
+        .count.return_value = 15
+
+    response = client.get("/regions/US/3?app_key=123")
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.unit
+def test_get_regions_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/regions/US")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_get_regions_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/regions/US?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
 # INTEGRATION TESTS
 
 
@@ -251,7 +523,7 @@ def test_get_countries_route(client):
         "total": 3
     }
 
-    response = client.get("/countries")
+    response = client.get("/countries?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -283,7 +555,7 @@ def test_get_regions_route(client):
         "total": 3
     }
 
-    response = client.get("/regions/US")
+    response = client.get("/regions/US?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json

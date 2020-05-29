@@ -1,12 +1,14 @@
 from copy import copy
 
 import pytest
+from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
 from app import create_app
 from config import Config
 from modules.password_resets.routes_admin import get_password_resets
 from modules.password_resets.model import PasswordReset
+from modules.app_keys.model import AppKey
 
 
 @pytest.fixture
@@ -201,6 +203,12 @@ def test_get_password_resets_route(app, mocker, client):
     expected_next_uri = 'http://localhost/password_resets/2/10'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -212,7 +220,7 @@ def test_get_password_resets_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/password_resets")
+    response = client.get("/password_resets?app_key=123")
 
     assert response.status_code == expected_status
     assert len(response.json['password_resets']) == expected_length
@@ -234,6 +242,12 @@ def test_get_password_resets_limit_5_page_2_of_3_route(app, mocker, client):
     expected_previous_uri = 'http://localhost/password_resets/1/5'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -245,7 +259,7 @@ def test_get_password_resets_limit_5_page_2_of_3_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/password_resets/{}/{}".format(
+    response = client.get("/password_resets/{}/{}?app_key=123".format(
         expected_page, expected_limit))
 
     assert response.status_code == expected_status
@@ -264,6 +278,12 @@ def test_get_password_resets_empty_route(app, mocker, client):
     expected_json = None
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -275,7 +295,7 @@ def test_get_password_resets_empty_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = 15
 
-    response = client.get("/password_resets/3")
+    response = client.get("/password_resets/3?app_key=123")
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -292,6 +312,12 @@ def test_get_password_resets_filter_route(app, mocker, client):
     expected_next_uri = 'http://localhost/password_resets/2/10?user_id=1'
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -305,7 +331,7 @@ def test_get_password_resets_filter_route(app, mocker, client):
         .filter.return_value \
         .count.return_value = expected_total
 
-    response = client.get("/password_resets?user_id=1")
+    response = client.get("/password_resets?user_id=1&app_key=123")
 
     assert response.status_code == expected_status
     assert len(response.json['password_resets']) == expected_length
@@ -313,6 +339,35 @@ def test_get_password_resets_filter_route(app, mocker, client):
     assert response.json['page'] == expected_page
     assert response.json['total'] == expected_total
     assert response.json['next_uri'] == expected_next_uri
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_password_resets_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.get("/password_resets")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_password_resets_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.get("/password_resets?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
 
 
 # INTEGRATION TESTS
@@ -442,7 +497,7 @@ def test_get_password_resets_route_with_data(client):
         "total": 7
     }
 
-    response = client.get("/password_resets")
+    response = client.get("/password_resets?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json['limit'] == expected_json['limit']
@@ -508,7 +563,8 @@ def test_get_password_resets_filter_route_with_data(client):
         "total": 2
     }
 
-    response = client.get("/password_resets?user_id=1")
+    response = client.get(
+        "/password_resets?user_id=1&app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
 
     assert response.status_code == expected_status
     assert response.json == expected_json

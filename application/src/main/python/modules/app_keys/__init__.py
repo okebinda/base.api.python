@@ -4,10 +4,11 @@ App Keys module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long,bad-continuation
 
 from flask import Blueprint
 
+from modules.app_keys.middleware import require_appkey
 from .routes_admin import get_app_keys, post_app_keys, get_app_key, \
     put_app_key, delete_app_key
 
@@ -31,20 +32,25 @@ def admin_routes(app):
     admin = Blueprint('admin_app_keys', __name__)
 
     # GET /app_keys
-    admin.route("/app_keys", methods=['GET'])(get_app_keys)
-    admin.route("/app_keys/<int:page>", methods=['GET'])(get_app_keys)
-    admin.route("/app_keys/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(get_app_keys)  # noqa
+    admin.route("/app_keys", methods=['GET'])(
+    admin.route("/app_keys/<int:page>", methods=['GET'])(
+    admin.route("/app_keys/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
+        require_appkey(get_app_keys))))
 
     # POST /app_keys
-    admin.route('/app_keys', methods=['POST'])(post_app_keys)
+    admin.route('/app_keys', methods=['POST'])(
+        require_appkey(post_app_keys))
 
     # GET /app_key/{id}
-    admin.route('/app_key/<int:app_key_id>', methods=['GET'])(get_app_key)
+    admin.route('/app_key/<int:app_key_id>', methods=['GET'])(
+        require_appkey(get_app_key))
 
     # PUT /app_key/{id}
-    admin.route('/app_key/<int:app_key_id>', methods=['PUT'])(put_app_key)
+    admin.route('/app_key/<int:app_key_id>', methods=['PUT'])(
+        require_appkey(put_app_key))
 
     # DELETE /app_key/{id}
-    admin.route('/app_key/<int:app_key_id>', methods=['DELETE'])(delete_app_key)  # noqa
+    admin.route('/app_key/<int:app_key_id>', methods=['DELETE'])(
+        require_appkey(delete_app_key))
 
     app.register_blueprint(admin)
