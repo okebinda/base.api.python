@@ -6,6 +6,7 @@ which is part of this source code package.
 """
 
 from flask import Flask
+from flask_principal import Principal
 
 from init_dep import db, ma
 from lib.wsgi import ReverseProxied
@@ -26,6 +27,9 @@ def create_app(config):
     # init app
     app = Flask(__name__)
     app.config.from_object(config)
+
+    # init authorization
+    Principal(app)
 
     # init database
     db.init_app(app)

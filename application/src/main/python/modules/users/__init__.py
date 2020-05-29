@@ -8,6 +8,7 @@ which is part of this source code package.
 
 from flask import Blueprint
 
+from lib.auth import auth_basic
 from modules.app_keys.middleware import require_appkey
 from .routes_admin import get_users, post_user, get_user, put_user, delete_user
 
@@ -34,23 +35,23 @@ def admin_routes(app):
     admin.route("/users", methods=['GET'])(
     admin.route("/users/<int:page>", methods=['GET'])(
     admin.route("/users/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
-        require_appkey(get_users))))
+        require_appkey(auth_basic.login_required(get_users)))))
 
     # POST /users
     admin.route('/users', methods=['POST'])(
-        require_appkey(post_user))
+        require_appkey(auth_basic.login_required(post_user)))
 
     # GET /user/{id}
     admin.route('/user/<int:user_id>', methods=['GET'])(
     admin.route('/user/<string:username>', methods=['GET'])(  # noqa
-        require_appkey(get_user)))
+        require_appkey(auth_basic.login_required(get_user))))
 
     # PUT /user/{id}
     admin.route('/user/<int:user_id>', methods=['PUT'])(
-        require_appkey(put_user))
+        require_appkey(auth_basic.login_required(put_user)))
 
     # DELETE /user/{id}
     admin.route('/user/<int:user_id>', methods=['DELETE'])(
-        require_appkey(delete_user))
+        require_appkey(auth_basic.login_required(delete_user)))
 
     app.register_blueprint(admin)

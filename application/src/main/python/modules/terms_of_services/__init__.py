@@ -8,6 +8,7 @@ which is part of this source code package.
 
 from flask import Blueprint
 
+from lib.auth import auth_basic
 from modules.app_keys.middleware import require_appkey
 from .routes_public import get_terms_of_service as public_get_terms_of_service
 from .routes_admin import get_terms_of_services, post_terms_of_services,\
@@ -53,22 +54,22 @@ def admin_routes(app):
     admin.route("/terms_of_services", methods=['GET'])(
     admin.route("/terms_of_services/<int:page>", methods=['GET'])(
     admin.route("/terms_of_services/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
-        require_appkey(get_terms_of_services))))
+        require_appkey(auth_basic.login_required(get_terms_of_services)))))
 
     # POST /terms_of_services
     admin.route('/terms_of_services', methods=['POST'])(
-        require_appkey(post_terms_of_services))
+        require_appkey(auth_basic.login_required(post_terms_of_services)))
 
     # GET /terms_of_service/{id}
     admin.route('/terms_of_service/<int:terms_of_service_id>', methods=['GET'])(  # noqa
-        require_appkey(get_terms_of_service))
+        require_appkey(auth_basic.login_required(get_terms_of_service)))
 
     # PUT /terms_of_service/{id}
     admin.route('/terms_of_service/<int:terms_of_service_id>', methods=['PUT'])(  # noqa
-        require_appkey(put_terms_of_service))
+        require_appkey(auth_basic.login_required(put_terms_of_service)))
 
     # DELETE /terms_of_service/{id}
     admin.route('/terms_of_service/<int:terms_of_service_id>', methods=['DELETE'])(  # noqa
-        require_appkey(delete_terms_of_service))
+        require_appkey(auth_basic.login_required(delete_terms_of_service)))
 
     app.register_blueprint(admin)

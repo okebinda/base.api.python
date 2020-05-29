@@ -1,8 +1,9 @@
 from copy import copy
 import re
+import base64
 
 import pytest
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, Unauthorized
 from sqlalchemy.orm.exc import NoResultFound
 
 from fixtures import Fixtures
@@ -156,6 +157,10 @@ def test_get_app_keys_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
     response = client.get("/app_keys?app_key=123")
 
     assert response.status_code == expected_status
@@ -195,6 +200,10 @@ def test_get_app_keys_limit_5_page_2_of_3_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = expected_total
 
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
     response = client.get(
         "/app_keys/{}/{}?app_key=123".format(expected_page,
                                              expected_limit))
@@ -232,6 +241,10 @@ def test_get_app_keys_empty_route(app, mocker, client):
         .order_by.return_value \
         .count.return_value = 15
 
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
     response = client.get("/app_keys/3?app_key=123")
 
     assert response.status_code == expected_status
@@ -262,6 +275,28 @@ def test_get_app_keys_route_bad_app_key(app, mocker, client):
         .one.side_effect = NoResultFound()
 
     response = client.get("/app_keys?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_app_keys_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.get("/app_keys?app_key=123")
 
     assert response.status_code == expected_status
     assert 'error' in response.json
@@ -316,6 +351,10 @@ def test_get_app_key_route_ok(app, mocker, client):
     query_mock.return_value \
         .get.return_value = AppKey()
 
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
     response = client.get("/app_key/1?app_key=123")
 
     assert response.status_code == expected_status
@@ -346,6 +385,28 @@ def test_get_app_key_route_bad_app_key(app, mocker, client):
         .one.side_effect = NoResultFound()
 
     response = client.get("/app_key/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_get_app_key_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.get("/app_key/1?app_key=123")
 
     assert response.status_code == expected_status
     assert 'error' in response.json
@@ -564,6 +625,10 @@ def test_post_app_key_route_ok(app, mocker, client):
         .filter.return_value \
         .first.return_value = None
 
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
     db_mock = mocker.patch('modules.app_keys.routes_admin.db')
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
@@ -607,6 +672,28 @@ def test_post_app_key_route_bad_app_key(app, mocker, client):
         .one.side_effect = NoResultFound()
 
     response = client.post("/app_keys?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_post_app_key_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.post("/app_keys?app_key=123")
 
     assert response.status_code == expected_status
     assert 'error' in response.json
@@ -867,6 +954,10 @@ def test_put_app_key_route_ok(app, mocker, client):
     db_mock = mocker.patch('modules.app_keys.routes_admin.db')
     db_mock.commit.return_value = None
 
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
     response = client.put("/app_key/{}?app_key=123".format(expected_m_id))
 
     assert response.status_code == expected_status
@@ -906,6 +997,28 @@ def test_put_app_key_route_bad_app_key(app, mocker, client):
         .one.side_effect = NoResultFound()
 
     response = client.put("/app_key/1?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_app_key_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.put("/app_key/1?app_key=123")
 
     assert response.status_code == expected_status
     assert 'error' in response.json
@@ -966,6 +1079,10 @@ def test_delete_app_key_route_ok(app, mocker, client):
     db_mock = mocker.patch('modules.administrators.routes_admin.db')
     db_mock.commit.return_value = None
 
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
     response = client.delete("/app_key/5?app_key=123")
 
     assert response.status_code == expected_status
@@ -996,6 +1113,28 @@ def test_delete_app_key_route_bad_app_key(app, mocker, client):
         .one.side_effect = NoResultFound()
 
     response = client.delete("/app_key/5?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_delete_app_key_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.delete("/app_key/5?app_key=123")
 
     assert response.status_code == expected_status
     assert 'error' in response.json
@@ -1052,7 +1191,12 @@ def test_get_app_keys_route_with_data(client):
         "total": 4
     }
 
-    response = client.get("/app_keys?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get(
+        "/app_keys?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -1074,8 +1218,12 @@ def test_get_app_key_1_route_with_data(client):
         }
     }
 
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
     response = client.get(
-        "/app_key/1?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
+        "/app_key/1?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -1099,8 +1247,12 @@ def test_post_app_keys_route_with_data(client, mocker):
         "status": expected_m_status
     }
 
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
     response = client.post(
-        "/app_keys?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
+        "/app_keys?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'app_key' in response.json
@@ -1133,9 +1285,12 @@ def test_put_app_keys_route_with_data(client, mocker):
         "status": expected_m_status
     }
 
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
     response = client.put(
         "/app_key/{}?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW".format(
-            expected_m_id))
+            expected_m_id), headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'app_key' in response.json
@@ -1156,8 +1311,12 @@ def test_delete_app_key_1_route_with_data(client):
     expected_status = 204
     expected_json = None
 
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
     response = client.delete(
-        "/app_key/5?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW")
+        "/app_key/5?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json == expected_json

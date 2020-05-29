@@ -8,6 +8,7 @@ which is part of this source code package.
 
 from flask import Blueprint
 
+from lib.auth import auth_basic
 from modules.app_keys.middleware import require_appkey
 from .routes_admin import get_notifications
 
@@ -34,6 +35,6 @@ def admin_routes(app):
     admin.route("/notifications", methods=['GET'])(
     admin.route("/notifications/<int:page>", methods=['GET'])(
     admin.route("/notifications/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
-        require_appkey(get_notifications))))
+        require_appkey(auth_basic.login_required(get_notifications)))))
 
     app.register_blueprint(admin)
