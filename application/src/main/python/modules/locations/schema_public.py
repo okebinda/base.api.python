@@ -1,5 +1,5 @@
 """
-Schemas to serialize/deserialize/validate models for Locations module.
+Public schemas to serialize/deserialize/validate models for Locations module.
 
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.

@@ -37,9 +37,11 @@ def test_country_get_1(app):
     assert len(country.regions) == 7
     assert country.status == Country.STATUS_ENABLED
     assert country.status_changed_at.strftime(
+        "%Y-%m-%dT%H:%M:%S%z") == "2018-01-03T00:00:00+0000"
+    assert country.created_at.strftime(
         "%Y-%m-%dT%H:%M:%S%z") == "2018-01-01T00:00:00+0000"
-    assert type(country.created_at).__name__ == "datetime"
-    assert type(country.updated_at).__name__ == "datetime"
+    assert country.updated_at.strftime(
+        "%Y-%m-%dT%H:%M:%S%z") == "2018-01-02T00:00:00+0000"
 
 
 @pytest.mark.integration
@@ -51,6 +53,8 @@ def test_region_get_1(app):
     assert region.country.id == 1
     assert region.status == Region.STATUS_ENABLED
     assert region.status_changed_at.strftime(
+        "%Y-%m-%dT%H:%M:%S%z") == "2018-01-03T00:00:00+0000"
+    assert region.created_at.strftime(
         "%Y-%m-%dT%H:%M:%S%z") == "2018-01-01T00:00:00+0000"
-    assert type(region.created_at).__name__ == "datetime"
-    assert type(region.updated_at).__name__ == "datetime"
+    assert region.updated_at.strftime(
+        "%Y-%m-%dT%H:%M:%S%z") == "2018-01-02T00:00:00+0000"
