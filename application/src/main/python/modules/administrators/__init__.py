@@ -11,6 +11,7 @@ from flask_principal import identity_loaded
 
 from lib.auth import auth_basic
 from modules.app_keys.middleware import require_appkey
+from .routes_auth import get_auth_token, get_auth_token_check
 from .routes_admin import get_administrators, post_administrator,\
     get_administrator, put_administrator, delete_administrator
 from .authentication import Authentication
@@ -43,6 +44,14 @@ def admin_routes(app):
         return Authentication.on_identity_loaded(sender, identity)
 
     admin = Blueprint('admin_administrators', __name__)
+
+    # GET /token
+    admin.route('/token', methods=['GET'])(
+        require_appkey(auth_basic.login_required(get_auth_token)))
+
+    # GET /token/check
+    admin.route('/token/check', methods=['GET'])(
+        require_appkey(auth_basic.login_required(get_auth_token_check)))
 
     # GET /administrators
     admin.route("/administrators", methods=['GET'])(
