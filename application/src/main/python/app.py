@@ -13,7 +13,7 @@ from lib.wsgi import ReverseProxied
 from lib import errors
 from modules import health_check, locations, app_keys, roles, administrators, \
     terms_of_services, users, user_profiles, logins, password_resets, \
-    notifications
+    notifications, user_account
 
 
 def create_app(config):
@@ -55,5 +55,6 @@ def create_app(config):
     logins.register(app)
     password_resets.register(app)
     notifications.register(app)
+    user_account.register(app)
 
     return app
