@@ -9,8 +9,11 @@ from sqlalchemy.orm.exc import NoResultFound
 from fixtures import Fixtures
 from app import create_app
 from config import Config
-from modules.user_account.routes_admin import get_account, put_account
-from modules.administrators.model import Administrator
+from modules.user_account.routes_admin import get_account, put_account, \
+    put_password
+from modules.administrators.model import Administrator, \
+    AdministratorPasswordHistory
+from modules.roles.model import Role
 from modules.app_keys.model import AppKey
 
 
@@ -575,6 +578,304 @@ def test_put_account_route_unauthorized(app, mocker, client):
     assert 'error' in response.json
 
 
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_ok(app, mocker):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {
+        'previous_password': "admin1pass",
+        'password1': "admin1Pass2",
+        'password2': "admin1Pass2",
+    }
+
+    role = Role()
+    role.password_policy = True
+    role.password_reuse_history = 10
+
+    admin1 = Administrator()
+    admin1.password = "admin1pass"
+    admin1.roles = [role]
+
+    g_mock = mocker.patch('modules.user_account.routes_admin.g')
+    g_mock.user = admin1
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    pw_history1 = AdministratorPasswordHistory()
+    pw_history1.password = "$2b$04$fpn.utPgc5S3InjyWvm1auoGq/NgpG1/Cjnu6WJNNzz6AZBeUAes2"
+
+    # mock password history
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .__iter__.return_value = [pw_history1]
+
+    db_mock = mocker.patch('modules.user_account.routes_admin.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_required_fail(app, mocker):
+    expected_status = 400
+    expected_json = {
+        'error': {
+            'password1': ['Missing data for required field.'],
+            'password2': ['Missing data for required field.'],
+            'previous_password': ['Missing data for required field.'],
+        }
+    }
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {'foo': "bar"}
+
+    g_mock = mocker.patch('modules.user_account.routes_admin.g')
+    g_mock.user = Administrator()
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_previous_password_incorrect_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'previous_password': ['Incorrect password.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {
+        'previous_password': "bad_pass",
+        'password1': "admin1Pass2",
+        'password2': "admin1Pass2",
+    }
+
+    admin1 = Administrator()
+    admin1.password = "admin1pass"
+
+    g_mock = mocker.patch('modules.user_account.routes_admin.g')
+    g_mock.user = admin1
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_password1_complexity_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'password1': ['Please choose a more complex password.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {
+        'previous_password': "admin1pass",
+        'password1': "password",
+        'password2': "password",
+    }
+
+    admin1 = Administrator()
+    admin1.password = "admin1pass"
+
+    g_mock = mocker.patch('modules.user_account.routes_admin.g')
+    g_mock.user = admin1
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_password2_match_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'password2': ['New passwords must match.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {
+        'previous_password': "admin1pass",
+        'password1': "admin1Pass2",
+        'password2': "admin1Pass3",
+    }
+
+    admin1 = Administrator()
+    admin1.password = "admin1pass"
+
+    g_mock = mocker.patch('modules.user_account.routes_admin.g')
+    g_mock.user = admin1
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_password_history_reuse_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'password1': ['This password has recently been used.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {
+        'previous_password': "admin1Pass",
+        'password1': "admin1Pass2",
+        'password2': "admin1Pass2",
+    }
+
+    role = Role()
+    role.password_policy = True
+    role.password_reuse_history = 10
+
+    admin1 = Administrator()
+    admin1.password = "admin1Pass"
+    admin1.roles = [role]
+
+    g_mock = mocker.patch('modules.user_account.routes_admin.g')
+    g_mock.user = admin1
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    pw_history1 = AdministratorPasswordHistory()
+    pw_history1.password = "$2b$04$R6qjwKEIkvLLBvyfJMqjPeopGW3mz98maNA0VC9VMNkSoYGmrHaIK"
+
+    # mock password history
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .__iter__.return_value = [pw_history1]
+
+    db_mock = mocker.patch('modules.user_account.routes_admin.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_route_ok(app, mocker, client):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {
+        'previous_password': "admin1pass",
+        'password1': "admin1Pass2",
+        'password2': "admin1Pass2",
+    }
+
+    role = Role()
+    role.password_policy = True
+    role.password_reuse_history = 10
+
+    admin1 = Administrator()
+    admin1.password = "admin1pass"
+    admin1.roles = [role]
+
+    g_mock = mocker.patch('modules.user_account.routes_admin.g')
+    g_mock.user = admin1
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    pw_history1 = AdministratorPasswordHistory()
+    pw_history1.password = "$2b$04$fpn.utPgc5S3InjyWvm1auoGq/NgpG1/Cjnu6WJNNzz6AZBeUAes2"
+
+    # mock password history
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .__iter__.return_value = [pw_history1]
+
+    db_mock = mocker.patch('modules.user_account.routes_admin.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.return_value = True
+
+    response = client.put("/user_account/password?app_key=123")
+
+    assert response.status_code == expected_status
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.put("/user_account/password")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.put("/user_account/password?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+@pytest.mark.admin_api
+def test_put_password_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.administrators.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.put("/user_account/password?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
 # INTEGRATION TESTS
 
 
@@ -648,3 +949,27 @@ def test_put_account_route_with_data(client, mocker):
     assert response.json['user_account']['password_changed_at'] == \
            expected_m_password_changed_at
     assert response.json['user_account']['joined_at'] == expected_m_joined_at
+
+
+@pytest.mark.integration
+@pytest.mark.admin_api
+def test_put_password_route_with_data(client, mocker):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    request_mock = mocker.patch('modules.user_account.routes_admin.request')
+    request_mock.json = {
+        'previous_password': "admin1pass",
+        'password1': "admin1Pass2",
+        'password2': "admin1Pass2",
+    }
+
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.put(
+        "/user_account/password?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        headers={"Authorization": f"Basic {credentials}"})
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json

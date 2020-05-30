@@ -10,7 +10,7 @@ from flask import Blueprint
 
 from lib.auth import auth_basic
 from modules.app_keys.middleware import require_appkey
-from .routes_admin import get_account, put_account
+from .routes_admin import get_account, put_account, put_password
 
 
 def register(app):
@@ -39,5 +39,9 @@ def admin_routes(app):
     # PUT /user_account
     admin.route('/user_account', methods=['PUT'])(
         require_appkey(auth_basic.login_required(put_account)))
+
+    # PUT /user_account/password
+    admin.route('/user_account/password', methods=['PUT'])(
+        require_appkey(auth_basic.login_required(put_password)))
 
     app.register_blueprint(admin)
