@@ -1,5 +1,5 @@
 """
-Authentication for Administrators module.
+Authentication for Users module.
 
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
@@ -14,11 +14,11 @@ from flask_principal import Identity, RoleNeed, UserNeed, identity_changed
 from init_dep import db
 from modules.logins.model import Login
 from modules.roles.model import Role
-from .model import Administrator
+from .model import User
 
 
 class Authentication:
-    """Helper class for administrator authentication"""
+    """Helper class for user authentication"""
 
     @staticmethod
     def verify_password(username_or_token, password):
@@ -35,7 +35,7 @@ class Authentication:
         """
 
         # first try to authenticate by token
-        user = Administrator.verify_auth_token(username_or_token)
+        user = User.verify_auth_token(username_or_token)
         if not user:
 
             # ADMIN login lockout policy
@@ -43,9 +43,9 @@ class Authentication:
                 abort(401, "Account locked")
 
             # try to authenticate with username/password
-            user = Administrator.query.filter(
-                Administrator.username == username_or_token,
-                Administrator.status == Administrator.STATUS_ENABLED).first()
+            user = User.query.filter(
+                User.username == username_or_token,
+                User.status == User.STATUS_ENABLED).first()
             if not user or not user.check_password(password):
 
                 # log failed login
@@ -55,7 +55,7 @@ class Authentication:
                         username=username_or_token[0:40],
                         ip_address=request.environ.get('HTTP_X_REAL_IP',
                                                        request.remote_addr),
-                        api=Login.API_ADMIN,
+                        api=Login.API_PUBLIC,
                         success=False,
                         attempt_date=datetime.now())
                     db.session.add(login_record)
@@ -71,7 +71,7 @@ class Authentication:
                     username=username_or_token[0:40],
                     ip_address=request.environ.get('HTTP_X_REAL_IP',
                                                    request.remote_addr),
-                    api=Login.API_ADMIN,
+                    api=Login.API_PUBLIC,
                     success=True,
                     attempt_date=datetime.now())
                 db.session.add(login_record)
@@ -119,10 +119,10 @@ class Authentication:
         :rtype: bool
         """
 
-        admin_role = Role.query.filter(Role.name == 'SUPER_ADMIN').first()
-        if admin_role.login_lockout_policy:
+        role = Role.query.filter(Role.name == 'USER').first()
+        if role.login_lockout_policy:
             login_query = Login.query
-            if admin_role.login_ban_by_ip:
+            if role.login_ban_by_ip:
                 login_query = login_query.filter(
                     Login.username == username_or_token,
                     Login.ip_address == request.environ.get(
@@ -131,17 +131,16 @@ class Authentication:
                 login_query = login_query.filter(
                     Login.username == username_or_token)
             recent_logins = login_query.order_by(
-                Login.attempt_date.desc()).limit(admin_role.login_max_attempts)
-            if recent_logins.count() >= admin_role.login_max_attempts:
+                Login.attempt_date.desc()).limit(role.login_max_attempts)
+            if recent_logins.count() >= role.login_max_attempts:
                 if sum(list(map(
                         lambda x: 1 if not x.success else 0, recent_logins
-                ))) >= admin_role.login_max_attempts:
+                ))) >= role.login_max_attempts:
                     if ((recent_logins[0].attempt_date -
                          recent_logins[-1].attempt_date).total_seconds() <=
-                            admin_role.login_timeframe):
+                            role.login_timeframe):
                         banned_window = recent_logins[0].attempt_date + \
-                                        timedelta(
-                                            seconds=admin_role.login_ban_time)
+                                        timedelta(seconds=role.login_ban_time)
                         ban_win = banned_window.replace(tzinfo=None)
                         if ban_win > datetime.now():
                             return True
