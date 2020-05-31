@@ -83,7 +83,7 @@ def test_get_account_route_ok(app, mocker, client):
     response = client.get("/user_account?app_key=123")
 
     assert response.status_code == expected_status
-    assert 'user_account' in  response.json
+    assert 'user_account' in response.json
 
 
 @pytest.mark.unit
