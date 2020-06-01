@@ -460,10 +460,6 @@ def test_post_user_account_step1_route_ok(app, mocker, client):
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
-    # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
-
     response = client.post("/user_account/step1?app_key=123")
 
     assert response.status_code == expected_status
@@ -910,6 +906,495 @@ def test_get_user_account_route_unauthorized(app, mocker, client):
     assert 'error' in response.json
 
 
+@pytest.mark.unit
+def test_put_user_account_ok(app, mocker):
+    expected_status = 200
+    expected_m_length = 8
+    expected_m_id = None
+    expected_m_user_username = "user9"
+    expected_m_user_email = "user9@test.com"
+    expected_m_user_is_verified = None
+    expected_m_user_first_name = "Wilmer"
+    expected_m_user_last_name = "Munson"
+    expected_m_user_password_changed_at = None
+    # @todo: timezone
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": expected_m_user_username,
+        "email": expected_m_user_email,
+        "first_name": expected_m_user_first_name,
+        "last_name": expected_m_user_last_name,
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert 'user_account' in result[0].json
+    assert len(result[0].json['user_account']) == expected_m_length
+    assert result[0].json['user_account']['id'] == expected_m_id
+    assert result[0].json['user_account']['username'] == \
+        expected_m_user_username
+    assert result[0].json['user_account']['email'] == expected_m_user_email
+    assert result[0].json['user_account']['is_verified'] == \
+        expected_m_user_is_verified
+    assert result[0].json['user_account']['first_name'] == \
+        expected_m_user_first_name
+    assert result[0].json['user_account']['last_name'] == \
+        expected_m_user_last_name
+    assert result[0].json['user_account']['password_changed_at'] == \
+        expected_m_user_password_changed_at
+    assert bool(re_datetime.match(
+        result[0].json['user_account']['joined_at']))
+
+
+@pytest.mark.unit
+def test_put_user_account_required_fail(app, mocker):
+    expected_status = 400
+    expected_json = {
+        'error': {
+            'email': ['Missing data for required field.'],
+            'first_name': ['Missing data for required field.'],
+            'foo': ['Unknown field.'],
+            'last_name': ['Missing data for required field.'],
+            'username': ['Missing data for required field.'],
+        }
+    }
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {'foo': "bar"}
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_user_account_unique_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'username': ['Value must be unique.'],
+        'email': ['Value must be unique.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": "user1",
+        "email": "user1@test.com",
+        "first_name": "Wilmer",
+        "last_name": "Munson",
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = User()
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_user_account_min_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'first_name': ['Value must be between 1 and 40 characters long.'],
+        'last_name': ['Value must be between 2 and 40 characters long.'],
+        'username': ['Value must be between 2 and 40 characters long.'],
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": "u",
+        "email": "user9@test.com",
+        "first_name": "",
+        "last_name": "M",
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_user_account_max_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'first_name': ['Value must be between 1 and 40 characters long.'],
+        'last_name': ['Value must be between 2 and 40 characters long.'],
+        'username': ['Value must be between 2 and 40 characters long.'],
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": "ZSnrETVjjXdkqqYaxG5ePKh68nRT8rzcNWYfCLnV4",
+        "email": "user9@test.com",
+        "first_name": "DFaAUB2kKa7CxS7wZBqGMNtvseM8Uyjnpn2Met9DG",
+        "last_name": "9PEAgwuDPsGvNDEW7b3Tf2UZdWZnJ3fPv8HGuZFdy",
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_user_account_username_numeric_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'username': ['Value must not be a number.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": "1234",
+        "email": "user9@test.com",
+        "first_name": "Wilmer",
+        "last_name": "Munson",
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+
+@pytest.mark.unit
+def test_put_user_account_username_character_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'username': ['Value must contain only alphanumeric characters and the underscore.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": "user 9",
+        "email": "user9@test.com",
+        "first_name": "Wilmer",
+        "last_name": "Munson",
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_user_account_type_fail(app, mocker):
+    expected_status = 400
+    expected_json = {
+        'error': {
+            'email': ["Not a valid email address."],
+            'first_name': ["Not a valid string."],
+            'last_name': ["Not a valid string."],
+            'username': ["Not a valid string."],
+        }
+    }
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": 123,
+        "email": 123,
+        "first_name": 123,
+        "last_name": 123,
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_user_account_route_ok(app, mocker, client):
+    expected_status = 200
+    expected_m_length = 8
+    expected_m_id = None
+    expected_m_user_username = "user9"
+    expected_m_user_email = "user9@test.com"
+    expected_m_user_is_verified = None
+    expected_m_user_first_name = "Wilmer"
+    expected_m_user_last_name = "Munson"
+    expected_m_user_password_changed_at = None
+    # @todo: timezone
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+    data = {
+        "username": expected_m_user_username,
+        "email": expected_m_user_email,
+        "first_name": expected_m_user_first_name,
+        "last_name": expected_m_user_last_name,
+    }
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    # mock user login
+    auth_mock = mocker.patch('modules.users.Authentication')
+    auth_mock.verify_password.return_value = True
+
+    response = client.put("/user_account?app_key=123", json=data)
+
+    assert response.status_code == expected_status
+    assert 'user_account' in response.json
+    assert len(response.json['user_account']) == expected_m_length
+    assert response.json['user_account']['id'] == expected_m_id
+    assert response.json['user_account']['username'] == \
+        expected_m_user_username
+    assert response.json['user_account']['email'] == expected_m_user_email
+    assert response.json['user_account']['is_verified'] == \
+        expected_m_user_is_verified
+    assert response.json['user_account']['first_name'] == \
+        expected_m_user_first_name
+    assert response.json['user_account']['last_name'] == \
+        expected_m_user_last_name
+    assert response.json['user_account']['password_changed_at'] == \
+        expected_m_user_password_changed_at
+    assert bool(re_datetime.match(
+        response.json['user_account']['joined_at']))
+
+
+@pytest.mark.unit
+def test_put_user_account_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.put("/user_account")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_put_user_account_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.put("/user_account?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_put_user_account_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.users.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.put("/user_account?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_delete_user_account_ok(app, mocker):
+    expected_status = 204
+    expected_content = ''
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.commit.return_value = None
+
+    result = delete_user_account()
+
+    assert result[1] == expected_status
+    assert result[0] == expected_content
+
+
+@pytest.mark.unit
+def test_delete_user_account_route_ok(app, mocker, client):
+    expected_status = 204
+    expected_json = None
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.commit.return_value = None
+
+    # mock user login
+    auth_mock = mocker.patch('modules.users.Authentication')
+    auth_mock.verify_password.return_value = True
+
+    response = client.delete("/user_account?app_key=123")
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.unit
+def test_delete_user_account_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.delete("/user_account")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_delete_user_account_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.delete("/user_account?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_delete_user_account_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.users.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.delete("/user_account?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
 # INTEGRATION TESTS
 
 
@@ -1043,6 +1528,68 @@ def test_get_user_account_route_with_data(client):
         'user2:user2pass'.encode('ascii')).decode('utf-8')
 
     response = client.get(
+        "/user_account?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        headers={"Authorization": f"Basic {credentials}"})
+
+    assert response.status_code == expected_status
+    assert response.json == expected_json
+
+
+@pytest.mark.integration
+def test_put_user_account_route_with_data(client, mocker):
+    expected_status = 200
+    expected_m_length = 8
+    expected_m_id = 2
+    expected_m_user_username = "user2a"
+    expected_m_user_email = "user2a@test.com"
+    expected_m_user_is_verified = True
+    expected_m_user_first_name = "Lynn"
+    expected_m_user_last_name = "Harfourd"
+    expected_m_user_joined_at = "2018-12-07T00:00:00+0000"
+    expected_m_user_password_changed_at = "2018-12-08T00:00:00+0000"
+
+    data = {
+        "username": expected_m_user_username,
+        "email": expected_m_user_email,
+        "first_name": expected_m_user_first_name,
+        "last_name": expected_m_user_last_name,
+    }
+
+    credentials = base64.b64encode(
+        'user2:user2pass'.encode('ascii')).decode('utf-8')
+
+    response = client.put(
+        "/user_account?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        json=data, headers={"Authorization": f"Basic {credentials}"})
+
+    assert response.status_code == expected_status
+    assert 'user_account' in response.json
+    assert len(response.json['user_account']) == expected_m_length
+    assert response.json['user_account']['id'] == expected_m_id
+    assert response.json['user_account']['username'] == \
+        expected_m_user_username
+    assert response.json['user_account']['email'] == expected_m_user_email
+    assert response.json['user_account']['is_verified'] == \
+        expected_m_user_is_verified
+    assert response.json['user_account']['first_name'] == \
+        expected_m_user_first_name
+    assert response.json['user_account']['last_name'] == \
+        expected_m_user_last_name
+    assert response.json['user_account']['joined_at'] == \
+        expected_m_user_joined_at
+    assert response.json['user_account']['password_changed_at'] == \
+        expected_m_user_password_changed_at
+
+
+@pytest.mark.integration
+def test_delete_user_account_route_with_data(client):
+    expected_status = 204
+    expected_json = None
+
+    credentials = base64.b64encode(
+        'user2:user2pass'.encode('ascii')).decode('utf-8')
+
+    response = client.delete(
         "/user_account?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
         headers={"Authorization": f"Basic {credentials}"})
 
