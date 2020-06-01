@@ -8,7 +8,7 @@ which is part of this source code package.
 from flask import Flask
 from flask_principal import Principal
 
-from init_dep import db, ma
+from init_dep import db, ma, logger
 from lib.wsgi import ReverseProxied
 from lib import errors
 from modules import health_check, locations, app_keys, roles, administrators, \
@@ -27,6 +27,9 @@ def create_app(config):
     # init app
     app = Flask(__name__)
     app.config.from_object(config)
+
+    # init logging
+    logger.init_app(app, app.config['LOGGING_LEVEL'])
 
     # init authorization
     Principal(app)
