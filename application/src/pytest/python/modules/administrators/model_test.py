@@ -1,4 +1,5 @@
 from copy import copy
+from datetime import datetime
 
 import pytest
 
@@ -81,8 +82,7 @@ def test_administrator_get_1(app):
     assert len(administrator.password_history) == 2
     assert administrator.joined_at.strftime(
         "%Y-%m-%dT%H:%M:%S%z") == "2018-11-01T00:00:00+0000"
-    assert administrator.password_changed_at.strftime(
-        "%Y-%m-%dT%H:%M:%S%z") == "2018-11-04T00:00:00+0000"
+    assert isinstance(administrator.password_changed_at, datetime)
     assert administrator.status == Administrator.STATUS_ENABLED
     assert administrator.status_changed_at.strftime(
         "%Y-%m-%dT%H:%M:%S%z") == "2018-11-03T00:00:00+0000"

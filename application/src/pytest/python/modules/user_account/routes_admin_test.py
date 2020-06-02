@@ -73,14 +73,35 @@ def test_get_account_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
-    g_mock = mocker.patch('modules.user_account.routes_admin.g')
-    g_mock.user = Administrator()
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.get("/user_account?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/user_account?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'user_account' in response.json
@@ -470,26 +491,16 @@ def test_put_account_route_ok(app, mocker, client):
     expected_m_first_name = "TommyA"
     expected_m_last_name = "LundA"
     expected_m_uri = "http://localhost/administrator/1"
-    expected_m_password_changed_at = None
     expected_m_joined_at = None
+    # @todo: timezone
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
 
-    request_mock = mocker.patch('modules.user_account.routes_admin.request')
-    request_mock.json = {
+    data = {
         'username': expected_m_username,
         'email': expected_m_email,
         'first_name': expected_m_first_name,
         'last_name': expected_m_last_name,
     }
-
-    admin1 = Administrator()
-    admin1.id = 1
-    admin1.username = 'admin1'
-    admin1.email = 'admin1@test.com'
-    admin1.first_name = 'Tommy'
-    admin1.last_name = 'Lund'
-
-    g_mock = mocker.patch('modules.user_account.routes_admin.g')
-    g_mock.user = admin1
 
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
 
@@ -498,19 +509,43 @@ def test_put_account_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
-    # mock unique(), unique_email() validation
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.username = 'admin1'
+    admin1.email = 'admin1@test.com'
+    admin1.first_name = 'Tommy'
+    admin1.last_name = 'Lund'
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    # mock login user, unique(), unique_email() validation
     query_mock.return_value \
         .filter.return_value \
-        .first.return_value = None
+        .first.side_effect = [admin1, None, None]
 
     db_mock = mocker.patch('modules.user_account.routes_admin.db')
     db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.put("/user_account?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.put("/user_account?app_key=123", json=data,
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'user_account' in response.json
@@ -522,8 +557,8 @@ def test_put_account_route_ok(app, mocker, client):
            expected_m_first_name
     assert response.json['user_account']['last_name'] == expected_m_last_name
     assert response.json['user_account']['uri'] == expected_m_uri
-    assert response.json['user_account']['password_changed_at'] == \
-           expected_m_password_changed_at
+    assert bool(re_datetime.match(
+        response.json['user_account']['password_changed_at']))
     assert response.json['user_account']['joined_at'] == expected_m_joined_at
 
 
@@ -779,25 +814,34 @@ def test_put_password_route_ok(app, mocker, client):
     expected_status = 200
     expected_m_json = {'success': 'true'}
 
-    request_mock = mocker.patch('modules.user_account.routes_admin.request')
-    request_mock.json = {
+    data = {
         'previous_password': "admin1pass",
         'password1': "admin1Pass2",
         'password2': "admin1Pass2",
     }
 
-    role = Role()
-    role.password_policy = True
-    role.password_reuse_history = 10
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+    role2.password_policy = True
+    role2.password_reuse_history = 10
 
     admin1 = Administrator()
+    admin1.id = 1
     admin1.password = "admin1pass"
-    admin1.roles = [role]
+    admin1.roles = [role2]
 
-    g_mock = mocker.patch('modules.user_account.routes_admin.g')
-    g_mock.user = admin1
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
 
-    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
 
     pw_history1 = AdministratorPasswordHistory()
     pw_history1.password = "$2b$04$fpn.utPgc5S3InjyWvm1auoGq/NgpG1/Cjnu6WJNNzz6AZBeUAes2"
@@ -814,10 +858,15 @@ def test_put_password_route_ok(app, mocker, client):
     db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.put("/user_account/password?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.put("/user_account/password?app_key=123", json=data,
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
 
@@ -884,17 +933,18 @@ def test_put_password_route_unauthorized(app, mocker, client):
 def test_get_account_route_with_data(client):
     expected_status = 200
     expected_json = {
-            "user_account": {
+        "user_account": {
             "email": "admin1@test.com",
             "first_name": "Tommy",
             "id": 1,
             "joined_at": "2018-11-01T00:00:00+0000",
             "last_name": "Lund",
-            "password_changed_at": "2018-11-04T00:00:00+0000",
+            "password_changed_at": None,
             "uri": "http://localhost/administrator/1",
             "username": "admin1"
         }
     }
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
 
     credentials = base64.b64encode(
         'admin1:admin1pass'.encode('ascii')).decode('utf-8')
@@ -904,7 +954,22 @@ def test_get_account_route_with_data(client):
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
-    assert response.json == expected_json
+    assert response.json['user_account']['email'] == \
+        expected_json['user_account']['email']
+    assert response.json['user_account']['first_name'] == \
+        expected_json['user_account']['first_name']
+    assert response.json['user_account']['id'] == \
+        expected_json['user_account']['id']
+    assert response.json['user_account']['joined_at'] == \
+        expected_json['user_account']['joined_at']
+    assert response.json['user_account']['last_name'] == \
+        expected_json['user_account']['last_name']
+    assert response.json['user_account']['uri'] == \
+        expected_json['user_account']['uri']
+    assert response.json['user_account']['username'] == \
+        expected_json['user_account']['username']
+    assert bool(re_datetime.match(
+        response.json['user_account']['password_changed_at']))
 
 
 @pytest.mark.integration
@@ -918,11 +983,10 @@ def test_put_account_route_with_data(client, mocker):
     expected_m_first_name = "TommyA"
     expected_m_last_name = "LundA"
     expected_m_uri = "http://localhost/administrator/1"
-    expected_m_password_changed_at = "2018-11-04T00:00:00+0000"
     expected_m_joined_at = "2018-11-01T00:00:00+0000"
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
 
-    request_mock = mocker.patch('modules.user_account.routes_admin.request')
-    request_mock.json = {
+    data = {
         'username': expected_m_username,
         'email': expected_m_email,
         'first_name': expected_m_first_name,
@@ -934,6 +998,7 @@ def test_put_account_route_with_data(client, mocker):
 
     response = client.put(
         "/user_account?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        json=data,
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
@@ -943,11 +1008,11 @@ def test_put_account_route_with_data(client, mocker):
     assert response.json['user_account']['username'] == expected_m_username
     assert response.json['user_account']['email'] == expected_m_email
     assert response.json['user_account']['first_name'] == \
-           expected_m_first_name
+        expected_m_first_name
     assert response.json['user_account']['last_name'] == expected_m_last_name
     assert response.json['user_account']['uri'] == expected_m_uri
-    assert response.json['user_account']['password_changed_at'] == \
-           expected_m_password_changed_at
+    assert bool(re_datetime.match(
+        response.json['user_account']['password_changed_at']))
     assert response.json['user_account']['joined_at'] == expected_m_joined_at
 
 
@@ -957,8 +1022,7 @@ def test_put_password_route_with_data(client, mocker):
     expected_status = 200
     expected_m_json = {'success': 'true'}
 
-    request_mock = mocker.patch('modules.user_account.routes_admin.request')
-    request_mock.json = {
+    data = {
         'previous_password': "admin1pass",
         'password1': "admin1Pass2",
         'password2': "admin1Pass2",
@@ -969,6 +1033,7 @@ def test_put_password_route_with_data(client, mocker):
 
     response = client.put(
         "/user_account/password?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        json=data,
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status

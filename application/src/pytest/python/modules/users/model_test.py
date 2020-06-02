@@ -1,4 +1,5 @@
 from copy import copy
+from datetime import datetime
 
 import pytest
 
@@ -79,8 +80,7 @@ def test_user_get_1(app):
     assert len(user.terms_of_services) == 2
     assert len(user.password_resets) == 5
     assert len(user.notifications) == 2
-    assert user.password_changed_at.strftime(
-        "%Y-%m-%dT%H:%M:%S%z") == "2018-12-08T00:00:00+0000"
+    assert isinstance(user.password_changed_at, datetime)
     assert user.is_verified is True
     assert user.status == User.STATUS_ENABLED
     assert user.status_changed_at.strftime(

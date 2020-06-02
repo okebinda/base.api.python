@@ -2030,7 +2030,7 @@ def test_get_administrators_route_with_data(client):
                 "id": 1,
                 "joined_at": "2018-11-01T00:00:00+0000",
                 "last_name": "Lund",
-                "password_changed_at": "2018-11-04T00:00:00+0000",
+                "password_changed_at": None,
                 "roles": [
                     {
                       "id": 2,
@@ -2132,7 +2132,16 @@ def test_get_administrators_route_with_data(client):
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
-    assert response.json == expected_json
+    assert response.json['administrators'][0]['id'] == \
+        expected_json['administrators'][0]['id']
+    assert response.json['administrators'][1] == \
+        expected_json['administrators'][1]
+    assert response.json['administrators'][2] == \
+        expected_json['administrators'][2]
+    assert response.json['administrators'][3] == \
+        expected_json['administrators'][3]
+    assert response.json['administrators'][4] == \
+        expected_json['administrators'][4]
 
 
 @pytest.mark.integration
@@ -2147,7 +2156,7 @@ def test_get_administrator_1_route_with_data(client):
             "id": 1,
             "joined_at": "2018-11-01T00:00:00+0000",
             "last_name": "Lund",
-            "password_changed_at": "2018-11-04T00:00:00+0000",
+            "password_changed_at": None,
             "roles": [
                 {
                   "id": 2,
@@ -2161,6 +2170,7 @@ def test_get_administrator_1_route_with_data(client):
             "username": "admin1"
         }
     }
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
 
     credentials = base64.b64encode(
         'admin1:admin1pass'.encode('ascii')).decode('utf-8')
@@ -2170,7 +2180,32 @@ def test_get_administrator_1_route_with_data(client):
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
-    assert response.json == expected_json
+    assert response.json['administrator']['created_at'] == \
+        expected_json['administrator']['created_at']
+    assert response.json['administrator']['email'] == \
+        expected_json['administrator']['email']
+    assert response.json['administrator']['first_name'] == \
+        expected_json['administrator']['first_name']
+    assert response.json['administrator']['id'] == \
+        expected_json['administrator']['id']
+    assert response.json['administrator']['joined_at'] == \
+        expected_json['administrator']['joined_at']
+    assert response.json['administrator']['last_name'] == \
+        expected_json['administrator']['last_name']
+    assert bool(re_datetime.match(
+        response.json['administrator']['password_changed_at']))
+    assert response.json['administrator']['roles'] == \
+        expected_json['administrator']['roles']
+    assert response.json['administrator']['status'] == \
+        expected_json['administrator']['status']
+    assert response.json['administrator']['status_changed_at'] == \
+        expected_json['administrator']['status_changed_at']
+    assert response.json['administrator']['updated_at'] == \
+        expected_json['administrator']['updated_at']
+    assert response.json['administrator']['uri'] == \
+        expected_json['administrator']['uri']
+    assert response.json['administrator']['username'] == \
+        expected_json['administrator']['username']
 
 
 @pytest.mark.integration
@@ -2190,8 +2225,7 @@ def test_post_administrators_route_with_data(client, mocker):
     expected_m_status = Administrator.STATUS_ENABLED
     re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
 
-    request_mock = mocker.patch('modules.administrators.routes_admin.request')
-    request_mock.json = {
+    data = {
         'email': expected_m_email,
         'first_name': expected_m_first_name,
         'joined_at': expected_m_joined_at,
@@ -2207,6 +2241,7 @@ def test_post_administrators_route_with_data(client, mocker):
 
     response = client.post(
         "/administrators?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        json=data,
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
@@ -2249,8 +2284,7 @@ def test_put_administrator_route_with_data(client, mocker):
     expected_m_status = Administrator.STATUS_DISABLED
     re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
 
-    request_mock = mocker.patch('modules.administrators.routes_admin.request')
-    request_mock.json = {
+    data = {
         'email': expected_m_email,
         'first_name': expected_m_first_name,
         'joined_at': expected_m_joined_at,
@@ -2266,7 +2300,9 @@ def test_put_administrator_route_with_data(client, mocker):
 
     response = client.put(
         "/administrator/{}?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW".format(
-            expected_m_id), headers={"Authorization": f"Basic {credentials}"})
+            expected_m_id),
+        json=data,
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'administrator' in response.json

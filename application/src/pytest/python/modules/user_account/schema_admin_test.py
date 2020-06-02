@@ -1,4 +1,5 @@
 from copy import copy
+import re
 
 import pytest
 
@@ -31,6 +32,8 @@ def app(request):
 @pytest.mark.integration
 @pytest.mark.admin_api
 def test_user_account_admin_schema_dump(app):
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
+
     admin1 = Administrator.query.get(1)
     result = UserAccountAdminSchema().dump(admin1)
     assert len(result) == 8
@@ -40,5 +43,5 @@ def test_user_account_admin_schema_dump(app):
     assert result['first_name'] == 'Tommy'
     assert result['last_name'] == 'Lund'
     assert result['uri'] == 'http://localhost/administrator/1'
-    assert result['password_changed_at'] == '2018-11-04T00:00:00+0000'
+    assert bool(re_datetime.match(result['password_changed_at']))
     assert result['joined_at'] == '2018-11-01T00:00:00+0000'

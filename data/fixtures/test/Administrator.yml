@@ -7,7 +7,7 @@
   first_name: Tommy
   last_name: Lund
   joined_at: 2018-11-01 00:00:00
-  password_changed_at: 2018-11-04 00:00:00
+  password_changed_at: now
   roles: [Role(02_role_admin)]
   status: 1
   status_changed_at: 2018-11-03 00:00:00

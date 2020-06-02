@@ -1,4 +1,5 @@
 from copy import copy
+import re
 
 import pytest
 
@@ -31,6 +32,8 @@ def app(request):
 @pytest.mark.integration
 @pytest.mark.admin_api
 def test_administrator_schema_dump(app):
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{4}$")
+
     administrator = Administrator.query.get(1)
     result = AdministratorAdminSchema().dump(administrator)
     assert len(result) == 13
@@ -44,7 +47,7 @@ def test_administrator_schema_dump(app):
     assert result['roles'][0]['id'] == 2
     assert result['roles'][0]['name'] == 'SUPER_ADMIN'
     assert result['uri'] == 'http://localhost/administrator/1'
-    assert result['password_changed_at'] == '2018-11-04T00:00:00+0000'
+    assert bool(re_datetime.match(result['password_changed_at']))
     assert result['status'] == Administrator.STATUS_ENABLED
     assert result['status_changed_at'] == '2018-11-03T00:00:00+0000'
     assert result['created_at'] == '2018-11-01T00:00:00+0000'

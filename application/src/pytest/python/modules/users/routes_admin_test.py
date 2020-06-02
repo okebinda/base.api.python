@@ -11,6 +11,7 @@ from app import create_app
 from config import Config
 from modules.users.routes_admin import get_users, post_user, get_user, \
     put_user, delete_user
+from modules.administrators.model import Administrator
 from modules.users.model import User
 from modules.roles.model import Role
 from modules.app_keys.model import AppKey
@@ -227,6 +228,23 @@ def test_get_users_route(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -239,10 +257,15 @@ def test_get_users_route(app, mocker, client):
         .count.return_value = expected_total
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.get("/users?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/users?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert len(response.json['users']) == expected_length
@@ -2112,7 +2135,7 @@ def test_get_users_route_with_data(client):
                     "last_name": "Farnham"
                 },
                 "roles": [],
-                "status": 2,
+                "status": 1,
                 "status_changed_at": "2018-12-03T00:00:00+0000",
                 "terms_of_services": [
                     {
@@ -2141,7 +2164,7 @@ def test_get_users_route_with_data(client):
                 "email": "user2@test.com",
                 "id": 2,
                 "is_verified": True,
-                "password_changed_at": "2018-12-08T00:00:00+0000",
+                "password_changed_at": None,
                 "profile": {
                     "first_name": "Lynne",
                     "joined_at": "2018-12-07T00:00:00+0000",
@@ -2313,24 +2336,30 @@ def test_get_users_route_with_data(client):
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
-    assert response.json == expected_json
+    assert response.json['users'][0] == expected_json['users'][0]
+    assert response.json['users'][2] == expected_json['users'][2]
+    assert response.json['users'][3] == expected_json['users'][3]
+    assert response.json['users'][4] == expected_json['users'][4]
+    assert response.json['users'][5] == expected_json['users'][5]
+    assert response.json['users'][6] == expected_json['users'][6]
+    assert response.json['users'][1]['id'] == expected_json['users'][1]['id']
 
 
 @pytest.mark.integration
 @pytest.mark.admin_api
-def test_get_user_2_route_with_data(client):
+def test_get_user_3_route_with_data(client):
     expected_status = 200
     expected_json = {
         "user": {
-            "created_at": "2018-12-05T00:00:00+0000",
-            "email": "user2@test.com",
-            "id": 2,
+            "created_at": "2018-12-10T00:00:00+0000",
+            "email": "user3@test.com",
+            "id": 3,
             "is_verified": True,
-            "password_changed_at": "2018-12-08T00:00:00+0000",
+            "password_changed_at": "2018-12-13T00:00:00+0000",
             "profile": {
-                "first_name": "Lynne",
-                "joined_at": "2018-12-07T00:00:00+0000",
-                "last_name": "Harford"
+                "first_name": "Duane",
+                "joined_at": "2018-12-12T00:00:00+0000",
+                "last_name": "Hargrave"
             },
             "roles": [
                 {
@@ -2339,28 +2368,20 @@ def test_get_user_2_route_with_data(client):
                 }
             ],
             "status": 1,
-            "status_changed_at": "2018-12-07T00:00:00+0000",
+            "status_changed_at": "2018-12-12T00:00:00+0000",
             "terms_of_services": [
                 {
-                    "accept_date": "2019-01-17T08:00:00+0000",
-                    "ip_address": "1.1.1.2",
+                    "accept_date": "2019-02-05T08:00:00+0000",
+                    "ip_address": "1.1.1.3",
                     "terms_of_service": {
                         "id": 2,
                         "version": "1.1"
                     }
-                },
-                {
-                    "accept_date": "2018-12-12T08:00:00+0000",
-                    "ip_address": "1.1.1.2",
-                    "terms_of_service": {
-                        "id": 1,
-                        "version": "1.0"
-                    }
                 }
             ],
-            "updated_at": "2018-12-06T00:00:00+0000",
-            "uri": "http://localhost/user/2",
-            "username": "user2"
+            "updated_at": "2018-12-11T00:00:00+0000",
+            "uri": "http://localhost/user/3",
+            "username": "user3"
         }
     }
 
@@ -2368,7 +2389,7 @@ def test_get_user_2_route_with_data(client):
         'admin1:admin1pass'.encode('ascii')).decode('utf-8')
 
     response = client.get(
-        "/user/2?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        "/user/3?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
