@@ -82,8 +82,7 @@ def public_routes(app):
         require_appkey(
         auth_basic.login_required(
         permission_user.require(http_exception=403)(
-        check_password_expiration(
-            public_put_password)))))  # noqa
+            public_put_password))))  # noqa
 
     # POST /password/request-reset-code
     public.route('/password/request-reset-code', methods=['POST'])(
@@ -128,7 +127,6 @@ def admin_routes(app):
         require_appkey(
         auth_basic.login_required(
         permission_super_admin.require(http_exception=403)(
-        check_password_expiration(
-            put_password)))))  # noqa
+            put_password))))  # noqa
 
     app.register_blueprint(admin)

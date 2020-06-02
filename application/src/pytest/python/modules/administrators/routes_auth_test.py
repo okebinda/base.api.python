@@ -11,6 +11,7 @@ from config import Config
 from modules.administrators.routes_auth import get_auth_token, \
     get_auth_token_check
 from modules.administrators.model import Administrator
+from modules.roles.model import Role
 from modules.app_keys.model import AppKey
 
 
@@ -73,18 +74,36 @@ def test_get_auth_token_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
     admin1 = Administrator()
     admin1.id = 1
-    admin1.username = 'admin1'
+    admin1.username = expected_r_username
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
 
-    g_mock = mocker.patch('modules.administrators.routes_auth.g')
-    g_mock.user = admin1
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.get("/token?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/token?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json['expiration'] == expected_r_expiration
@@ -170,11 +189,35 @@ def test_get_auth_token_check_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
-    # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
 
-    response = client.get("/token/check?app_key=123")
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    # mock user login
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
+
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/token/check?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json == expected_json

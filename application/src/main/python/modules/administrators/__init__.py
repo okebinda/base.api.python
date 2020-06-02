@@ -11,6 +11,7 @@ from flask_principal import identity_loaded
 
 from lib.auth import auth_basic, permission_super_admin
 from modules.app_keys.middleware import require_appkey
+from modules.users.authentication import check_password_expiration
 from .routes_auth import get_auth_token, get_auth_token_check
 from .routes_admin import get_administrators, post_administrator,\
     get_administrator, put_administrator, delete_administrator
@@ -47,32 +48,58 @@ def admin_routes(app):
 
     # GET /token
     admin.route('/token', methods=['GET'])(
-        require_appkey(auth_basic.login_required(get_auth_token)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+            get_auth_token))))  # noqa
 
     # GET /token/check
     admin.route('/token/check', methods=['GET'])(
-        require_appkey(auth_basic.login_required(get_auth_token_check)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+            get_auth_token_check))))  # noqa
 
     # GET /administrators
     admin.route("/administrators", methods=['GET'])(
     admin.route("/administrators/<int:page>", methods=['GET'])(
     admin.route("/administrators/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
-        require_appkey(auth_basic.login_required(get_administrators)))))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            get_administrators)))))))  # noqa
 
     # POST /administrators
     admin.route('/administrators', methods=['POST'])(
-        require_appkey(auth_basic.login_required(post_administrator)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            post_administrator)))))  # noqa
 
     # GET /administrator/{id}
     admin.route('/administrator/<int:administrator_id>', methods=['GET'])(
-        require_appkey(auth_basic.login_required(get_administrator)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            get_administrator)))))  # noqa
 
     # PUT /administrator/{id}
     admin.route('/administrator/<int:administrator_id>', methods=['PUT'])(
-        require_appkey(auth_basic.login_required(put_administrator)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            put_administrator)))))  # noqa
 
     # DELETE /administrator/{id}
     admin.route('/administrator/<int:administrator_id>', methods=['DELETE'])(
-        require_appkey(auth_basic.login_required(delete_administrator)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            delete_administrator)))))  # noqa
 
     app.register_blueprint(admin)

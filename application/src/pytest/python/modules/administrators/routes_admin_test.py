@@ -228,6 +228,25 @@ def test_get_administrators_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -240,10 +259,15 @@ def test_get_administrators_route_ok(app, mocker, client):
         .count.return_value = expected_total
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.get("/administrators?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/administrators?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert len(response.json['administrators']) == expected_length
@@ -271,6 +295,25 @@ def test_get_administrators_limit_5_page_2_of_3_route(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -283,12 +326,17 @@ def test_get_administrators_limit_5_page_2_of_3_route(app, mocker, client):
         .count.return_value = expected_total
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
+
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
 
     response = client.get(
         "/administrators/{}/{}?app_key=123".format(expected_page,
-                                                   expected_limit))
+                                                   expected_limit),
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert len(response.json['administrators']) == expected_length
@@ -312,6 +360,25 @@ def test_get_administrators_empty_route(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
     query_mock.return_value \
         .filter.return_value \
         .order_by.return_value \
@@ -324,10 +391,15 @@ def test_get_administrators_empty_route(app, mocker, client):
         .count.return_value = 15
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.get("/administrators/3?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/administrators/3?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json == expected_json
@@ -441,15 +513,39 @@ def test_get_administrator_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    db_mock = mocker.patch('modules.administrators.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
     # mock resource query
     query_mock.return_value \
         .get.return_value = Administrator()
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.get("/administrator/1?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/administrator/1?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'administrator' in response.json
@@ -1018,8 +1114,7 @@ def test_post_administrator_route_ok(app, mocker, client):
     # @todo: timezone
     re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
 
-    request_mock = mocker.patch('modules.administrators.routes_admin.request')
-    request_mock.json = {
+    data = {
         'email': expected_m_email,
         'first_name': expected_m_first_name,
         'joined_at': expected_m_joined_at,
@@ -1038,10 +1133,25 @@ def test_post_administrator_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
-    # mock unique(), unique() email validation
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    # mock user login, unique(), unique_email()  validation
     query_mock.return_value \
         .filter.return_value \
-        .first.return_value = None
+        .first.side_effect = [admin1, None, None]
+
+    auth_db_mock = mocker.patch('modules.administrators.authentication.db')
+    auth_db_mock.add.return_value = None
+    auth_db_mock.commit.return_value = None
 
     # mock exists() validation
     role_2 = Role()
@@ -1055,10 +1165,17 @@ def test_post_administrator_route_ok(app, mocker, client):
     db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.post("/administrators?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.post(
+        "/administrators?app_key=123",
+        json=data,
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'administrator' in response.json
@@ -1776,9 +1893,7 @@ def test_put_administrator_route_ok(app, mocker, client):
     # @todo: timezone
     re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
 
-    # mock controller request
-    request_mock = mocker.patch('modules.administrators.routes_admin.request')
-    request_mock.json = {
+    data = {
         'email': expected_m_email,
         'first_name': expected_m_first_name,
         'joined_at': expected_m_joined_at,
@@ -1804,25 +1919,46 @@ def test_put_administrator_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    # mock user login unique(), unique_email()  validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.side_effect = [admin1, None, None]
+
+    auth_db_mock = mocker.patch('modules.administrators.authentication.db')
+    auth_db_mock.add.return_value = None
+    auth_db_mock.commit.return_value = None
+
     # mock initial resource query and exists() validation
     query_mock.return_value \
         .get.side_effect = [administrator_1, role_1]
-
-    # mock unique(), unique() email validation
-    query_mock.return_value \
-        .filter.return_value \
-        .first.return_value = None
 
     db_mock = mocker.patch('modules.administrators.routes_admin.db')
     db_mock.add.return_value = None
     db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
+
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
 
     response = client.put(
-        "/administrator/{}?app_key=123".format(expected_m_role_id))
+        "/administrator/{}?app_key=123".format(expected_m_role_id),
+        json=data,
+        headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert 'administrator' in response.json
@@ -1945,6 +2081,25 @@ def test_delete_administrator_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    # mock user login db query
+    role2 = Role()
+    role2.id = 2
+    role2.name = 'SUPER_ADMIN'
+    role2.password_reset_days = 365
+
+    admin1 = Administrator()
+    admin1.id = 1
+    admin1.password = 'admin1pass'
+    admin1.roles = [role2]
+
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = admin1
+
+    auth_db_mock = mocker.patch('modules.administrators.authentication.db')
+    auth_db_mock.add.return_value = None
+    auth_db_mock.commit.return_value = None
+
     # mock resource query
     query_mock.return_value \
         .get.return_value = Administrator()
@@ -1954,10 +2109,15 @@ def test_delete_administrator_route_ok(app, mocker, client):
     db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.administrators.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.administrators.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.delete("/administrator/6?app_key=123")
+    credentials = base64.b64encode(
+        'admin1:admin1pass'.encode('ascii')).decode('utf-8')
+
+    response = client.delete("/administrator/6?app_key=123",
+                             headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json == expected_json
