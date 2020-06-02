@@ -6,17 +6,25 @@ which is part of this source code package.
 """
 # pylint: disable=no-member
 
-from datetime import datetime
+import re
+from datetime import datetime, timedelta
+import time
+import os
+import hashlib
+import bcrypt
 
-from flask import jsonify, request, g
+from flask import jsonify, request, g, current_app
 from marshmallow import ValidationError
 
 from init_dep import db
+from lib.schema.validate import unique, unique_email, exists
+from lib.random import String as RandomString
 from modules.users.model import User, UserTermsOfService, UserPasswordHistory
 from modules.user_profiles.model import UserProfile
 from modules.roles.model import Role
 from modules.terms_of_services.model import TermsOfService
-from lib.schema.validate import unique, unique_email, exists
+from modules.password_resets.model import PasswordReset
+from modules.notifications.notify import Notify
 from .schema_public import UserAccountSchema
 
 
@@ -274,3 +282,229 @@ def delete_user_account():
 
     # response
     return '', 204
+
+
+def put_password():
+    """Updates the current user's password.
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
+    # pylint: disable=too-many-branches
+
+    # get user
+    user = g.user
+
+    # prep regex
+    re_password = re.compile(UserAccountSchema.re_password)
+
+    # validate data
+    errors = {}
+    if ('previous_password' not in request.json or
+            not request.json['previous_password']):
+        if 'previous_password' not in errors:
+            errors['previous_password'] = []
+        errors['previous_password'].append("Missing data for required field.")
+    elif ('previous_password' in request.json and
+          not user.check_password(request.json['previous_password'])):
+        if 'previous_password' not in errors:
+            errors['previous_password'] = []
+        errors['previous_password'].append("Incorrect password.")
+
+    if 'password1' not in request.json or not request.json['password1']:
+        if 'password1' not in errors:
+            errors['password1'] = []
+        errors['password1'].append("Missing data for required field.")
+    if ('password1' in request.json and
+            not re_password.match(request.json['password1'])):
+        if 'password1' not in errors:
+            errors['password1'] = []
+        errors['password1'].append("Please choose a more complex password.")
+
+    if 'password2' not in request.json or not request.json['password2']:
+        if 'password2' not in errors:
+            errors['password2'] = []
+        errors['password2'].append("Missing data for required field.")
+    if 'password1' in request.json and 'password2' in request.json:
+        if request.json['password1'] != request.json['password2']:
+            if 'password2' not in errors:
+                errors['password2'] = []
+            errors['password2'].append("New passwords must match.")
+
+    if errors:
+        return jsonify({"error": errors}), 400
+
+    # check previous passwords
+    if user.roles[0].password_policy and user.roles[0].password_reuse_history:
+        prev_passwords = UserPasswordHistory.query.\
+            filter(UserPasswordHistory.user_id == user.id).\
+            order_by(UserPasswordHistory.set_date.desc()).\
+            limit(user.roles[0].password_reuse_history)
+        for record in prev_passwords:
+            if bcrypt.checkpw(request.json.get('password1').encode('utf-8'),
+                              record.password.encode('utf-8')):
+                errors['password1'] = ["This password has recently been used."]
+                break
+
+    if errors:
+        return jsonify({"error": errors}), 400
+
+    # save user and password history
+    user.password = request.json.get('password1')
+    pass_history = UserPasswordHistory(user=user,
+                                       password=user.password,
+                                       set_date=datetime.now())
+    db.session.add(pass_history)
+    db.session.commit()
+
+    # response
+    return jsonify({'success': 'true'}), 200
+
+
+def post_password_request_reset_code():
+    """Creates a password reset code for the current user, send via email.
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
+
+    # initialize user
+    user = None
+
+    # validate data
+    errors = {}
+    if 'email' not in request.json or not request.json['email']:
+        if 'email' not in errors:
+            errors['email'] = []
+        errors['email'].append("Missing data for required field.")
+    if request.json.get('email'):
+        temp_user = User(email=request.json.get('email'))
+        if temp_user:
+            user = User.query.filter(
+                User.status == User.STATUS_ENABLED,
+                User.roles.any(Role.id == 1),
+                User.email_digest == temp_user.email_digest).first()
+        if not user:
+            if 'email' not in errors:
+                errors['email'] = []
+            errors['email'].append("Email address not found.")
+
+    if errors:
+        return jsonify({"error": errors}), 400
+
+    # generate random seed
+    now = datetime.now()
+    unixtime = time.mktime(now.timetuple())
+    hash_object = hashlib.sha256(
+        (str(unixtime) + str(os.getpid()) +
+         User.CRYPT_DIGEST_SALT).encode('utf-8'))
+    random_seed = hash_object.hexdigest()
+
+    # save reset request
+    password_reset = PasswordReset(
+        user_id=user.id,
+        code=RandomString.user_code(8, random_seed),
+        is_used=False,
+        requested_at=datetime.now(),
+        ip_address=request.environ.get('HTTP_X_REAL_IP', request.remote_addr),
+        status=PasswordReset.STATUS_ENABLED,
+        status_changed_at=datetime.now()
+    )
+    db.session.add(password_reset)
+    db.session.commit()
+
+    # email notification
+    notify = Notify(current_app.config['ENV'], db)
+    response = notify.send(
+        user,
+        Notify.CHANNEL_EMAIL,
+        'password-reset-code',
+        name=user.profile.first_name if user.profile else 'User',
+        code=password_reset.code)
+
+    # response
+    return jsonify({'success': 'true', 'sent': response}), 201
+
+
+def put_password_reset():
+    """Updates the current user's password using a reset code.
+
+    :returns: JSON string of a `true` value; status code
+    :rtype: (str, int)
+    """
+    # pylint: disable=too-many-branches
+
+    # initialize user
+    user = None
+
+    # prep regex
+    re_password = re.compile(UserAccountSchema.re_password)
+
+    # validate data
+    errors = {}
+    if 'code' not in request.json or not request.json['code']:
+        if 'code' not in errors:
+            errors['code'] = []
+        errors['code'].append("Missing data for required field.")
+    if 'email' not in request.json or not request.json['email']:
+        if 'email' not in errors:
+            errors['email'] = []
+        errors['email'].append("Missing data for required field.")
+
+    if request.json.get('email'):
+        temp_user = User(email=request.json.get('email'))
+        if temp_user:
+            user = User.query.filter(
+                User.status == User.STATUS_ENABLED,
+                User.roles.any(Role.id == 1),
+                User.email_digest == temp_user.email_digest).first()
+        if not user:
+            if 'email' not in errors:
+                errors['email'] = []
+            errors['email'].append("Email address not found.")
+    if user and request.json.get('code'):
+        password_reset = PasswordReset.query.filter(
+            PasswordReset.status == PasswordReset.STATUS_ENABLED,
+            PasswordReset.code == request.json.get('code'),
+            PasswordReset.user_id == user.id,
+            PasswordReset.is_used == False,  # noqa; pylint: disable=singleton-comparison
+            (PasswordReset.requested_at +
+             timedelta(seconds=3600)) >= datetime.now()
+        ).first()
+        if not password_reset:
+            if 'code' not in errors:
+                errors['code'] = []
+            errors['code'].append("Invalid reset code.")
+
+    if 'password1' not in request.json or not request.json['password1']:
+        if 'password1' not in errors:
+            errors['password1'] = []
+        errors['password1'].append("Missing data for required field.")
+    if ('password1' in request.json and
+            not re_password.match(request.json['password1'])):
+        if 'password1' not in errors:
+            errors['password1'] = []
+        errors['password1'].append("Please choose a more complex password.")
+
+    if 'password2' not in request.json or not request.json['password2']:
+        if 'password2' not in errors:
+            errors['password2'] = []
+        errors['password2'].append("Missing data for required field.")
+    if 'password1' in request.json and 'password2' in request.json:
+        if request.json['password1'] != request.json['password2']:
+            if 'password2' not in errors:
+                errors['password2'] = []
+            errors['password2'].append("New passwords must match.")
+
+    if errors:
+        return jsonify({"error": errors}), 400
+
+    # save password reset record
+    password_reset.is_used = True
+
+    # save user
+    user.password = request.json.get('password1')
+    db.session.commit()
+
+    # response
+    return jsonify({'success': 'true'}), 200

@@ -11,7 +11,8 @@ from app import create_app
 from config import Config
 from modules.user_account.routes_public import post_user_account_step1, \
     post_user_account_step2, get_user_account, put_user_account, \
-    delete_user_account
+    delete_user_account, put_password, post_password_request_reset_code, \
+    put_password_reset
 from modules.users.model import User, UserTermsOfService, UserPasswordHistory
 from modules.terms_of_services.model import TermsOfService
 from modules.roles.model import Role
@@ -1395,6 +1396,293 @@ def test_delete_user_account_route_unauthorized(app, mocker, client):
     assert 'error' in response.json
 
 
+@pytest.mark.unit
+def test_put_password_ok(app, mocker):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'previous_password': "user2pass",
+        'password1': "user2Pass2",
+        'password2': "user2Pass2",
+    }
+
+    role = Role()
+    role.password_policy = True
+    role.password_reuse_history = 10
+
+    user2 = User()
+    user2.password = "user2pass"
+    user2.roles = [role]
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = user2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    pw_history1 = UserPasswordHistory()
+    pw_history1.password = "$2b$04$CgyaUQX08T5ntiGMD7GRDeLqknLxn/QoC0z7x/Ks8JG8lDrMVL.Xm"
+
+    # mock password history
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .__iter__.return_value = [pw_history1]
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_required_fail(app, mocker):
+    expected_status = 400
+    expected_json = {
+        'error': {
+            'password1': ['Missing data for required field.'],
+            'password2': ['Missing data for required field.'],
+            'previous_password': ['Missing data for required field.'],
+        }
+    }
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {'foo': "bar"}
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_password_previous_password_incorrect_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'previous_password': ['Incorrect password.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'previous_password': "bad_pass",
+        'password1': "user2Pass2",
+        'password2': "user2Pass2",
+    }
+
+    user2 = User()
+    user2.password = "user2pass"
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = user2
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_password_password1_complexity_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'password1': ['Please choose a more complex password.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'previous_password': "user2pass",
+        'password1': "password",
+        'password2': "password",
+    }
+
+    user2 = User()
+    user2.password = "user2pass"
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = user2
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_password_password2_match_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'password2': ['New passwords must match.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'previous_password': "user2pass",
+        'password1': "user2Pass2",
+        'password2': "user2Pass3",
+    }
+
+    user2 = User()
+    user2.password = "user2pass"
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = user2
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_password_password_history_reuse_fail(app, mocker):
+    expected_status = 400
+    expected_json = {'error': {
+        'password1': ['This password has recently been used.']}}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'previous_password': "user2pass",
+        'password1': "user2Pass2",
+        'password2': "user2Pass2",
+    }
+
+    role = Role()
+    role.password_policy = True
+    role.password_reuse_history = 10
+
+    user2 = User()
+    user2.password = "user2pass"
+    user2.roles = [role]
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = user2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    pw_history1 = UserPasswordHistory()
+    pw_history1.password = "$2b$04$Mf9/Xlftvv0NVHJpXseo2u9z7cL.jnIycojralfDRAtHfqZOIS1xm"
+
+    # mock password history
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .__iter__.return_value = [pw_history1]
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    result = put_password()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_json
+
+
+@pytest.mark.unit
+def test_put_password_route_ok(app, mocker, client):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    data = {
+        'previous_password': "user2pass",
+        'password1': "user2Pass2",
+        'password2': "user2Pass2",
+    }
+
+    role = Role()
+    role.password_policy = True
+    role.password_reuse_history = 10
+
+    user2 = User()
+    user2.password = "user2pass"
+    user2.roles = [role]
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = user2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    pw_history1 = UserPasswordHistory()
+    pw_history1.password = "$2b$04$CgyaUQX08T5ntiGMD7GRDeLqknLxn/QoC0z7x/Ks8JG8lDrMVL.Xm"
+
+    # mock password history
+    query_mock.return_value \
+        .filter.return_value \
+        .order_by.return_value \
+        .limit.return_value \
+        .__iter__.return_value = [pw_history1]
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    # mock user login
+    auth_mock = mocker.patch('modules.users.Authentication')
+    auth_mock.verify_password.return_value = True
+
+    response = client.put("/user_account/password?app_key=123", json=data)
+
+    assert response.status_code == expected_status
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.put("/user_account/password")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_put_password_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.put("/user_account/password?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_put_password_route_unauthorized(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.return_value = AppKey()
+
+    # mock user login
+    auth_mock = mocker.patch('modules.users.Authentication')
+    auth_mock.verify_password.side_effect = Unauthorized()
+
+    response = client.put("/user_account/password?app_key=123")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
 # INTEGRATION TESTS
 
 
@@ -1595,3 +1883,26 @@ def test_delete_user_account_route_with_data(client):
 
     assert response.status_code == expected_status
     assert response.json == expected_json
+
+
+@pytest.mark.integration
+def test_put_password_route_with_data(client, mocker):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    data = {
+        'previous_password': "user2pass",
+        'password1': "user2Pass2",
+        'password2': "user2Pass2",
+    }
+
+    credentials = base64.b64encode(
+        'user2:user2pass'.encode('ascii')).decode('utf-8')
+
+    response = client.put(
+        "/user_account/password?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        json=data,
+        headers={"Authorization": f"Basic {credentials}"})
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json
