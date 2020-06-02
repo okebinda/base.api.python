@@ -243,9 +243,9 @@ def test_get_administrators_route_ok(app, mocker, client):
         .filter.return_value \
         .first.return_value = admin1
 
-    db_mock = mocker.patch('modules.administrators.authentication.db')
-    db_mock.add.return_value = None
-    db_mock.commit.return_value = None
+    auth_db_mock = mocker.patch('modules.administrators.authentication.db')
+    auth_db_mock.add.return_value = None
+    auth_db_mock.commit.return_value = None
 
     query_mock.return_value \
         .filter.return_value \
