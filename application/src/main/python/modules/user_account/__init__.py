@@ -65,12 +65,11 @@ def public_routes(app):
 
     # POST /password/request-reset-code
     public.route('/password/request-reset-code', methods=['POST'])(
-        require_appkey(
-            auth_basic.login_required(post_password_request_reset_code)))
+        require_appkey(post_password_request_reset_code))
 
     # PUT /password/reset
     public.route('/password/reset', methods=['PUT'])(
-        require_appkey(auth_basic.login_required(put_password_reset)))
+        require_appkey(put_password_reset))
 
     app.register_blueprint(public)
 

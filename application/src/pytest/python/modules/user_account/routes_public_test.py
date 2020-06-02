@@ -16,6 +16,7 @@ from modules.user_account.routes_public import post_user_account_step1, \
 from modules.users.model import User, UserTermsOfService, UserPasswordHistory
 from modules.terms_of_services.model import TermsOfService
 from modules.roles.model import Role
+from modules.password_resets.model import PasswordReset
 from modules.app_keys.model import AppKey
 
 
@@ -1683,6 +1684,374 @@ def test_put_password_route_unauthorized(app, mocker, client):
     assert 'error' in response.json
 
 
+@pytest.mark.unit
+def test_post_password_request_reset_code_ok(app, mocker):
+    expected_status = 201
+    expected_m_json = {'success': 'true', 'sent': 1}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'email': "user2@test.com",
+    }
+
+    user2 = User()
+    user2.id = 2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = user2
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    notify_mock = mocker.patch('modules.user_account.routes_public.Notify')
+    notify_mock.return_value.send.return_value = 1
+
+    result = post_password_request_reset_code()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_post_password_request_reset_code_required_fail(app, mocker):
+    expected_status = 400
+    expected_m_json = {'error': {
+        'email': ["Missing data for required field."]
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'foo': "bar",
+    }
+
+    result = post_password_request_reset_code()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_post_password_request_reset_code_not_found_fail(app, mocker):
+    expected_status = 400
+    expected_m_json = {'error': {
+        'email': ["Email address not found."]
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'email': "someaddress@test.com",
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    result = post_password_request_reset_code()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_post_password_request_reset_code_route_ok(app, mocker, client):
+    expected_status = 201
+    expected_m_json = {'success': 'true', 'sent': 1}
+
+    data = {
+        'email': "user2@test.com",
+    }
+
+    user2 = User()
+    user2.id = 2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = user2
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    notify_mock = mocker.patch('modules.user_account.routes_public.Notify')
+    notify_mock.return_value.send.return_value = 1
+
+    response = client.post("/password/request-reset-code?app_key=123",
+                           json=data)
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json
+
+
+@pytest.mark.unit
+def test_post_password_request_reset_code_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.post("/password/request-reset-code")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_post_password_request_reset_code_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.post("/password/request-reset-code?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_put_password_reset_ok(app, mocker):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'code': "123ABC",
+        'email': "user2@test.com",
+        'password1': "newPass1",
+        'password2': "newPass1",
+    }
+
+    user2 = User()
+    user2.id = 2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.side_effect = [user2, PasswordReset()]
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.commit.return_value = None
+
+    result = put_password_reset()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_reset_required_fail(app, mocker):
+    expected_status = 400
+    expected_m_json = {'error': {
+        'code': ["Missing data for required field."],
+        'email': ["Missing data for required field."],
+        'password1': ["Missing data for required field."],
+        'password2': ["Missing data for required field."],
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'foo': "bar",
+    }
+
+    result = put_password_reset()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_reset_email_not_found_fail(app, mocker):
+    expected_status = 400
+    expected_m_json = {'error': {
+        'email': ["Email address not found."],
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'code': "123ABC",
+        'email': "someaddress@test.com",
+        'password1': "newPass1",
+        'password2': "newPass1",
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    result = put_password_reset()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_reset_code_not_found_fail(app, mocker):
+    expected_status = 400
+    expected_m_json = {'error': {
+        'code': ["Invalid reset code."],
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'code': "BADCODE",
+        'email': "user2@test.com",
+        'password1': "newPass1",
+        'password2': "newPass1",
+    }
+
+    user2 = User()
+    user2.id = 2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.side_effect = [user2, None]
+
+    result = put_password_reset()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_reset_password_complexity_fail(app, mocker):
+    expected_status = 400
+    expected_m_json = {'error': {
+        'password1': ["Please choose a more complex password."],
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'code': "ABC123",
+        'email': "user2@test.com",
+        'password1': "password",
+        'password2': "password",
+    }
+
+    user2 = User()
+    user2.id = 2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.side_effect = [user2, PasswordReset()]
+
+    result = put_password_reset()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_reset_password_match_fail(app, mocker):
+    expected_status = 400
+    expected_m_json = {'error': {
+        'password2': ["New passwords must match."],
+    }}
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        'code': "ABC123",
+        'email': "user2@test.com",
+        'password1': "newPass1",
+        'password2': "newPass2",
+    }
+
+    user2 = User()
+    user2.id = 2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.side_effect = [user2, PasswordReset()]
+
+    result = put_password_reset()
+
+    assert result[1] == expected_status
+    assert result[0].json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_reset_route_ok(app, mocker, client):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    data = {
+        'code': "123ABC",
+        'email': "user2@test.com",
+        'password1': "newPass1",
+        'password2': "newPass1",
+    }
+
+    user2 = User()
+    user2.id = 2
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock user from email
+    query_mock.return_value \
+        .filter.return_value \
+        .first.side_effect = [user2, PasswordReset()]
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.commit.return_value = None
+
+    response = client.put("/password/reset?app_key=123", json=data)
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json
+
+
+@pytest.mark.unit
+def test_put_password_reset_route_no_app_key(app, client):
+    expected_status = 401
+
+    response = client.put("/password/reset")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
+@pytest.mark.unit
+def test_put_password_reset_route_bad_app_key(app, mocker, client):
+    expected_status = 401
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock app key authorization db query
+    query_mock.return_value \
+        .filter.return_value \
+        .one.side_effect = NoResultFound()
+
+    response = client.put("/password/reset?app_key=BAD_KEY")
+
+    assert response.status_code == expected_status
+    assert 'error' in response.json
+
+
 # INTEGRATION TESTS
 
 
@@ -1903,6 +2272,46 @@ def test_put_password_route_with_data(client, mocker):
         "/user_account/password?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
         json=data,
         headers={"Authorization": f"Basic {credentials}"})
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json
+
+
+@pytest.mark.integration
+def test_post_password_request_reset_code_route_with_data(app, mocker, client):
+    expected_status = 201
+    expected_m_json = {'success': 'true', 'sent': 1}
+
+    data = {
+        'email': "user2@test.com",
+    }
+
+    notify_mock = mocker.patch('modules.user_account.routes_public.Notify')
+    notify_mock.return_value.send.return_value = 1
+
+    response = client.post(
+        "/password/request-reset-code?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        json=data)
+
+    assert response.status_code == expected_status
+    assert response.json == expected_m_json
+
+
+@pytest.mark.integration
+def test_put_password_reset_route_with_data(app, mocker, client):
+    expected_status = 200
+    expected_m_json = {'success': 'true'}
+
+    data = {
+        'code': "J91NP0",
+        'email': "user2@test.com",
+        'password1': "user2PassR3s3t",
+        'password2': "user2PassR3s3t",
+    }
+
+    response = client.put(
+        "/password/reset?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        json=data)
 
     assert response.status_code == expected_status
     assert response.json == expected_m_json
