@@ -46,7 +46,7 @@ shift $((OPTIND-1))
 
 # run integration tests
 cd /vagrant/application/src/main/python
-pipenv run coverage run -m --source=. pytest -W ignore -m integration ../../pytest/python/
+pipenv run coverage run -m --source=. pytest -m integration ../../pytest/python/
 
 # show coverage
 if [ "$FLAG_COVERAGE_REPORT" = true ]

@@ -13,7 +13,7 @@ def app():
     return app
 
 
-class TestModel(db.Model):
+class SomeModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
@@ -32,7 +32,7 @@ def test_unique_pass(app, mocker):
         .filter.return_value \
         .first.return_value = None
 
-    errors = unique({}, TestModel, TestModel.name, 'foo')
+    errors = unique({}, SomeModel, SomeModel.name, 'foo')
 
     assert errors == {}
 
@@ -44,19 +44,19 @@ def test_unique_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
         .filter.return_value \
-        .first.return_value = TestModel()
+        .first.return_value = SomeModel()
 
-    errors = unique({}, TestModel, TestModel.name, 'foo')
+    errors = unique({}, SomeModel, SomeModel.name, 'foo')
 
     assert errors == {'name': ['Value must be unique.']}
 
 
 @pytest.mark.unit
 def test_unique_update_no_diff_pass(app, mocker):
-    test_model = TestModel()
+    test_model = SomeModel()
     test_model.name = 'foo'
 
-    errors = unique({}, TestModel, TestModel.name, 'foo', update=test_model)
+    errors = unique({}, SomeModel, SomeModel.name, 'foo', update=test_model)
 
     assert errors == {}
 
@@ -69,10 +69,10 @@ def test_unique_update_diff_pass(app, mocker):
     query_mock.return_value \
         .filter.return_value \
         .first.return_value = None
-    test_model = TestModel()
+    test_model = SomeModel()
     test_model.name = 'bar'
 
-    errors = unique({}, TestModel, TestModel.name, 'foo', update=test_model)
+    errors = unique({}, SomeModel, SomeModel.name, 'foo', update=test_model)
 
     assert errors == {}
 
@@ -84,11 +84,11 @@ def test_unique_update_diff_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
         .filter.return_value \
-        .first.return_value = TestModel()
-    test_model = TestModel()
+        .first.return_value = SomeModel()
+    test_model = SomeModel()
     test_model.name = 'bar'
 
-    errors = unique({}, TestModel, TestModel.name, 'foo', update=test_model)
+    errors = unique({}, SomeModel, SomeModel.name, 'foo', update=test_model)
 
     assert errors == {'name': ['Value must be unique.']}
 
@@ -102,7 +102,7 @@ def test_unique_email_pass(app, mocker):
         .filter.return_value \
         .first.return_value = None
 
-    errors = unique_email({}, TestModel, TestModel.email, 'foo')
+    errors = unique_email({}, SomeModel, SomeModel.email, 'foo')
 
     assert errors == {}
 
@@ -114,19 +114,19 @@ def test_unique_email_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
         .filter.return_value \
-        .first.return_value = TestModel()
+        .first.return_value = SomeModel()
 
-    errors = unique_email({}, TestModel, TestModel.email, 'foo')
+    errors = unique_email({}, SomeModel, SomeModel.email, 'foo')
 
     assert errors == {'email': ['Value must be unique.']}
 
 
 @pytest.mark.unit
 def test_unique_email_update_no_diff_pass(app, mocker):
-    test_model = TestModel()
+    test_model = SomeModel()
     test_model.email = 'foo'
 
-    errors = unique_email({}, TestModel, TestModel.email, 'foo',
+    errors = unique_email({}, SomeModel, SomeModel.email, 'foo',
                           update=test_model)
 
     assert errors == {}
@@ -140,10 +140,10 @@ def test_unique_unique_email_diff_pass(app, mocker):
     query_mock.return_value \
         .filter.return_value \
         .first.return_value = None
-    test_model = TestModel()
+    test_model = SomeModel()
     test_model.email = 'bar'
 
-    errors = unique_email({}, TestModel, TestModel.email, 'foo',
+    errors = unique_email({}, SomeModel, SomeModel.email, 'foo',
                           update=test_model)
 
     assert errors == {}
@@ -156,11 +156,11 @@ def test_unique_update_diff_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
         .filter.return_value \
-        .first.return_value = TestModel()
-    test_model = TestModel()
+        .first.return_value = SomeModel()
+    test_model = SomeModel()
     test_model.email = 'bar'
 
-    errors = unique_email({}, TestModel, TestModel.email, 'foo',
+    errors = unique_email({}, SomeModel, SomeModel.email, 'foo',
                           update=test_model)
 
     assert errors == {'email': ['Value must be unique.']}
@@ -168,7 +168,7 @@ def test_unique_update_diff_fail(app, mocker):
 
 @pytest.mark.unit
 def test_exists_single_pass(app, mocker):
-    test_model = TestModel()
+    test_model = SomeModel()
     test_model.id = 1
 
     # mock db query
@@ -176,7 +176,7 @@ def test_exists_single_pass(app, mocker):
     query_mock.return_value \
         .get.return_value = test_model
 
-    errors, models = exists({}, TestModel, 'field', 1)
+    errors, models = exists({}, SomeModel, 'field', 1)
 
     assert errors == {}
     assert models == test_model
@@ -184,7 +184,7 @@ def test_exists_single_pass(app, mocker):
 
 @pytest.mark.unit
 def test_exists_multiple_pass(app, mocker):
-    test_model = TestModel()
+    test_model = SomeModel()
     test_model.id = 1
 
     # mock db query
@@ -192,7 +192,7 @@ def test_exists_multiple_pass(app, mocker):
     query_mock.return_value \
         .get.return_value = test_model
 
-    errors, models = exists({}, TestModel, 'field', [1, 2])
+    errors, models = exists({}, SomeModel, 'field', [1, 2])
 
     assert errors == {}
     assert models == [test_model, test_model]
@@ -206,7 +206,7 @@ def test_exists_single_fail(app, mocker):
     query_mock.return_value \
         .get.return_value = None
 
-    errors, models = exists({}, TestModel, 'field', 1)
+    errors, models = exists({}, SomeModel, 'field', 1)
 
     assert errors == {'field': ["Invalid value."]}
     assert models is None
@@ -220,7 +220,7 @@ def test_exists_multiple_fail(app, mocker):
     query_mock.return_value \
         .get.return_value = None
 
-    errors, models = exists({}, TestModel, 'field', [1, 2])
+    errors, models = exists({}, SomeModel, 'field', [1, 2])
 
     assert errors == {'field': ["Invalid value."]}
     assert models == []
@@ -234,7 +234,7 @@ def test_exists_no_pkey_fail(app, mocker):
     query_mock.return_value \
         .get.return_value = None
 
-    errors, models = exists({}, TestModel, 'field', None)
+    errors, models = exists({}, SomeModel, 'field', None)
 
     assert errors == {'field': ["Missing data for required field."]}
     assert models is None
@@ -248,7 +248,7 @@ def test_exists_single_custom_message_fail(app, mocker):
     query_mock.return_value \
         .get.return_value = None
 
-    errors, models = exists({}, TestModel, 'field', 1, invalid_error="foo")
+    errors, models = exists({}, SomeModel, 'field', 1, invalid_error="foo")
 
     assert errors == {'field': ["foo"]}
     assert models is None
@@ -262,7 +262,7 @@ def test_exists_no_pkey_custom_message_fail(app, mocker):
     query_mock.return_value \
         .get.return_value = None
 
-    errors, models = exists({}, TestModel, 'field', None, missing_error="bar")
+    errors, models = exists({}, SomeModel, 'field', None, missing_error="bar")
 
     assert errors == {'field': ["bar"]}
     assert models is None
