@@ -8,9 +8,9 @@ which is part of this source code package.
 
 from flask import Blueprint
 
-from lib.auth import auth_basic, permission_user, permission_super_admin
+from lib.auth import auth_basic, permission_user, permission_super_admin, \
+    check_password_expiration
 from modules.app_keys.middleware import require_appkey
-from modules.users.authentication import check_password_expiration
 from .routes_public import post_user_account_step1, post_user_account_step2, \
     get_user_account, put_user_account, delete_user_account, \
     put_password as public_put_password, post_password_request_reset_code, \

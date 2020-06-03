@@ -9,9 +9,9 @@ which is part of this source code package.
 from flask import Blueprint
 from flask_principal import identity_loaded
 
-from lib.auth import auth_basic, permission_super_admin
+from lib.auth import auth_basic, permission_super_admin, \
+    check_password_expiration
 from modules.app_keys.middleware import require_appkey
-from modules.users.authentication import check_password_expiration
 from .routes_auth import get_auth_token, get_auth_token_check
 from .routes_admin import get_administrators, post_administrator,\
     get_administrator, put_administrator, delete_administrator

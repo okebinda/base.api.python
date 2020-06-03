@@ -8,7 +8,8 @@ which is part of this source code package.
 
 from flask import Blueprint
 
-from lib.auth import auth_basic
+from lib.auth import auth_basic, permission_super_admin, \
+    check_password_expiration
 from modules.app_keys.middleware import require_appkey
 from .routes_admin import get_logins
 
@@ -34,7 +35,11 @@ def admin_routes(app):
     # GET /users
     admin.route("/logins", methods=['GET'])(
     admin.route("/logins/<int:page>", methods=['GET'])(
-    admin.route("/logins/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
-        require_appkey(auth_basic.login_required(get_logins)))))
+    admin.route("/logins/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            get_logins)))))))  # noqa
 
     app.register_blueprint(admin)

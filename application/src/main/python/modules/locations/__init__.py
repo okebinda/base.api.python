@@ -8,7 +8,8 @@ which is part of this source code package.
 
 from flask import Blueprint
 
-from lib.auth import auth_basic
+from lib.auth import auth_basic, permission_super_admin, \
+    check_password_expiration
 from modules.app_keys.middleware import require_appkey
 from .routes_public import \
     get_countries as public_get_countries, \
@@ -64,13 +65,21 @@ def admin_routes(app):
     # GET /countries
     admin.route("/countries", methods=['GET'])(
     admin.route("/countries/<int:page>", methods=['GET'])(
-    admin.route("/countries/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(  # noqa
-        require_appkey(auth_basic.login_required(admin_get_countries)))))
+    admin.route("/countries/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            admin_get_countries)))))))  # noqa
 
     # GET /countries
     admin.route("/regions", methods=['GET'])(
     admin.route("/regions/<int:page>", methods=['GET'])(
-    admin.route("/regions/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(  # noqa
-        require_appkey(auth_basic.login_required(admin_get_regions)))))
+    admin.route("/regions/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            admin_get_regions)))))))  # noqa
 
     app.register_blueprint(admin)

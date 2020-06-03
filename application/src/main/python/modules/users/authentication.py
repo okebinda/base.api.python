@@ -7,7 +7,6 @@ which is part of this source code package.
 # pylint: disable=no-member
 
 from datetime import datetime, timedelta
-from functools import wraps
 
 from flask import g, current_app, request, abort
 from flask_principal import Identity, RoleNeed, UserNeed, identity_changed
@@ -16,30 +15,6 @@ from init_dep import db
 from modules.logins.model import Login
 from modules.roles.model import Role
 from .model import User
-
-
-def check_password_expiration(view_function):
-    """A Decorator function to check if the current user's password has
-    expired.
-
-    :param view_function: The function to decorate
-    :type view_function: function
-    :return: The internal decorator function
-    :rtype: function
-    """
-
-    @wraps(view_function)
-    def decorated_function(*args, **kwargs):
-        """Internal decorator function"""
-
-        if hasattr(g, 'user'):
-            password_valid_window = g.user.password_changed_at + timedelta(
-                days=g.user.roles[0].password_reset_days)
-            pvw = password_valid_window.replace(tzinfo=None)
-            if pvw < datetime.now():
-                abort(403, "Password expired")
-        return view_function(*args, **kwargs)
-    return decorated_function
 
 
 class Authentication:
