@@ -9,7 +9,8 @@ which is part of this source code package.
 from flask import Blueprint
 from flask_principal import identity_loaded
 
-from lib.auth import auth_basic
+from lib.auth import auth_basic, permission_super_admin, permission_user, \
+    check_password_expiration
 from modules.app_keys.middleware import require_appkey
 from .routes_auth import get_auth_token, get_auth_token_check
 from .routes_admin import get_users, post_user, get_user, put_user, delete_user
@@ -48,11 +49,17 @@ def public_routes(app):
 
     # GET /token
     public.route('/token', methods=['GET'])(
-        require_appkey(auth_basic.login_required(get_auth_token)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_user.require(http_exception=403)(
+            get_auth_token))))  # noqa
 
     # GET /token/check
     public.route('/token/check', methods=['GET'])(
-        require_appkey(auth_basic.login_required(get_auth_token_check)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_user.require(http_exception=403)(
+            get_auth_token_check))))  # noqa
 
     app.register_blueprint(public)
 
@@ -69,23 +76,43 @@ def admin_routes(app):
     admin.route("/users", methods=['GET'])(
     admin.route("/users/<int:page>", methods=['GET'])(
     admin.route("/users/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
-        require_appkey(auth_basic.login_required(get_users)))))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            get_users)))))))  # noqa
 
     # POST /users
     admin.route('/users', methods=['POST'])(
-        require_appkey(auth_basic.login_required(post_user)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            post_user)))))  # noqa
 
     # GET /user/{id}
     admin.route('/user/<int:user_id>', methods=['GET'])(
     admin.route('/user/<string:username>', methods=['GET'])(  # noqa
-        require_appkey(auth_basic.login_required(get_user))))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            get_user))))))  # noqa
 
     # PUT /user/{id}
     admin.route('/user/<int:user_id>', methods=['PUT'])(
-        require_appkey(auth_basic.login_required(put_user)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            put_user)))))  # noqa
 
     # DELETE /user/{id}
     admin.route('/user/<int:user_id>', methods=['DELETE'])(
-        require_appkey(auth_basic.login_required(delete_user)))
+        require_appkey(
+        auth_basic.login_required(
+        permission_super_admin.require(http_exception=403)(
+        check_password_expiration(
+            delete_user)))))  # noqa
 
     app.register_blueprint(admin)

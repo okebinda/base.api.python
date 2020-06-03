@@ -65,7 +65,7 @@ def admin_routes(app):
     # GET /countries
     admin.route("/countries", methods=['GET'])(
     admin.route("/countries/<int:page>", methods=['GET'])(
-    admin.route("/countries/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(
+    admin.route("/countries/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(  # noqa
         require_appkey(
         auth_basic.login_required(
         permission_super_admin.require(http_exception=403)(
@@ -75,7 +75,7 @@ def admin_routes(app):
     # GET /countries
     admin.route("/regions", methods=['GET'])(
     admin.route("/regions/<int:page>", methods=['GET'])(
-    admin.route("/regions/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(
+    admin.route("/regions/<int:page>/<int(min=1, max=250):limit>", methods=['GET'])(  # noqa
         require_appkey(
         auth_basic.login_required(
         permission_super_admin.require(http_exception=403)(

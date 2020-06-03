@@ -10,6 +10,7 @@ from app import create_app
 from config import Config
 from modules.users.routes_auth import get_auth_token, get_auth_token_check
 from modules.users.model import User
+from modules.roles.model import Role
 from modules.app_keys.model import AppKey
 
 
@@ -70,18 +71,38 @@ def test_get_auth_token_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
+    role1 = Role()
+    role1.id = 1
+    role1.name = 'USER'
+    role1.password_reset_days = 365
+    role1.password_policy = True
+    role1.password_reuse_history = 10
+
     user2 = User()
     user2.id = 2
-    user2.username = 'user2'
+    user2.username = expected_r_username
+    user2.password = "user2pass"
+    user2.roles = [role1]
 
-    g_mock = mocker.patch('modules.users.routes_auth.g')
-    g_mock.user = user2
+    # mock user login db query
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = user2
+
+    db_mock = mocker.patch('modules.users.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
 
     # mock user login
-    auth_mock = mocker.patch('modules.users.Authentication')
-    auth_mock.verify_password.return_value = True
+    auth_mock = mocker.patch(
+        'modules.users.Authentication.is_account_locked')
+    auth_mock.return_value = False
 
-    response = client.get("/token?app_key=123")
+    credentials = base64.b64encode(
+        'user2:user2pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/token?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json['expiration'] == expected_r_expiration
@@ -162,11 +183,38 @@ def test_get_auth_token_check_route_ok(app, mocker, client):
         .filter.return_value \
         .one.return_value = AppKey()
 
-    # mock user login
-    auth_mock = mocker.patch('modules.users.Authentication')
-    auth_mock.verify_password.return_value = True
+    role1 = Role()
+    role1.id = 1
+    role1.name = 'USER'
+    role1.password_reset_days = 365
+    role1.password_policy = True
+    role1.password_reuse_history = 10
 
-    response = client.get("/token/check?app_key=123")
+    user2 = User()
+    user2.id = 2
+    user2.username = "user2"
+    user2.password = "user2pass"
+    user2.roles = [role1]
+
+    # mock user login db query
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = user2
+
+    db_mock = mocker.patch('modules.users.authentication.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    # mock user login
+    auth_mock = mocker.patch(
+        'modules.users.Authentication.is_account_locked')
+    auth_mock.return_value = False
+
+    credentials = base64.b64encode(
+        'user2:user2pass'.encode('ascii')).decode('utf-8')
+
+    response = client.get("/token/check?app_key=123",
+                          headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status
     assert response.json == expected_json

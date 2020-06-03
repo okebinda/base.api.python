@@ -35,7 +35,7 @@ def admin_routes(app):
     # GET /users
     admin.route("/logins", methods=['GET'])(
     admin.route("/logins/<int:page>", methods=['GET'])(
-    admin.route("/logins/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(
+    admin.route("/logins/<int:page>/<int(min=1, max=100):limit>", methods=['GET'])(  # noqa
         require_appkey(
         auth_basic.login_required(
         permission_super_admin.require(http_exception=403)(
