@@ -5,6 +5,7 @@ __pycache__
 .vagrant/
 application/.pybuilder/
 application/.pytest_cache/
+Pipfile.lock
 .coverage
 htmlcov/
 application/target/
