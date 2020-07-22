@@ -7,6 +7,7 @@ which is part of this source code package.
 
 from flask import Flask
 from flask_principal import Principal
+from flask_cors import CORS
 
 from init_dep import db, ma, logger
 from lib.wsgi import ReverseProxied
@@ -33,6 +34,11 @@ def create_app(config):
 
     # init authorization
     Principal(app)
+
+    # init CORS
+    if 'CORS_ORIGIN' in app.config:
+        CORS(app, supports_credentials=True,
+             resources={r"/*": {"origins": app.config['CORS_ORIGIN']}})
 
     # init database
     db.init_app(app)

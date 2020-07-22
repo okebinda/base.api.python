@@ -33,7 +33,7 @@ class Authentication:
         :return: True on success or abort on failure
         :rtype: bool
         """
-        print("TEST")
+
         # first try to authenticate by token
         user = User.verify_auth_token(username_or_token)
         if not user:
