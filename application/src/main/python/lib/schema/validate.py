@@ -109,12 +109,14 @@ def exists(errors, model, field, pkey, *, missing_error=None,
         elif isinstance(pkey, list):
             record = []
             for record_id in pkey:
-                record_item = model.query.get(int(record_id))
-                if record_item is None:
-                    errors.setdefault(field, [])
-                    errors[field].append(invalid_error)
-                    break
-                else:
-                    record.append(record_item)
+                if isinstance(record_id, int) or (isinstance(record_id, str)
+                                                  and record_id.isnumeric()):
+                    record_item = model.query.get(int(record_id))
+                    if record_item is None:
+                        errors.setdefault(field, [])
+                        errors[field].append(invalid_error)
+                        break
+                    else:
+                        record.append(record_item)
 
     return errors, record

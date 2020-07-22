@@ -99,6 +99,65 @@ def test_post_user_account_step1_ok(app, mocker):
 
 
 @pytest.mark.unit
+def test_post_user_account_step1_cap_username_ok(app, mocker):
+    expected_status = 201
+    expected_m_length = 8
+    expected_m_id = None
+    expected_m_user_username = "user9"
+    expected_m_user_email = "user9@test.com"
+    expected_m_user_is_verified = False
+    expected_m_user_first_name = None
+    expected_m_user_last_name = None
+    expected_m_user_joined_at = None
+    # @todo: timezone
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": "User9",
+        "email": expected_m_user_email,
+        "password": "user9Pass",
+        "password2": "user9Pass",
+        "tos_id": 2
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    # mock exists() validation
+    query_mock.return_value \
+        .get.return_value = TermsOfService()
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    result = post_user_account_step1()
+
+    assert result[1] == expected_status
+    assert 'user_account' in result[0].json
+    assert len(result[0].json['user_account']) == expected_m_length
+    assert result[0].json['user_account']['id'] == expected_m_id
+    assert result[0].json['user_account']['username'] == \
+        expected_m_user_username
+    assert result[0].json['user_account']['email'] == expected_m_user_email
+    assert result[0].json['user_account']['is_verified'] == \
+        expected_m_user_is_verified
+    assert result[0].json['user_account']['first_name'] == \
+        expected_m_user_first_name
+    assert result[0].json['user_account']['last_name'] == \
+        expected_m_user_last_name
+    assert result[0].json['user_account']['joined_at'] == \
+        expected_m_user_joined_at
+    assert bool(re_datetime.match(
+        result[0].json['user_account']['password_changed_at']))
+
+
+@pytest.mark.unit
 def test_post_user_account_step1_required_fail(app, mocker):
     expected_status = 400
     expected_json = {
@@ -970,6 +1029,63 @@ def test_put_user_account_ok(app, mocker):
     request_mock = mocker.patch('modules.user_account.routes_public.request')
     request_mock.json = {
         "username": expected_m_user_username,
+        "email": expected_m_user_email,
+        "first_name": expected_m_user_first_name,
+        "last_name": expected_m_user_last_name,
+    }
+
+    query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
+
+    # mock unique(), unique() email validation
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
+    db_mock = mocker.patch('modules.user_account.routes_public.db')
+    db_mock.add.return_value = None
+    db_mock.commit.return_value = None
+
+    g_mock = mocker.patch('modules.user_account.routes_public.g')
+    g_mock.user = User()
+
+    result = put_user_account()
+
+    assert result[1] == expected_status
+    assert 'user_account' in result[0].json
+    assert len(result[0].json['user_account']) == expected_m_length
+    assert result[0].json['user_account']['id'] == expected_m_id
+    assert result[0].json['user_account']['username'] == \
+        expected_m_user_username
+    assert result[0].json['user_account']['email'] == expected_m_user_email
+    assert result[0].json['user_account']['is_verified'] == \
+        expected_m_user_is_verified
+    assert result[0].json['user_account']['first_name'] == \
+        expected_m_user_first_name
+    assert result[0].json['user_account']['last_name'] == \
+        expected_m_user_last_name
+    assert result[0].json['user_account']['password_changed_at'] == \
+        expected_m_user_password_changed_at
+    assert bool(re_datetime.match(
+        result[0].json['user_account']['joined_at']))
+
+
+@pytest.mark.unit
+def test_put_user_account_cap_username_ok(app, mocker):
+    expected_status = 200
+    expected_m_length = 8
+    expected_m_id = None
+    expected_m_user_username = "user9"
+    expected_m_user_email = "user9@test.com"
+    expected_m_user_is_verified = None
+    expected_m_user_first_name = "Wilmer"
+    expected_m_user_last_name = "Munson"
+    expected_m_user_password_changed_at = None
+    # @todo: timezone
+    re_datetime = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+    request_mock = mocker.patch('modules.user_account.routes_public.request')
+    request_mock.json = {
+        "username": "User9",
         "email": expected_m_user_email,
         "first_name": expected_m_user_first_name,
         "last_name": expected_m_user_last_name,

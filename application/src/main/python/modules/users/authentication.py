@@ -44,7 +44,7 @@ class Authentication:
 
             # try to authenticate with username/password
             user = User.query.filter(
-                User.username == username_or_token,
+                User.username == username_or_token.lower().strip(),
                 User.status == User.STATUS_ENABLED).first()
             if not user or not user.check_password(password):
 

@@ -44,7 +44,7 @@ class Authentication:
 
             # try to authenticate with username/password
             user = Administrator.query.filter(
-                Administrator.username == username_or_token,
+                Administrator.username == username_or_token.lower().strip(),
                 Administrator.status == Administrator.STATUS_ENABLED).first()
             if not user or not user.check_password(password):
 

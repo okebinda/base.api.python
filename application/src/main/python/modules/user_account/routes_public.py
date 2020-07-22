@@ -37,10 +37,12 @@ def post_user_account_step1():
 
     # pre-validate data
     errors = unique({}, User, User.username,
-                    request.json.get('username', None))
+                    str(request.json.get('username')).lower().strip()
+                    if request.json.get('username', None) else None)
 
     errors = unique_email(errors, User, User.email,
-                          request.json.get('email', None))
+                          str(request.json.get('email')).lower().strip()
+                          if request.json.get('email', None) else None)
 
     errors, tos = exists(errors, TermsOfService, 'tos_id',
                          request.json.get('tos_id', None),
@@ -63,8 +65,8 @@ def post_user_account_step1():
         return jsonify({"error": errors}), 400
 
     # save user
-    user = User(username=data['username'].strip(),
-                email=data['email'].strip(),
+    user = User(username=data['username'].lower().strip(),
+                email=data['email'].lower().strip(),
                 password=data['password'],
                 is_verified=False,
                 status=User.STATUS_ENABLED,
@@ -204,10 +206,14 @@ def put_user_account():
 
     # pre-validate data
     errors = unique({}, User, User.username,
-                    request.json.get('username', None), update=user)
+                    str(request.json.get('username')).lower().strip()
+                    if request.json.get('username', None) else None,
+                    update=user)
 
     errors = unique_email(errors, User, User.email,
-                          request.json.get('email', None), update=user)
+                          str(request.json.get('email')).lower().strip()
+                          if request.json.get('email', None) else None,
+                          update=user)
 
     # validate data
     try:
@@ -221,8 +227,8 @@ def put_user_account():
         return jsonify({"error": errors}), 400
 
     # save user
-    user.username = data['username'].strip()
-    user.email = data['email'].strip()
+    user.username = data['username'].lower().strip()
+    user.email = data['email'].lower().strip()
 
     # save user profile
     if user_profile:
