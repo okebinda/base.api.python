@@ -33,4 +33,26 @@ class Config:
     CORS_ORIGIN = os.environ.get('CORS_ORIGIN', '')
 
     # logging properties
-    LOGGING_LEVEL = os.environ.get('LOGGING_LEVEL', 'ERROR')
+    LOGGING_DEFAULT_ENABLED = bool(int(os.environ.get(
+        'LOGGING_DEFAULT_ENABLED', 1)))
+    LOGGING_DEFAULT_LEVEL = os.environ.get(
+        'LOGGING_DEFAULT_LEVEL', 'ERROR')
+    LOGGING_DEFAULT_FILE = os.environ.get(
+        'LOGGING_DEFAULT_FILE', None)
+    LOGGING_DEFAULT_FILE_ROTATION = os.environ.get(
+        'LOGGING_DEFAULT_FILE_ROTATION', None)
+    LOGGING_DEFAULT_FILE_ROTATION_INTERVAL = int(os.environ.get(
+        'LOGGING_DEFAULT_FILE_ROTATION_INTERVAL', 1))
+    LOGGING_DEFAULT_FILE_ROTATION_RETENTION = int(os.environ.get(
+        'LOGGING_DEFAULT_FILE_ROTATION_RETENTION', 10))
+
+    LOGGING_ACCESS_ENABLED = bool(int(os.environ.get(
+        'LOGGING_ACCESS_ENABLED', 1)))
+    LOGGING_ACCESS_FILE = os.environ.get(
+        'LOGGING_ACCESS_FILE', None)
+    LOGGING_ACCESS_FILE_ROTATION = os.environ.get(
+        'LOGGING_ACCESS_FILE_ROTATION', None)
+    LOGGING_ACCESS_FILE_ROTATION_INTERVAL = int(os.environ.get(
+        'LOGGING_ACCESS_FILE_ROTATION_INTERVAL', 1))
+    LOGGING_ACCESS_FILE_ROTATION_RETENTION = int(os.environ.get(
+        'LOGGING_ACCESS_FILE_ROTATION_RETENTION', 10))

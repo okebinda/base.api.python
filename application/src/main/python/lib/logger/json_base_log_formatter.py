@@ -76,7 +76,6 @@ class JSONBaseLogFormatter(logging.Formatter):
         :return: Dictionary of request properties
         :trype: dict
         """
-        # pylint: disable=unused-argument
 
         # available fields
         available_fields = [
@@ -152,7 +151,6 @@ class JSONBaseLogFormatter(logging.Formatter):
         :return: Dictionary of response properties
         :trype: dict
         """
-        # pylint: disable=no-self-use
 
         # available fields
         available_fields = [

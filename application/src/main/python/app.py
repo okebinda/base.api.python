@@ -29,7 +29,7 @@ def create_app(config):
     app.config.from_object(config)
 
     # init logging
-    logger.init_app(app, app.config['LOGGING_LEVEL'])
+    logger.init_app(app)
 
     # init authorization
     Principal(app)
