@@ -42,6 +42,10 @@ def get_users(page=1, limit=10):
             'id.desc': User.id.desc(),
             'username.asc': User.username.asc(),
             'username.desc': User.username.desc(),
+            'created_at.asc': User.created_at.asc(),
+            'created_at.desc': User.created_at.desc(),
+            'updated_at.asc': User.updated_at.asc(),
+            'updated_at.desc': User.updated_at.desc(),
         },
         request.args,
         Query.STATUS_FILTER_ADMIN)
@@ -99,8 +103,8 @@ def post_user():
         return jsonify({"error": errors}), 400
 
     # save user
-    user = User(username=data['username'].strip(),
-                email=data['email'].strip(),
+    user = User(username=data['username'].lower().strip(),
+                email=data['email'].lower().strip(),
                 password=data['password'],
                 is_verified=data['is_verified'],
                 status=data['status'],
@@ -191,8 +195,8 @@ def put_user(user_id):
         return jsonify({"error": errors}), 400
 
     # save user
-    user.username = data['username'].strip()
-    user.email = data['email'].strip()
+    user.username = data['username'].lower().strip()
+    user.email = data['email'].lower().strip()
     user.is_verified = data['is_verified']
 
     if 'password' in data:

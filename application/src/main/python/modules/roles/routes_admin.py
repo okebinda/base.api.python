@@ -14,6 +14,8 @@ from init_dep import db
 from lib.routes.pager import Pager
 from lib.routes.query import Query
 from lib.schema.validate import unique
+from modules.users.model import User
+from modules.administrators.model import Administrator
 from .model import Role
 from .schema_admin import RoleAdminSchema
 
@@ -40,6 +42,10 @@ def get_roles(page=1, limit=10, role_type=None):
             'id.desc': Role.id.desc(),
             'name.asc': Role.name.asc(),
             'name.desc': Role.name.desc(),
+            'created_at.asc': Role.created_at.asc(),
+            'created_at.desc': Role.created_at.desc(),
+            'updated_at.asc': Role.updated_at.asc(),
+            'updated_at.desc': Role.updated_at.desc(),
         },
         request.args,
         Query.STATUS_FILTER_NONE)
@@ -199,6 +205,12 @@ def delete_role(role_id):
     role = Role.query.get(role_id)
     if role is None:
         abort(404)
+
+    # check if role is being used
+    if User.query.filter(User.roles.any(id=role.id)).first():
+        return jsonify({"error": {"role_id": ["Role is in use."]}}), 400
+    if Administrator.query.filter(Administrator.roles.any(id=role.id)).first():
+        return jsonify({"error": {"role_id": ["Role is in use."]}}), 400
 
     # delete role
     db.session.delete(role)

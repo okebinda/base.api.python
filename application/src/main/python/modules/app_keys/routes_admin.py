@@ -39,6 +39,10 @@ def get_app_keys(page=1, limit=10):
             'id.desc': AppKey.id.desc(),
             'application.asc': AppKey.application.asc(),
             'application.desc': AppKey.application.desc(),
+            'created_at.asc': AppKey.created_at.asc(),
+            'created_at.desc': AppKey.created_at.desc(),
+            'updated_at.asc': AppKey.updated_at.asc(),
+            'updated_at.desc': AppKey.updated_at.desc(),
         },
         request.args,
         Query.STATUS_FILTER_ADMIN)
@@ -72,6 +76,9 @@ def post_app_keys():
 
     # pre-validate data
     errors = unique({}, AppKey, AppKey.key, request.json.get('key', None))
+
+    errors = unique(errors, AppKey, AppKey.application,
+                    request.json.get('application', None))
 
     # validate data
     try:

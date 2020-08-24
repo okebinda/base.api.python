@@ -42,6 +42,10 @@ def get_administrators(page=1, limit=10):
             'username.desc': Administrator.username.desc(),
             'joined_at.asc': Administrator.joined_at.asc(),
             'joined_at.desc': Administrator.joined_at.desc(),
+            'created_at.asc': Administrator.created_at.asc(),
+            'created_at.desc': Administrator.created_at.desc(),
+            'updated_at.asc': Administrator.updated_at.asc(),
+            'updated_at.desc': Administrator.updated_at.desc(),
         },
         request.args,
         Query.STATUS_FILTER_ADMIN)
@@ -100,8 +104,8 @@ def post_administrator():
         return jsonify({"error": errors}), 400
 
     # save admin
-    admin = Administrator(username=data['username'],
-                          email=data['email'],
+    admin = Administrator(username=data['username'].lower().strip(),
+                          email=data['email'].lower().strip(),
                           first_name=data['first_name'],
                           last_name=data['last_name'],
                           password=data['password'],
@@ -178,8 +182,8 @@ def put_administrator(administrator_id):
         return jsonify({"error": errors}), 400
 
     # save administrator
-    administrator.username = data['username']
-    administrator.email = data['email']
+    administrator.username = data['username'].lower().strip()
+    administrator.email = data['email'].lower().strip()
     administrator.first_name = data['first_name']
     administrator.last_name = data['last_name']
     administrator.joined_at = data['joined_at']

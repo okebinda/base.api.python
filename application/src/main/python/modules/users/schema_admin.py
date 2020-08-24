@@ -76,6 +76,8 @@ class UserAdminSchema(ma.Schema):
                   'password', 'terms_of_services', 'password_changed_at',
                   'profile', 'is_verified')
         load_only = ['password']
+        dump_only = ['created_at', 'password_changed_at', 'status_changed_at',
+                     'updated_at']
         unknown = EXCLUDE  # fix for `role` property after marshmallow 3
 
     # hyperlinks
