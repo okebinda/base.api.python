@@ -40,6 +40,10 @@ def get_terms_of_services(page=1, limit=10):
             'publish_date.desc': TermsOfService.publish_date.desc(),
             'version.asc': TermsOfService.version.asc(),
             'version.desc': TermsOfService.version.desc(),
+            'created_at.asc': TermsOfService.created_at.asc(),
+            'created_at.desc': TermsOfService.created_at.desc(),
+            'updated_at.asc': TermsOfService.updated_at.asc(),
+            'updated_at.desc': TermsOfService.updated_at.desc(),
         },
         request.args,
         Query.STATUS_FILTER_ADMIN)
