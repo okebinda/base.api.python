@@ -50,10 +50,18 @@ def get_administrators(page=1, limit=10):
         request.args,
         Query.STATUS_FILTER_ADMIN)
 
-    # filter by role
+    # filter query based on URL parameters
     if request.args.get('role', '').isnumeric():
         query = query.filter(Administrator.roles.any(
             Role.id == int(request.args.get('role'))))
+    if request.args.get('username', None) is not None:
+        query = query.filter(
+            Administrator.username.ilike(
+                '%' + request.args.get('username') + '%'))
+    if request.args.get('email', None) is not None:
+        temp_user = Administrator(email=request.args.get('email'))
+        query = query.filter(
+            Administrator.email_digest == temp_user.email_digest)
 
     # retrieve and return results
     results = list(query.limit(limit).offset((page - 1) * limit))

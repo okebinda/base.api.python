@@ -47,6 +47,15 @@ def get_app_keys(page=1, limit=10):
         request.args,
         Query.STATUS_FILTER_ADMIN)
 
+    # filter query based on URL parameters
+    if request.args.get('application', None) is not None:
+        query = query.filter(
+            AppKey.application.ilike(
+                '%' + request.args.get('application') + '%'))
+    if request.args.get('key', None) is not None:
+        query = query.filter(
+            AppKey.key.ilike('%' + request.args.get('key') + '%'))
+
     # retrieve and return results
     results = list(query.limit(limit).offset((page - 1) * limit))
     if len(results) > 0:

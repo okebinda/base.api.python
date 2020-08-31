@@ -43,10 +43,10 @@ def get_logins(page=1, limit=25):
             Login.user_id == request.args.get('user_id'))
     if request.args.get('username', None) is not None:
         query = query.filter(
-            Login.username == request.args.get('username'))
+            Login.username.ilike('%' + request.args.get('username') + '%'))
     if request.args.get('ip_address', None) is not None:
         query = query.filter(
-            Login.ip_address == request.args.get('ip_address'))
+            Login.ip_address.ilike('%' + request.args.get('ip_address') + '%'))
     if request.args.get('api', None) is not None:
         query = query.filter(
             Login.api.in_(request.args.get('api').split(',')))

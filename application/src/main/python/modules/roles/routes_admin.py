@@ -54,6 +54,9 @@ def get_roles(page=1, limit=10, role_type=None):
     if role_type in ['admin', 'user']:
         query = query.filter(
             Role.is_admin_role == bool(role_type == 'admin'))
+    if request.args.get('name', None) is not None:
+        query = query.filter(
+            Role.name.ilike('%' + request.args.get('name') + '%'))
 
     # retrieve and return results
     results = list(query.limit(limit).offset((page - 1) * limit))
