@@ -102,8 +102,8 @@ class Query:
         :rtype: flask_sqlalchemy.BaseQuery
         """
 
-        if status is not None and status.isnumeric():
-            return query.filter(model.status == int(status))
+        if status is not None:
+            return query.filter(model.status.in_(status.split(',')))
         else:
             return query.filter(model.status.in_((model.STATUS_ENABLED,
                                                   model.STATUS_DISABLED,

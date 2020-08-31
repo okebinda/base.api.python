@@ -49,7 +49,10 @@ def get_logins(page=1, limit=25):
             Login.ip_address == request.args.get('ip_address'))
     if request.args.get('api', None) is not None:
         query = query.filter(
-            Login.api == request.args.get('api'))
+            Login.api.in_(request.args.get('api').split(',')))
+    if request.args.get('success', None) is not None:
+        query = query.filter(
+            Login.success.in_(request.args.get('success').split(',')))
 
     # retrieve and return results
     results = list(query.limit(limit).offset((page - 1) * limit))
