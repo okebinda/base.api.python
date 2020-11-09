@@ -1513,6 +1513,10 @@ def test_delete_role_ok(app, mocker):
     query_mock.return_value \
         .get.return_value = Role()
 
+    query_mock.return_value \
+        .filter.return_value \
+        .first.return_value = None
+
     db_mock = mocker.patch('modules.roles.routes_admin.db')
     db_mock.commit.return_value = None
 
@@ -1563,7 +1567,7 @@ def test_delete_role_route_ok(app, mocker, client):
 
     query_mock.return_value \
         .filter.return_value \
-        .first.side_effect = [admin1, None]
+        .first.side_effect = [admin1, None, None]
 
     auth_db_mock = mocker.patch('modules.administrators.authentication.db')
     auth_db_mock.add.return_value = None
@@ -1702,9 +1706,25 @@ def test_get_roles_route_with_data(client):
                 "password_reuse_history": 24,
                 "priority": 50,
                 "updated_at": "2018-01-11T00:00:00+0000"
+            },
+            {
+                "created_at": "2018-01-15T00:00:00+0000",
+                "id": 4,
+                "is_admin_role": True,
+                "login_ban_by_ip": True,
+                "login_ban_time": 3600,
+                "login_lockout_policy": True,
+                "login_max_attempts": 5,
+                "login_timeframe": 600,
+                "name": "EDITOR",
+                "password_policy": True,
+                "password_reset_days": 365,
+                "password_reuse_history": 24,
+                "priority": 75,
+                "updated_at": "2018-01-16T00:00:00+0000"
             }
         ],
-        "total": 3
+        "total": 4
     }
 
     credentials = base64.b64encode(
@@ -1757,7 +1777,7 @@ def test_get_role_1_route_with_data(client):
 def test_post_app_keys_route_with_data(client, mocker):
     expected_status = 201
     expected_m_length = 14
-    expected_m_id = 4
+    expected_m_id = 5
     expected_m_name = "SOME_ROLE"
     expected_m_is_admin_role = False
     expected_m_priority = 125
@@ -1898,7 +1918,7 @@ def test_delete_role_1_route_with_data(client):
         'admin1:admin1pass'.encode('ascii')).decode('utf-8')
 
     response = client.delete(
-        "/role/1?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
+        "/role/4?app_key=7sv3aPS45Ck8URGRKUtBdMWgKFN4ahfW",
         headers={"Authorization": f"Basic {credentials}"})
 
     assert response.status_code == expected_status

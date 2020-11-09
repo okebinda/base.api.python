@@ -591,7 +591,7 @@ def test_post_app_key_unique_fail(app, mocker):
     query_mock = mocker.patch('flask_sqlalchemy._QueryProperty.__get__')
     query_mock.return_value \
         .filter.return_value \
-        .first.return_value = AppKey()
+        .first.side_effect = [AppKey(), None]
 
     result = post_app_keys()
 
@@ -756,7 +756,7 @@ def test_post_app_key_route_ok(app, mocker, client):
 
     query_mock.return_value \
         .filter.return_value \
-        .first.side_effect = [admin1, None]
+        .first.side_effect = [admin1, None, None]
 
     auth_db_mock = mocker.patch('modules.administrators.authentication.db')
     auth_db_mock.add.return_value = None

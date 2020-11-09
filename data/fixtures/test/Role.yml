@@ -44,3 +44,18 @@
   password_reset_days: 365
   created_at: 2018-01-10 00:00:00
   updated_at: 2018-01-11 00:00:00
+
+04_role_editor:
+  name: EDITOR
+  is_admin_role: True
+  priority: 75
+  login_lockout_policy: true
+  login_max_attempts: 5
+  login_timeframe: 600
+  login_ban_time: 3600
+  login_ban_by_ip: true
+  password_policy: true
+  password_reuse_history: 24
+  password_reset_days: 365
+  created_at: 2018-01-15 00:00:00
+  updated_at: 2018-01-16 00:00:00

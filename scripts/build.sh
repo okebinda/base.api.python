@@ -12,6 +12,7 @@
 #  Options:
 #   -d : Build the local development environment
 #   -r : Rebuild the local development environment
+#   -s : Sync the dependencies with pipfile.lock
 #
 #################################################
 
@@ -19,12 +20,14 @@
 # flags
 FLAG_LOCAL_DEVELOPMENT_BUILD='false'
 FLAG_LOCAL_DEVELOPMENT_REBUILD='false'
+FLAG_LOCAL_DEVELOPMENT_SYNC='false'
 
 # options
-while getopts 'dr' flag; do
+while getopts 'drs' flag; do
   case "${flag}" in
     d) FLAG_LOCAL_DEVELOPMENT_BUILD='true' ;;
     r) FLAG_LOCAL_DEVELOPMENT_REBUILD='true' ;;
+    s) FLAG_LOCAL_DEVELOPMENT_SYNC='true' ;;
     *) error "Unexpected option ${flag}" ;;
   esac
 done
@@ -85,9 +88,27 @@ then
 
 fi
 
+# LOCAL DEVELOPMENT SYNC
+if [ "$FLAG_LOCAL_DEVELOPMENT_SYNC" = true ]
+then
+
+  echo -e "\n${HIGHLIGHT_COLOR}Installing dependencies...${DEFAULT_COLOR}"
+
+  # install dependencies
+  cd /vagrant/application
+  pipenv sync --dev
+
+  # load data fixtures
+  cd /vagrant
+  ./scripts/load_data.sh
+
+  echo -e "\n${HIGHLIGHT_COLOR}Rebuild complete.${DEFAULT_COLOR}\n"
+
+fi
+
 
 # PYBUILDER
-if [[ "$FLAG_LOCAL_DEVELOPMENT_BUILD" = false && "$FLAG_LOCAL_DEVELOPMENT_REBUILD" = false ]]
+if [[ "$FLAG_LOCAL_DEVELOPMENT_BUILD" = false && "$FLAG_LOCAL_DEVELOPMENT_REBUILD" = false && "$FLAG_LOCAL_DEVELOPMENT_SYNC" = false ]]
 then
 
   echo -e "\n${HIGHLIGHT_COLOR}Running pybuilder...${DEFAULT_COLOR}"
