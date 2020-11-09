@@ -53,7 +53,7 @@ then
   pip install pybuilder
 
   # create and activate virtual environment
-  pipenv install --dev
+  pipenv sync --dev
 
   echo -e "\n${HIGHLIGHT_COLOR}Adding database extensions...${DEFAULT_COLOR}"
 

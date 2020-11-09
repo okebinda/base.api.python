@@ -10,7 +10,7 @@
 #  https://www.ubuntu.com/
 #
 #  Packages:
-#   Python3 3.8
+#   Python3 3.9
 #   PostgreSQL 12
 #   Nginx 1.17
 #   vim tmux screen git zip
@@ -47,10 +47,6 @@ apt install -y vim tmux screen git zip
 
 # install AWS command line interface
 apt install -y awscli
-
-# install ansible
-apt install ansible -y
-cp /vagrant/provision/development/templates/etc/ansible/hosts /etc/ansible/hosts
 
 
 #####################
@@ -93,11 +89,26 @@ echo 'eval "$(pyenv init -)"' >> /home/vagrant/.bashrc
 echo 'eval "$(pyenv virtualenv-init -)"' >> /home/vagrant/.bashrc
 
 # install and use python 3.8.3
-su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv install 3.8.3"
-su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv global 3.8.3"
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv install 3.9.0"
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv global 3.9.0"
 
 # install pipenv
 su - vagrant -c "/home/vagrant/.pyenv/shims/pip install pipenv"
+
+
+##################
+#
+# Install Ansible
+#
+##################
+
+# install ansible for vagrant user
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/vagrant/.bashrc
+su - vagrant -c "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py"
+su - vagrant -c "~/.pyenv/shims/python get-pip.py --user"
+su - vagrant -c "~/.pyenv/shims/pip install --user ansible"
+mkdir -p /etc/ansible
+cp /vagrant/provision/development/templates/etc/ansible/hosts /etc/ansible/hosts
 
 
 ################
