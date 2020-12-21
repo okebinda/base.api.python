@@ -35,4 +35,7 @@ jobs:
             - ".venv"
             - "/usr/local/bin"
             - "/usr/local/lib/python3.9/site-packages"
+      - run:
+          command: |
+            pipenv run coverage run -m --source=application/src/main/python pytest -n auto -m unit application/src/pytest/python
  
