@@ -2,8 +2,6 @@ version: 2
 
 jobs:
   build:
-  
-    working_directory: ~/application
 
     docker:
       - image: circleci/python:3.9.1
@@ -26,13 +24,13 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
       - restore_cache:  # ensure this step occurs *before* installing dependencies
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: deps9-{{ .Branch }}-{{ checksum "application/Pipfile.lock" }}
       - run:
           command: |
             sudo pip install pipenv
             pipenv sync
       - save_cache:
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: deps9-{{ .Branch }}-{{ checksum "application/Pipfile.lock" }}
           paths:
             - ".venv"
             - "/usr/local/bin"
