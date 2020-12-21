@@ -40,6 +40,13 @@ jobs:
             - "/usr/local/bin"
             - "/usr/local/lib/python3.9/site-packages"
       - run:
+          name: Run linters
+          command: |
+            pipenv run bandit -r application/src/main/python/
+            pipenv run pyflakes application/src/main/python/
+            pipenv run pycodestyle application/src/main/python/
+            pipenv run pylint application/src/main/python/*
+      - run:
           name: Run unit tests
           command: |
             cd application/src/main/python
