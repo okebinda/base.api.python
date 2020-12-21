@@ -44,7 +44,7 @@ jobs:
           command: |
             cd application
             pipenv run bandit -r src/main/python/
-            pipenv run pyflakes main/python/
+            pipenv run pyflakes src/main/python/
             pipenv run pycodestyle src/main/python/
             pipenv run pylint src/main/python/*
       - run:
