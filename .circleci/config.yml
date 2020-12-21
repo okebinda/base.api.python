@@ -2,7 +2,6 @@ version: 2
 
 jobs:
   build:
-    working_directory: ~/application
 
     docker:
       - image: circleci/python:3.9.1
@@ -19,6 +18,7 @@ jobs:
           CRYPT_SYM_SECRET_KEY: VEsuvPZ2W5M8Hb8s7cddMyAMB3g9LPf8VmC4hFmJWckG5htZfgybREBeDa2WaUDs
           CRYPT_DIGEST_SALT: mTqjD2YZKU4SXwT7uADbA5bndcc2meEz9PWgX56acdZUZpKn9X82SaJ67F8x8XAK
           LOGGING_LEVEL: INFO
+          PIPENV_PIPFILE: application/Pipfile
 
     steps:
       - checkout
