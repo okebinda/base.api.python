@@ -28,7 +28,7 @@ jobs:
       - run:
           command: |
             sudo pip install pipenv
-            pipenv sync
+            pipenv sync --dev
       - save_cache:
           key: deps9-{{ .Branch }}-{{ checksum "application/Pipfile.lock" }}
           paths:
