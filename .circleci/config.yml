@@ -9,7 +9,7 @@ jobs:
           username: mydockerhub-user
           password: $DOCKERHUB_PASSWORD
         environment:
-          PIPENV_PIPFILE: application/Pipfile
+          PIPENV_PIPFILE: /home/circleci/project/application/Pipfile
           DATABASE_URL: postgresql://api_admin:passpass@localhost:5432/api_db_test
           SECRET_KEY: SrJMTtdN7vu9NBBLgzNYRczC3UaWbUYuSwzD7CDduRfNjSPPKQZYzpjQFP4fKD3C
           AUTH_SECRET_KEY: XHmhmQzSqudjUBpuYT7CXUCnsJC4j274T84E7Hm7MYHccY8Gyfeg4apzPKxbb76N
@@ -23,7 +23,7 @@ jobs:
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
-      - restore_cache:  # ensure this step occurs *before* installing dependencies
+      - restore_cache:
           key: deps9-{{ .Branch }}-{{ checksum "application/Pipfile.lock" }}
       - run:
           command: |
