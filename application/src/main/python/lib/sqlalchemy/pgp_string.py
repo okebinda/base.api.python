@@ -14,7 +14,7 @@ class PGPString(BYTEA):
     """Defines an encrypted database field"""
 
     def __init__(self, passphrase, length=None):
-        super(PGPString, self).__init__(length)
+        super().__init__(length)
         self.passphrase = passphrase
 
     def bind_expression(self, bindvalue):

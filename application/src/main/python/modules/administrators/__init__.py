@@ -4,7 +4,7 @@ Administrators module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
-# pylint: disable=line-too-long,bad-continuation
+# pylint: disable=line-too-long
 
 from flask import Blueprint
 from flask_principal import identity_loaded

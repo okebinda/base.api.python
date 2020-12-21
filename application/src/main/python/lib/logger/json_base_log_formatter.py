@@ -4,7 +4,7 @@ logging.Formatter subclass for logging in JSON format.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
-# pylint: disable=consider-iterating-dictionary
+# pylint: disable=consider-iterating-dictionary,unused-argument,no-self-use
 
 from datetime import datetime, timezone
 import json

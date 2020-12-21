@@ -88,9 +88,9 @@ echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /home/vagrant/.bashrc
 echo 'eval "$(pyenv init -)"' >> /home/vagrant/.bashrc
 echo 'eval "$(pyenv virtualenv-init -)"' >> /home/vagrant/.bashrc
 
-# install and use python 3.8.3
-su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv install 3.9.0"
-su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv global 3.9.0"
+# install and use python 3.9.1
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv install 3.9.1"
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv global 3.9.1"
 
 # install pipenv
 su - vagrant -c "/home/vagrant/.pyenv/shims/pip install pipenv"

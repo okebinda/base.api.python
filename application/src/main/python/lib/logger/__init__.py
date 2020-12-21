@@ -4,15 +4,15 @@ Logger module.
 This file is subject to the terms and conditions defined in file 'LICENSE',
 which is part of this source code package.
 """
-# pylint: disable=unused-variable,too-few-public-methods
+# pylint: disable=unused-variable,too-few-public-methods,too-many-instance-attributes,too-many-arguments,too-many-branches,too-many-statements  # noqa
 
 
 import logging
-from logging.config import dictConfig
 import uuid
+from datetime import datetime, timezone
+from logging.config import dictConfig
 
 from flask import g
-from datetime import datetime, timezone
 
 from .json_access_log_formatter import JSONAccessLogFormatter
 from .json_default_log_formatter import JSONDefaultLogFormatter
