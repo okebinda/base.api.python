@@ -21,11 +21,15 @@ jobs:
 
     steps:
       - checkout
-      - run: sudo chown -R circleci:circleci /usr/local/bin
-      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
+      - run:
+          name: Update directory ownership
+          command: |
+            sudo chown -R circleci:circleci /usr/local/bin
+            sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
       - restore_cache:
           key: deps9-{{ .Branch }}-{{ checksum "application/Pipfile.lock" }}
       - run:
+          name: Install dependencies
           command: |
             sudo pip install pipenv
             pipenv sync --dev
@@ -36,6 +40,7 @@ jobs:
             - "/usr/local/bin"
             - "/usr/local/lib/python3.9/site-packages"
       - run:
+          name: Run unit tests
           command: |
             cd application/src/main/python
             pipenv run coverage run -m --source=. pytest -n auto -m unit ../../pytest/python
