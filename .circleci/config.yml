@@ -42,10 +42,11 @@ jobs:
       - run:
           name: Run linters
           command: |
-            pipenv run bandit -r application/src/main/python/
-            pipenv run pyflakes application/src/main/python/
-            pipenv run pycodestyle application/src/main/python/
-            pipenv run pylint application/src/main/python/*
+            cd application
+            pipenv run bandit -r src/main/python/
+            pipenv run pyflakes main/python/
+            pipenv run pycodestyle src/main/python/
+            pipenv run pylint src/main/python/*
       - run:
           name: Run unit tests
           command: |
