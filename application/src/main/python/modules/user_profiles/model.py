@@ -6,10 +6,10 @@ which is part of this source code package.
 """
 # pylint: disable=no-member,too-few-public-methods
 
-from init_dep import db
-from config import Config
 from lib.sqlalchemy.base_model import BaseModel
 from lib.sqlalchemy.pgp_string import PGPString
+from init_dep import db
+from config import Config
 
 
 class UserProfile(db.Model, BaseModel):

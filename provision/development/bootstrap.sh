@@ -16,6 +16,7 @@
 #   vim tmux screen git zip
 #   awscli
 #   ansible
+#   docker
 #
 #  author: https://github.com/okebinda
 #  date: May, 2020
@@ -142,6 +143,29 @@ ln -s /etc/nginx/sites-available/base.api.admin.python.vm.conf /etc/nginx/sites-
 
 # restart nginx
 systemctl restart nginx
+
+
+##################
+#
+# Install Docker
+#
+##################
+
+# setup docker registry
+apt install -y  apt-transport-https ca-certificates curl gnupg-agent software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+# install docker
+apt update
+apt install -y docker-ce docker-ce-cli containerd.io
+
+# update permissions
+usermod -aG docker vagrant
+
+# install docker-compose
+curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
 
 ###############

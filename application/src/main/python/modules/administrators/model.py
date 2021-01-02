@@ -15,10 +15,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 
-from init_dep import db
-from config import Config
 from lib.sqlalchemy.base_model import BaseModel
 from lib.sqlalchemy.pgp_string import PGPString
+from init_dep import db
+from config import Config
 
 
 # relation tables
