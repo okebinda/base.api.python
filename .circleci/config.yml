@@ -1,0 +1,55 @@
+version: 2
+
+jobs:
+  build:
+
+    docker:
+      - image: circleci/python:3.9.1
+        auth:
+          username: mydockerhub-user
+          password: $DOCKERHUB_PASSWORD
+        environment:
+          PIPENV_PIPFILE: /home/circleci/project/application/Pipfile
+          DATABASE_URL: postgresql://api_admin:passpass@localhost:5432/api_db_test
+          SECRET_KEY: SrJMTtdN7vu9NBBLgzNYRczC3UaWbUYuSwzD7CDduRfNjSPPKQZYzpjQFP4fKD3C
+          AUTH_SECRET_KEY: XHmhmQzSqudjUBpuYT7CXUCnsJC4j274T84E7Hm7MYHccY8Gyfeg4apzPKxbb76N
+          AUTH_TOKEN_EXPIRATION: 14400
+          AUTH_HASH_ROUNDS: 4
+          CRYPT_SYM_SECRET_KEY: VEsuvPZ2W5M8Hb8s7cddMyAMB3g9LPf8VmC4hFmJWckG5htZfgybREBeDa2WaUDs
+          CRYPT_DIGEST_SALT: mTqjD2YZKU4SXwT7uADbA5bndcc2meEz9PWgX56acdZUZpKn9X82SaJ67F8x8XAK
+          LOGGING_LEVEL: INFO
+
+    steps:
+      - checkout
+      - run:
+          name: Update directory ownership
+          command: |
+            sudo chown -R circleci:circleci /usr/local/bin
+            sudo chown -R circleci:circleci /usr/local/lib/python3.9/site-packages
+      - restore_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "application/Pipfile.lock" }}
+      - run:
+          name: Install dependencies
+          command: |
+            sudo pip install pipenv
+            pipenv sync --dev
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "application/Pipfile.lock" }}
+          paths:
+            - ".venv"
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.9/site-packages"
+      - run:
+          name: Run linters
+          command: |
+            cd application
+            pipenv run bandit -r src/main/python/
+            pipenv run pyflakes src/main/python/
+            pipenv run pycodestyle src/main/python/
+            pipenv run pylint src/main/python/*
+      - run:
+          name: Run unit tests
+          command: |
+            cd application/src/main/python
+            pipenv run coverage run -m --source=. pytest -n auto -m unit ../../pytest/python
+ 
