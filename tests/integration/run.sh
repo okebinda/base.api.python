@@ -21,7 +21,7 @@ export COVERAGE_FILE='/vagrant/tests/integration/.coverage'
 # export env variables
 cd /vagrant/application
 set -o allexport
-source config/.env.public.test
+source config/.env.test
 set +o allexport
 
 # flags
