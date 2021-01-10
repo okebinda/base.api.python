@@ -125,28 +125,6 @@ systemctl enable nginx.service
 
 ##################
 #
-# Configure Nginx
-#
-##################
-
-# symlink mapped application directory to operational /var subdirectory
-mkdir -p /var/www/vhosts
-ln -s /vagrant/application /var/www/vhosts/base.api.python.vm
-
-# setup public API reverse proxy
-cp /vagrant/provision/development/templates/etc/nginx/sites-available/base.api.python.vm.conf /etc/nginx/sites-available/base.api.python.vm.conf
-ln -s /etc/nginx/sites-available/base.api.python.vm.conf /etc/nginx/sites-enabled/base.api.python.vm.conf
-
-# setup admin API reverse proxy
-cp /vagrant/provision/development/templates/etc/nginx/sites-available/base.api.admin.python.vm.conf /etc/nginx/sites-available/base.api.admin.python.vm.conf
-ln -s /etc/nginx/sites-available/base.api.admin.python.vm.conf /etc/nginx/sites-enabled/base.api.admin.python.vm.conf
-
-# restart nginx
-systemctl restart nginx
-
-
-##################
-#
 # Install Docker
 #
 ##################
@@ -166,6 +144,48 @@ usermod -aG docker vagrant
 # install docker-compose
 curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
+
+
+####################
+#
+# Install MicroK8s
+#
+####################
+
+## install MicroK8s
+#snap install microk8s --classic
+#
+## enable addons
+#microk8s enable dns
+
+## deployment
+#microk8s kubectl create deployment api --image=application_api
+#microk8s kubectl scale deployment api --replicas=2
+#
+## service
+#microk8s kubectl expose deployment api --type=NodePort --port=5000 --name=api-service
+
+
+##################
+#
+# Configure Nginx
+#
+##################
+
+# symlink mapped application directory to operational /var subdirectory
+mkdir -p /var/www/vhosts
+ln -s /vagrant/application /var/www/vhosts/base.api.python.vm
+
+# setup public API reverse proxy
+cp /vagrant/provision/development/templates/etc/nginx/sites-available/base.api.python.vm.conf /etc/nginx/sites-available/base.api.python.vm.conf
+ln -s /etc/nginx/sites-available/base.api.python.vm.conf /etc/nginx/sites-enabled/base.api.python.vm.conf
+
+# setup admin API reverse proxy
+cp /vagrant/provision/development/templates/etc/nginx/sites-available/base.api.admin.python.vm.conf /etc/nginx/sites-available/base.api.admin.python.vm.conf
+ln -s /etc/nginx/sites-available/base.api.admin.python.vm.conf /etc/nginx/sites-enabled/base.api.admin.python.vm.conf
+
+# restart nginx
+systemctl restart nginx
 
 
 ###############
