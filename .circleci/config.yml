@@ -55,6 +55,6 @@ workflows:
       - aws-ecr/build-and-push-image:
           requires:
             - build-and-test
-          repo: base/api.python
+          repo: "${AWS_REPO}"
           tag: "${CIRCLE_SHA1}"
           path: /home/circleci/project/application
