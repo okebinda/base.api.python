@@ -49,12 +49,14 @@ jobs:
             PIPENV_DOTENV_LOCATION=/home/circleci/project/application/config/.env.test pipenv run coverage run -m --source=. pytest -n auto -m unit ../../pytest/python
 
 workflows:
-  build-and-test:
+  dev-build-test-and-push-image:
+    when:
+      equal: [ "dev", << pipeline.git.branch >> ]
     jobs:
       - build-and-test
       - aws-ecr/build-and-push-image:
           requires:
             - build-and-test
           repo: "${AWS_REPO}"
-          tag: "${CIRCLE_SHA1}"
+          tag: "dev-${CIRCLE_SHA1}"
           path: /home/circleci/project/application
