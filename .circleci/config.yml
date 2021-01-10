@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-ecr: circleci/aws-ecr@6.15.2
+
 jobs:
   build-and-test:
 
@@ -49,3 +52,9 @@ workflows:
   build-and-test:
     jobs:
       - build-and-test
+      - aws-ecr/build-and-push-image:
+          requires:
+            - build-and-test
+          repo: base/api.python
+          tag: "${CIRCLE_SHA1}"
+          path: /home/circleci/project/application
