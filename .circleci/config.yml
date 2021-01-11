@@ -63,6 +63,8 @@ workflows:
           requires:
             - build-and-test
           filters:
+            tags:
+              only: /.*/
             branches:
               only: dev
           repo: "${AWS_REPO}"
