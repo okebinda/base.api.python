@@ -49,14 +49,35 @@ jobs:
             PIPENV_DOTENV_LOCATION=/home/circleci/project/application/config/.env.test pipenv run coverage run -m --source=. pytest -n auto -m unit ../../pytest/python
 
 workflows:
-  dev-build-test-and-push-image:
-    when:
-      equal: [ "dev", << pipeline.git.branch >> ]
+  build-test-and-push-image:
     jobs:
-      - build-and-test
+
+      # all commits run unit tests
+      - build-and-test:
+          filters:
+            tags:
+              only: /.*/
+
+      # dev branch commits always create a new dev image
       - aws-ecr/build-and-push-image:
           requires:
             - build-and-test
+          filters:
+            branches:
+              only: dev
           repo: "${AWS_REPO}"
           tag: "dev-${CIRCLE_SHA1}"
+          path: /home/circleci/project/application
+
+      # release tags create a new prod image
+      - aws-ecr/build-and-push-image:
+          requires:
+            - build-and-test
+          filters:
+            tags:
+              only: /^release-.*/
+            branches:
+              ignore: /.*/
+          repo: "${AWS_REPO}"
+          tag: "${CIRCLE_TAG}"
           path: /home/circleci/project/application
