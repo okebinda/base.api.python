@@ -57,6 +57,8 @@ workflows:
           filters:
             tags:
               only: /.*/
+            branches:
+              only: /.*/
 
       # dev branch commits always create a new dev image
       - aws-ecr/build-and-push-image:
