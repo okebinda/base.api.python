@@ -155,7 +155,7 @@ $ ./scripts/build.sh
 ## Additional Documentation
 
 * [Working with Vagrant](documentation/vagrant.md)
-* [Recommended Gitflow](documentation/gitflow.md)
+* [Recommended Git Flow](documentation/gitflow.md)
 * [CircleCI Integration](documentation/circleci-integration.md)
 
 ## Repository Directory Structure

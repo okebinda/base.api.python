@@ -12,7 +12,7 @@ The recommended gitflow for this project is as follows:
 * Feature branches should be merged into the `main` branch for QA/Prod deployment
 * Feature branches should be removed once successfully deployed to Prod
 * The `dev` should be reset to `main` from time-to-time to keep it clean
-* Releases for QA/Prod must be based on the `main` branch, and tagged with 'release-\*.\*.\*' using major-minor-revision notation
+* Releases for QA/Prod must be based on the `main` branch, and tagged with the format: 'release-{major}.{minor}.{revision}', for example: 'release-1.0.3'
 
 ## Starting a New Feature
 
@@ -71,14 +71,14 @@ $ git push origin
 
 ### Tag
 
-Tag the release. Release tags should use semantic versioning, following the format: 'release-\*.\*.\*' (major.minor.revision).
+Tag the release. Release tags should use semantic versioning, following the format: 'release-{major}.{minor}.{revision}'.
 
 ```ssh
 $ git tag -a <release-tag> -m <tag-message>
 $ git push origin <release-tag>
 ```
 
-If you are using the default CircleCI configuration, this will build a production-ready Container image and push it to AWS ECR where it can be deployed manually.
+If you are using the default CircleCI configuration, this will build a production-ready Docker image and push it to AWS ECR where it can be deployed manually.
 
 ## Removing an Old Feature Branch
 
