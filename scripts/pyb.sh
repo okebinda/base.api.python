@@ -16,7 +16,7 @@ cd /vagrant/application
 
 # export env variables
 set -o allexport
-source config/.env.public.test
+source config/.env.test
 set +o allexport
 
 # create requirements.txt

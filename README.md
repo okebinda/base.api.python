@@ -25,36 +25,7 @@ Also, to access the API from your host machine you should update your local DNS 
 172.29.17.200 base.api.python.vm base.api.admin.python.vm
 ```
 
-### Start Virtual Machine
-
-Starts the local development environment and logs in to the virtual machine. This is a prerequisite for any following steps if the machine is not already booted.
-
-```ssh
-> vagrant up
-> vagrant ssh
-```
-
-### Stop Virtual Machine
-
-Stops the local development environment. Run this command from the host (i.e. log out of any virtual machine SSH sessions).
-
-```ssh
-> vagrant halt
-```
-
-### Delete Virtual Machine
-
-Deletes the local development environment. Run this command from the host (i.e. log out of any virtual machine SSH sessions).
-
-```ssh
-> vagrant destroy
-```
-
-Sometimes it is useful to completely remove all residual Vagrant files after destroying the box, in this case run the additional command:
-
-```ssh
-> rm -rf ./vagrant
-```
+The following commands assume the user is logged in to the local Vagrant virtual machine.
 
 ### Activate the Python virtual environment
 
@@ -138,7 +109,7 @@ $ cd /vagrant
 $ ./scripts/lint.sh
 ```
 
-The following linters are are run as part of the `lint.sh` command:
+The following linters are run as part of the `lint.sh` command:
 
 #### Bandit
 
@@ -180,6 +151,12 @@ $ ./scripts/build.sh
 ### Deploy
 
 [TBD]
+
+## Additional Documentation
+
+* [Working with Vagrant](documentation/vagrant.md)
+* [Recommended Gitflow](documentation/gitflow.md)
+* [CircleCI Integration](documentation/circleci-integration.md)
 
 ## Repository Directory Structure
 
