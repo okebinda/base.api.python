@@ -25,7 +25,7 @@ class CountrySchema(ma.Schema):
 
     # hyperlinks
     regions_uri = ma.AbsoluteUrlFor('public_locations.get_regions',
-                                    country_code='<code_2>')
+                                    values=dict(country_code='<code_2>'))
 
     # field validation
     id = fields.Integer()

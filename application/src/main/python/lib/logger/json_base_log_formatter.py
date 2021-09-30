@@ -122,8 +122,8 @@ class JSONBaseLogFormatter(logging.Formatter):
                 'remote_addr': 'remote_addr',
             }
             request_data.update(
-                [(request_fields[key], getattr(request, key))
-                 for key in request_fields.keys() if hasattr(request, key)])
+                [(value, getattr(request, key)) for key, value
+                 in request_fields.items() if hasattr(request, key)])
 
             if hasattr(request, 'environ'):
 
@@ -138,8 +138,8 @@ class JSONBaseLogFormatter(logging.Formatter):
                     'SERVER_PORT': 'server_port',
                 }
                 request_data.update(
-                    [(environ_fields[key], request.environ.get(key)) for
-                     key in environ_fields.keys() if key in request.environ])
+                    [(value, request.environ.get(key)) for key, value
+                     in environ_fields.items() if key in request.environ])
 
         return request_data
 
@@ -169,8 +169,8 @@ class JSONBaseLogFormatter(logging.Formatter):
                 'content_length': 'response_size',
             }
             response_data.update(
-                [(response_fields[key], getattr(record.response, key))
-                 for key in response_fields.keys()
+                [(value, getattr(record.response, key)) for key, value
+                 in response_fields.items()
                  if hasattr(record.response, key)])
 
         if (g.request_time and hasattr(record, 'data')
