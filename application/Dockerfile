@@ -8,7 +8,7 @@ RUN mkdir /install
 WORKDIR /install
 
 # install tools
-RUN apk add --no-cache gcc musl-dev linux-headers libffi-dev openssl-dev python3-dev postgresql-dev pcre pcre-dev
+RUN apk add --no-cache gcc g++ musl-dev linux-headers libffi-dev openssl-dev python3-dev postgresql-dev pcre pcre-dev
 RUN pip install pipenv uwsgi
 
 # install dependencies
