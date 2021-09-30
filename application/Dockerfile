@@ -1,4 +1,4 @@
-FROM python:3.9-alpine as base
+FROM python:3.9.7-alpine as base
 
 
 # use a temporary image to create initial build
@@ -23,9 +23,19 @@ FROM base
 # create user
 RUN adduser -D appuser
 WORKDIR /home/appuser
+RUN mkdir tmp
 
 # install system packages
 RUN apk add --no-cache postgresql-client pcre
+
+# install AWS CLI
+RUN apk add --no-cache \
+        python3 \
+        py3-pip \
+    && pip3 install --upgrade pip \
+    && pip3 install \
+        awscli \
+    && rm -rf /var/cache/apk/*
 
 # copy dependencies from builder image
 COPY --from=builder /usr/local/bin/uwsgi /usr/local/bin/uwsgi
@@ -35,7 +45,9 @@ COPY --from=builder /install /usr/local/lib/python3.9/site-packages
 COPY config/uwsgi.ini ./uwsgi.ini
 
 # copy application source code
-COPY src/main/python/ ./
+COPY src/main/python/ ./python/
+COPY src/main/scripts/ ./scripts/
+COPY src/main/migrations/ ./migrations/
 RUN chown -R appuser:appuser ./
 
 # start uwsgi application server on port 5000

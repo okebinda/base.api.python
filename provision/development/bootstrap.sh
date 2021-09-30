@@ -85,13 +85,18 @@ systemctl restart postgresql
 # install pyenv for vagrant user
 apt install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl
 su - vagrant -c "curl https://pyenv.run | bash"
+
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> /home/vagrant/.profile
+echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> /home/vagrant/.profile
+echo 'eval "$(pyenv init --path)"' >> /home/vagrant/.profile
+
 echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /home/vagrant/.bashrc
 echo 'eval "$(pyenv init -)"' >> /home/vagrant/.bashrc
 echo 'eval "$(pyenv virtualenv-init -)"' >> /home/vagrant/.bashrc
 
-# install and use python 3.9.1
-su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv install 3.9.1"
-su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv global 3.9.1"
+# install and use python 3.9.7
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv install 3.9.7"
+su - vagrant -c "/home/vagrant/.pyenv/bin/pyenv global 3.9.7"
 
 # install pipenv
 su - vagrant -c "/home/vagrant/.pyenv/shims/pip install pipenv"
