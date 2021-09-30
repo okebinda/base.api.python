@@ -182,6 +182,7 @@ class User(db.Model, BaseModel):
         'UserTermsOfService',
         lazy='subquery',
         cascade="all,delete-orphan",
+        back_populates='user',
         order_by=UserTermsOfService.accept_date.desc())
     password_resets = db.relationship(
         'PasswordReset',

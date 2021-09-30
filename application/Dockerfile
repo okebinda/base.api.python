@@ -47,7 +47,7 @@ COPY config/uwsgi.ini ./uwsgi.ini
 # copy application source code
 COPY src/main/python/ ./python/
 COPY src/main/scripts/ ./scripts/
-COPY src/main/migrations/ ./migrations/
+#COPY src/main/migrations/ ./migrations/
 RUN chown -R appuser:appuser ./
 
 # start uwsgi application server on port 5000

@@ -44,8 +44,8 @@ class AdministratorAdminSchema(ma.Schema):
         unknown = EXCLUDE  # fix for `role` property after marshmallow 3
 
     # hyperlinks
-    uri = ma.AbsoluteUrlFor(
-        'admin_administrators.get_administrator', administrator_id='<id>')
+    uri = ma.AbsoluteUrlFor('admin_administrators.get_administrator',
+                            values=dict(administrator_id='<id>'))
 
     # nested schema
     roles = fields.Nested('RoleAdminSchema', only=('id', 'name'), many=True,
