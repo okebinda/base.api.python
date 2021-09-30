@@ -29,7 +29,7 @@ class UserAccountAdminSchema(ma.Schema):
 
     # hyperlinks
     uri = ma.AbsoluteUrlFor('admin_administrators.get_administrator',
-                            administrator_id='<id>')
+                            values=dict(administrator_id='<id>'))
 
     # field validation
     id = fields.Integer()
